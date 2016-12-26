@@ -30,4 +30,14 @@ class HubspotFormRepository
     {
         return $this->client->forms()->getById($guid)->toArray();
     }
+
+    public function getAllFormsWithGuidAsKey()
+    {
+        $allForms = [];
+        $forms = $this->client->forms()->all()->toArray();
+        foreach ($forms as $form) {
+            $allForms[$form['guid']] = $form;
+        }
+        return $allForms;
+    }
 }

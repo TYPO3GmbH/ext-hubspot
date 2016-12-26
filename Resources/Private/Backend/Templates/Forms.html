@@ -1,0 +1,33 @@
+{namespace hs = T3G\Hubspot\ViewHelpers}
+{namespace core = TYPO3\CMS\Core\ViewHelpers}
+<div xmlns="http://www.w3.org/1999/xhtml" lang="en"
+     xmlns:f="http://xsd.helhum.io/ns/typo3/cms-fluid/master/ViewHelpers">
+  <f:layout name="Main"/>
+  <f:section name="content">
+    <h2>Forms currently in use:</h2>
+    <table class="table table-striped table-hover">
+      <thead>
+      <tr>
+        <th>
+          <f:translate key="hubspot_integration.form.pid"/>
+        </th>
+        <th>
+          <f:translate key="hubspot_integration.form.header"/>
+        </th>
+        <th colspan="2">
+          <f:translate key="hubspot_integration.form.form_name"/>
+        </th>
+      </tr>
+      </thead>
+      <f:for each="{formsInUse}" as="formElement">
+        <tr>
+          <td><a href="{hs:editRecord(parameters:'edit[pages][{formElement.pid}]=edit')}">{formElement.title}</a></td>
+          <td><a href="{hs:editRecord(parameters:'edit[tt_content][{formElement.uid}]=edit')}">{formElement.header}</a></td>
+          <td>{formElement.form_name}</td>
+          <td><a href="{hs:editRecord(parameters:'edit[tt_content][{formElement.uid}]=edit')}">
+            <core:icon identifier="actions-open" size="small"/></a></td>
+        </tr>
+      </f:for>
+    </table>
+  </f:section>
+</div>

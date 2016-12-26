@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-06-23T11:36:30Z">
+		<header>
+			<authorName>TYPO3</authorName>
+			<authorEmail>info@typo3.com</authorEmail>
+		</header>
+		<body>
+			<trans-unit id="hubspot_integration.form.pid">
+				<source>On Page</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.header">
+				<source>In Content Element</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.form_name">
+				<source>Form Name</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
