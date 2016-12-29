@@ -20,14 +20,12 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 
 /**
  * Edit Record ViewHelper, see FormEngine logic
- * copied from be_user sysext
- *
- * @internal
+ * copied from be_user sysext.
  */
 class EditRecordViewHelper extends AbstractViewHelper
 {
     /**
-     * Initializes the arguments
+     * Initializes the arguments.
      */
     public function initializeArguments()
     {
@@ -36,7 +34,7 @@ class EditRecordViewHelper extends AbstractViewHelper
     }
 
     /**
-     * Returns a URL to link to FormEngine
+     * Returns an URL to link to FormEngine.
      *
      * @return string URL to FormEngine module + parameters
      * @see \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl()

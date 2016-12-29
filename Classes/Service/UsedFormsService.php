@@ -1,14 +1,18 @@
 <?php
 declare(strict_types = 1);
 
-
 namespace T3G\Hubspot\Service;
-
 
 use T3G\Hubspot\Repository\ContentElementRepository;
 use T3G\Hubspot\Repository\HubspotFormRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Service Class to get forms currently in use with information from
+ * database and Hubspot API
+ *
+ * @package T3G\Hubspot\Service
+ */
 class UsedFormsService
 {
     protected $allForms;
@@ -23,6 +27,9 @@ class UsedFormsService
      */
     protected $hubspotFormRepository;
 
+    /**
+     * UsedFormsService constructor.
+     */
     public function __construct()
     {
         $this->contentElementRepository = GeneralUtility::makeInstance(ContentElementRepository::class);
@@ -30,7 +37,13 @@ class UsedFormsService
         $this->allForms = $this->hubspotFormRepository->getAllFormsWithGuidAsKey();
     }
 
-    public function getFormsInUseWithDetails()
+    /**
+     * Gets forms from database and enriches them with API information
+     * API is called only once (see __construct) to reduce API calls.
+     *
+     * @return array
+     */
+    public function getFormsInUseWithDetails() : array
     {
         $contentElementsWithHubspotForm = $this->contentElementRepository->getContentElementsWithHubspotForm();
         $enrichedElements = [];

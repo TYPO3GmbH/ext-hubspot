@@ -1,6 +1,7 @@
 tt_content.hubspot_form = COA
 tt_content.hubspot_form {
     10 < lib.stdheader
+
     20 = COA
     20 {
         wrap = <div class="hubspot-form">|</div>
@@ -16,7 +17,8 @@ tt_content.hubspot_form {
         20.if.directReturn = {$hubspot_form.disableCss}
 
         30 = TEXT
-        30.value = portalId: '{$hubspot_form.portalId}',
+        30.data = getenv : HUBSPOT_PORTALID
+        30.wrap = portalId: '|',
 
         40 = TEXT
         40.field = hubspot_guid

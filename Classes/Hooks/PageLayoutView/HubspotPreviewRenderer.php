@@ -10,11 +10,16 @@ use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Renders the content element preview for hubspot content elements in page module.
+ *
+ * @package T3G\Hubspot\Hooks\PageLayoutView
+ */
 class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
 {
 
     /**
-     * Preprocesses the preview rendering of a content element of type "My new content element"
+     * Preprocesses the preview rendering of a content element of type "hubspot_form".
      *
      * @param \TYPO3\CMS\Backend\View\PageLayoutView $parentObject Calling parent object
      * @param bool $drawItem Whether to draw the item using the default functionality
@@ -38,12 +43,14 @@ class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
     }
 
     /**
-     * @param $form
+     * Transform form structure from hubspot API to field list.
+     *
+     * @param array $form
      * @return array
      */
-    protected function getFormFieldLabels($form)
+    protected function getFormFieldLabels(array $form) : array
     {
-        $formFieldGroups = isset($form['formFieldGroups']) ? $form['formFieldGroups'] : [];
+        $formFieldGroups = $form['formFieldGroups'] ?? [];
         $fields = [];
         foreach ($formFieldGroups as $formFieldGroup) {
             if (isset($formFieldGroup['fields'])) {
@@ -56,11 +63,13 @@ class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
     }
 
     /**
-     * @param $itemContent
-     * @param array $row
+     * Renders the hubspot form preview.
+     *
+     * @param string &$itemContent
+     * @param array &$row
      * @return array
      */
-    protected function renderHubspotFormPreview(&$itemContent, array &$row)
+    protected function renderHubspotFormPreview(string &$itemContent, array &$row)
     {
         if (!empty($row['hubspot_guid'])) {
             $hubspotFormRepository = GeneralUtility::makeInstance(HubspotFormRepository::class);
