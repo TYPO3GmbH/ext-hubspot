@@ -1,0 +1,10 @@
+{namespace hs = T3G\Hubspot\ViewHelpers}
+{namespace core = TYPO3\CMS\Core\ViewHelpers}
+<div xmlns="http://www.w3.org/1999/xhtml" lang="en"
+     xmlns:f="http://xsd.helhum.io/ns/typo3/cms-fluid/master/ViewHelpers">
+  <f:layout name="Iframe"/>
+  <f:section name="content">
+    <iframe src="https://app.hubspot.com/forms/{portalId}/{hubspotGuid}/edit/" style="position: absolute; left: 0; right: 0; bottom: 0; top: 65px; border: none; width: 100%; height: calc(100% - 65px);" />
+  </f:section>
+</div>
+
