@@ -57,9 +57,7 @@ class BackendController extends ActionController
         parent::initializeView($view);
         $this->moduleTemplate = $view->getModuleTemplate();
         $this->pageRenderer = $this->moduleTemplate->getPageRenderer();
-        $this->pageRenderer->addCssFile(
-            PathUtility::getAbsoluteWebPath('../' . ExtensionManagementUtility::siteRelPath('hubspot') . 'Resources/Public/Css/backend.css')
-        );
+        $this->pageRenderer->addCssFile('EXT:hubspot/Resources/Public/Css/backend.css');
         $this->menuRegistry = $this->moduleTemplate->getDocHeaderComponent()->getMenuRegistry();
         $this->createMenu();
     }
