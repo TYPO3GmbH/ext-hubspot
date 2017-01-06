@@ -1,7 +1,6 @@
 TYPO3:
   CMS:
     Form:
-
       formManager:
         selectablePrototypesConfiguration:
           # add the prototype 'hubspot' to the FormManager select list
@@ -9,15 +8,28 @@ TYPO3:
             __inheritances:
               10: 'TYPO3.CMS.Form.formManager.selectablePrototypesConfiguration.100'
             identifier: 'hubspot'
-            label: 'Hubspot Forms'
-
+            label: 'Hubspot forms'
       prototypes:
         # add a new prototype called 'hubspot'
         # and extend it from the 'standard' prototype
         hubspot:
           __inheritances:
             10: 'TYPO3.CMS.Form.prototypes.standard'
-
+          formEditor:
+            dynamicRequireJsModules:
+              # load custom javascript code
+              additionalViewModelModules:
+                - 'TYPO3/CMS/Hubspot/Backend/FormEditor/ViewModel'
+            formEditorTemplates:
+              # search editor templates within this extension
+              templateRootPaths:
+                100: 'EXT:hubspot/Resources/Private/Backend/Templates/FormEditor/'
+              partialRootPaths:
+                100: 'EXT:hubspot/Resources/Private/Backend/Partials/FormEditor/'
+              layoutRootPaths:
+                100: 'EXT:hubspot/Resources/Private/Backend/Layouts/FormEditor/'
+              # custom select list for Hubspot properties
+              Inspector-HubspotPropertySelectEditor: 'Inspector/HubspotPropertySelectEditor'
           formElementsDefinition:
             Form:
               formEditor:
@@ -28,7 +40,6 @@ TYPO3:
                       1000:
                         value: 'Hubspot'
                         label: 'Hubspot'
-
                 propertyCollections:
                   finishers:
                     # Add the Hubspot finisher editor configurations.
@@ -40,73 +51,80 @@ TYPO3:
                           10: 'TYPO3.CMS.Form.mixins.formElementMixins.BaseCollectionEditorsMixin'
                         100:
                           label: 'Hubspot'
-
             Text:
               # add the Hubspot properties to Text elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             Password:
               # add the Hubspot properties to Password elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             AdvancedPassword:
               # add the Hubspot properties to AdvancedPassword elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             Textarea:
               # add the Hubspot properties to Textarea elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             Checkbox:
               # add the Hubspot properties to Checkbox elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             MultiCheckbox:
               # add the Hubspot properties to MultiCheckbox elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             MultiSelect:
               # add the Hubspot properties to MultiSelect elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             RadioButton:
               # add the Hubspot properties to RadioButton elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             SingleSelect:
               # add the Hubspot properties to SingleSelect elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             DatePicker:
               # add the Hubspot properties to DatePicker elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             FileUpload:
               # add the Hubspot properties to FileUpload elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
             ImageUpload:
               # add the Hubspot properties to ImageUpload elements
               __inheritances:
                 100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
-
+            # enable hidden elements within the editor
+            Hidden:
+              # add the Hubspot properties to Hidden elements
+              __inheritances:
+                100: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
+              formEditor:
+                label: 'Hidden'
+                group: input
+                groupSorting: 500
+                iconIdentifier: 't3-form-icon-text'
+                predefinedDefaults:
+                  properties:
+                    value: ''
+                  defaultValue: ''
+                editors:
+                  400:
+                    identifier: 'value'
+                    templateName: 'Inspector-TextEditor'
+                    label: 'value'
+                    propertyPath: 'properties.value'
+                  800: null
           finishersDefinition:
             Hubspot:
               implementationClassName: 'T3G\Hubspot\Domain\Finishers\HubspotFinisher'
               formEditor:
                 iconIdentifier: 't3-form-icon-finisher'
-
       mixins:
         formElementMixins:
           hubspotFormElementMixin:
@@ -123,6 +141,6 @@ TYPO3:
                   propertyPath: 'properties.hubspotProperty'
                 260:
                   identifier: 'hubspotTable'
-                  templateName: 'Inspector-TextEditor'
-                  label: 'Hubspot Type'
+                  templateName: 'Inspector-HubspotPropertySelectEditor'
+                  label: 'Hubspot Property Type'
                   propertyPath: 'properties.hubspotTable'
