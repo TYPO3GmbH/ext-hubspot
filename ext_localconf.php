@@ -20,3 +20,13 @@ foreach ($icons as $iconIdentifier => $source) {
         ['source' => $source]
     );
 }
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typolinkProcessing']['typolinkModifyParameterForPageLinks'][] = \T3G\Hubspot\Hooks\Typolink\ModifyParameterForPageLinksHook::class;
+
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1483626131161] = [
+    'nodeName' => 'HubspotCampaign',
+    'priority' => 40,
+    'class' => \T3G\Hubspot\Form\Element\HubspotCampaignElement::class
+];
+
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['Hubspot'] = \T3G\Hubspot\Hooks\DataHandler\DataHandlerHook::class;
