@@ -6,7 +6,7 @@
             <authorEmail>info@typo3.com</authorEmail>
         </header>
         <body>
-            <trans-unit id="hubspot_form">
+            <trans-unit id="plugin.hubspot_form">
                 <source>Hubspot Form</source>
             </trans-unit>
             <trans-unit id="hubspot_form.wizard.title">
@@ -14,6 +14,18 @@
             </trans-unit>
             <trans-unit id="hubspot_form.wizard.description">
                 <source>Add form configured in Hubspot</source>
+            </trans-unit>
+            <trans-unit id="hubspot_campaign_fullink_helptext">
+                <source>Paste hubspot generated campaign URL here.</source>
+            </trans-unit>
+            <trans-unit id="pages.utm_campaign_main_label">
+                <source>UTM Campaign Link</source>
+            </trans-unit>
+            <trans-unit id="pages.tab_label">
+                <source>Hubspot</source>
+            </trans-unit>
+            <trans-unit id="tt_content.hubspot_form">
+                <source>Hubspot Form</source>
             </trans-unit>
         </body>
     </file>

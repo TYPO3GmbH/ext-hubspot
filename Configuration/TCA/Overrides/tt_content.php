@@ -1,7 +1,7 @@
 <?php
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     [
-        'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:hubspot_form',
+        'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:plugin.hubspot_form',
         'hubspot_form',
         'EXT:hubspot/Resources/Public/Icons/ContentElements/hubspot_form.svg'
     ],
@@ -10,7 +10,7 @@
 );
 
 $GLOBALS['TCA']['tt_content']['columns']['hubspot_guid'] = [
-    'label' => 'Hubspot Form',
+    'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_form',
     'config' => [
         'type' => 'select',
         'renderType' => 'selectSingle',
