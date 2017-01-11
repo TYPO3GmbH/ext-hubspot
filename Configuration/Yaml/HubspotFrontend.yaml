@@ -1,0 +1,16 @@
+TYPO3:
+  CMS:
+    Form:
+      prototypes:
+        # add a new prototype called 'marketing_automatisation_hubspot'
+        # and extend it from the 'standard' prototype
+        hubspot:
+          __inheritances:
+            10: 'TYPO3.CMS.Form.prototypes.standard'
+
+          finishersDefinition:
+            Hubspot:
+              implementationClassName: 'T3G\Hubspot\Domain\Finishers\HubspotFinisher'
+              options:
+                #hubspotTableProperty: 'hubspotTable'
+                #hubspotPropertyProperty: 'hubspotProperty'
