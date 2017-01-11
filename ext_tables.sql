@@ -7,4 +7,5 @@ CREATE TABLE pages (
 
 CREATE TABLE tt_content (
 	hubspot_guid VARCHAR(36) DEFAULT '' NOT NULL,
+	hubspot_cta TEXT,
 );

@@ -27,6 +27,9 @@
             <trans-unit id="tt_content.hubspot_form">
                 <source>Hubspot Form</source>
             </trans-unit>
+            <trans-unit id="tt_content.hubspot_cta">
+                <source>Hubspot Call To Action</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
