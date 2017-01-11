@@ -1,9 +1,7 @@
 <?php
-declare(strict_types = 1);
-
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Controller;
-
 
 use T3G\Hubspot\Service\UsedFormsService;
 use T3G\Hubspot\View\BackendTemplateView;
@@ -11,9 +9,7 @@ use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\MenuRegistry;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Core\Page\PageRenderer;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\PathUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
@@ -21,7 +17,6 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 /**
  * Backend module for Hubspot Integration
  *
- * @package T3G\Hubspot\Controller
  */
 class BackendController extends ActionController
 {
@@ -175,5 +170,4 @@ class BackendController extends ActionController
         $menu->addMenuItem($menuItem);
         return $menu;
     }
-
 }

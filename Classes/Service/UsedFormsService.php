@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Service;
 
@@ -11,7 +11,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Service Class to get forms currently in use with information from
  * database and Hubspot API
  *
- * @package T3G\Hubspot\Service
  */
 class UsedFormsService
 {

@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
@@ -8,7 +8,6 @@ use SevenShores\Hubspot\Factory;
 /**
  * Repository for fetching data from hubspot via API
  *
- * @package T3G\Hubspot\Repository
  */
 class HubspotFormRepository
 {

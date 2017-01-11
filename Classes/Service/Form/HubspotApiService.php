@@ -1,12 +1,13 @@
 <?php
-declare(strict_types = 1);
-
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Service\Form;
 
-
 use GuzzleHttp\Client;
 
+/**
+ * Class HubspotApiService
+ */
 class HubspotApiService
 {
 
@@ -20,12 +21,18 @@ class HubspotApiService
      */
     protected $url = '';
 
+    /**
+     * HubspotApiService constructor.
+     */
     public function __construct()
     {
         $this->client = new Client();
         $this->url = getenv('HUBSPOT_MIDDLEWARE_BASEURL') . '?whatever&humweeekey=' . getenv('HUBSPOT_MIDDLEWARE_APIKEY');
     }
 
+    /**
+     * @param array $data
+     */
     public function sendToHubspot(array $data)
     {
         $converterService = new ConverterService();

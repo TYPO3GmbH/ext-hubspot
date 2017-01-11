@@ -1,9 +1,7 @@
 <?php
-declare(strict_types = 1);
-
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Tests\Service\Form;
-
 
 use T3G\Hubspot\Service\Form\ConverterService;
 

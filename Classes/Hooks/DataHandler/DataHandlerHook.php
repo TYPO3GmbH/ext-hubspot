@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Hooks\DataHandler;
 
@@ -29,5 +29,4 @@ class DataHandlerHook
             }
         }
     }
-
 }

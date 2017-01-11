@@ -1,5 +1,6 @@
 <?php
 namespace T3G\Hubspot\ViewHelpers;
+
 /*
  * This file is part of the TYPO3 CMS project.
  *

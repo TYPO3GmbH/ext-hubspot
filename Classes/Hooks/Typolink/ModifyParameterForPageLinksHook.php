@@ -1,11 +1,8 @@
 <?php
-declare(strict_types = 1);
-
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Hooks\Typolink;
 
-
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use TYPO3\CMS\Frontend\ContentObject\TypolinkModifyLinkConfigForPageLinksHookInterface;
 
 class ModifyParameterForPageLinksHook implements TypolinkModifyLinkConfigForPageLinksHookInterface

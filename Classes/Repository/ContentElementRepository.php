@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare (strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
@@ -10,7 +10,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Repository for the selection of ContentElements
  *
- * @package T3G\Hubspot\Repository
  */
 class ContentElementRepository
 {
