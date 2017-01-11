@@ -30,3 +30,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1483626131161] 
 ];
 
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['Hubspot'] = \T3G\Hubspot\Hooks\DataHandler\DataHandlerHook::class;
+
+
+/** @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer */
+$pageRenderer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Page\PageRenderer::class);
+$pageRenderer->loadRequireJsModule('TYPO3/CMS/Hubspot/HubspotCtaModule', 'function() { console.log("Loaded Hubspot."); }');
