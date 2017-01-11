@@ -14,7 +14,7 @@ class ConverterService
      *
      * @return array
      */
-    public function convertToHubspotFormat(array $formData)
+    public function convertToHubspotFormat(array $formData) : array
     {
         $hubspotData = [];
         foreach ($formData as $datum) {
