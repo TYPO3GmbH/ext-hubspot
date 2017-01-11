@@ -6,7 +6,7 @@ define(['jquery'], function ($) {
 
     var HubspotCta = {
         initialize: function () {
-            $(":input[name*='hubspot_cta']").on("click", function () {
+            $(document).on("focus", "textarea[name*='hubspot_cta']", function () {
                 $(this).select();
             });
         }
