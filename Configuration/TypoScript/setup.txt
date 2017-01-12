@@ -32,14 +32,15 @@ tt_content.hubspot_form {
 
 tt_content.hubspot_cta = COA
 tt_content.hubspot_cta {
-    10 < lib.stdheader
-
-    20 = USER
-    20 {
-        userFunc = T3G\Hubspot\Repository\HubspotCtaRepository->getHubspotCtaForContentElement
-        hubspot_cta = TEXT
-        hubspot_cta.field = hubspot_cta
-        stdWrap = <div class="hubspot-cta">|</div>
+    10 = RECORDS
+    10 {
+        source.field = hubspot_cta
+        tables = tx_hubspot_cta
+        conf.tx_hubspot_cta = TEXT
+        conf.tx_hubspot_cta {
+            field = hubspot_cta_code
+            wrap = <div class="hubspot-cta">|</div>
+        }
     }
 }
 
