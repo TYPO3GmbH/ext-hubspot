@@ -37,8 +37,17 @@ $columns = [
     'hubspot_cta' => [
         'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_cta',
         'config' => [
-            'type' => 'select',
-            'foreign_table' => 'tx_hubspot_cta'
+            'type' => 'group',
+            'internal_type' => 'db',
+            'allowed' => 'tx_hubspot_cta',
+            'size' => '3',
+            'maxitems' => '1',
+            'minitems' => '0',
+            'wizards' => [
+                'suggest' => [
+                    'type' => 'suggest',
+                ],
+            ],
         ]
     ]
 ];
