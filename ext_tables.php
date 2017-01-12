@@ -6,12 +6,12 @@ if (!defined('TYPO3_MODE')) {
 
 call_user_func(
     function () {
-        \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-            'T3G.hubspot',
-            'hubspotForm',
-            'Hubspot Form'
-        );
         if (TYPO3_MODE === 'BE') {
+            \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+                'T3G.hubspot',
+                'hubspotForm',
+                'Hubspot Form'
+            );
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
                 'T3G.Hubspot',
                 'tools',
