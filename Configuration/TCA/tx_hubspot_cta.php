@@ -5,7 +5,7 @@ if (!defined('TYPO3_MODE')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_domain_model_cta',
+        'title' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta',
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -21,7 +21,7 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'name',
-        'iconfile' => 'EXT:hubspot/Resources/Public/Icons/tx_hubspot_domain_model_cta.svg'
+        'iconfile' => 'EXT:hubspot/Resources/Public/Icons/tx_hubspot_cta.svg'
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, hubspot_cta_code',
@@ -55,8 +55,8 @@ return [
                 'items' => [
                     ['', 0],
                 ],
-                'foreign_table' => 'tx_hubspot_domain_model_cta',
-                'foreign_table_where' => 'AND tx_hubspot_domain_model_cta.pid=###CURRENT_PID### AND tx_hubspot_domain_model_cta.sys_language_uid IN (-1,0)',
+                'foreign_table' => 'tx_hubspot_cta',
+                'foreign_table_where' => 'AND tx_hubspot_cta.pid=###CURRENT_PID### AND tx_hubspot_cta.sys_language_uid IN (-1,0)',
             ],
         ],
         'l10n_diffsource' => [
@@ -104,7 +104,7 @@ return [
         ],
         'name' => [
             'exclude' => 0,
-            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_domain_model_cta.name',
+            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -113,7 +113,7 @@ return [
         ],
         'hubspot_cta_code' => [
             'exclude' => 0,
-            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_domain_model_cta.hubspot_cta_code',
+            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.hubspot_cta_code',
             'config' => [
                 'type' => 'text',
                 'cols' => 40,

@@ -37,8 +37,8 @@ tt_content.hubspot_cta {
     20 = USER
     20 {
         userFunc = T3G\Hubspot\Repository\HubspotCtaRepository->getHubspotCtaForContentElement
-        content_uid = TEXT
-        content_uid.field = uid
+        hubspot_cta = TEXT
+        hubspot_cta.field = hubspot_cta
         stdWrap = <div class="hubspot-cta">|</div>
     }
 }

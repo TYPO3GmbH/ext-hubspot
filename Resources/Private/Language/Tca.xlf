@@ -31,13 +31,13 @@
                 <source>Hubspot Call To Action</source>
             </trans-unit>
 
-            <trans-unit id="tx_hubspot_domain_model_cta">
+            <trans-unit id="tx_hubspot_cta">
                 <source>Hubspot Call To Action</source>
             </trans-unit>
-            <trans-unit id="tx_hubspot_domain_model_cta.name">
+            <trans-unit id="tx_hubspot_cta.name">
                 <source>Name</source>
             </trans-unit>
-            <trans-unit id="tx_hubspot_domain_model_cta.hubspot_cta_code">
+            <trans-unit id="tx_hubspot_cta.hubspot_cta_code">
                 <source>Call To Action Code (provided from Hubspot)</source>
             </trans-unit>
         </body>

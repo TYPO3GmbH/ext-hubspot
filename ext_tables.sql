@@ -11,9 +11,9 @@ CREATE TABLE tt_content (
 );
 
 #
-# Table structure for table 'tx_hubspot_domain_model_cta'
+# Table structure for table 'tx_hubspot_cta'
 #
-CREATE TABLE tx_hubspot_domain_model_cta (
+CREATE TABLE tx_hubspot_cta (
 
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
@@ -36,17 +36,4 @@ CREATE TABLE tx_hubspot_domain_model_cta (
 	PRIMARY KEY (uid),
  KEY language (l10n_parent,sys_language_uid)
 
-);
-
-
-#
-# Table structure for table 'tx_hubspot_domain_model_cta_mm'
-#
-CREATE TABLE tx_hubspot_domain_model_cta_mm (
-	uid_local int(11) unsigned DEFAULT '0' NOT NULL,
-	uid_foreign int(11) unsigned DEFAULT '0' NOT NULL,
-	sorting int(11) unsigned DEFAULT '0' NOT NULL,
-
-	KEY uid_local (uid_local),
-	KEY uid_foreign (uid_foreign)
 );
