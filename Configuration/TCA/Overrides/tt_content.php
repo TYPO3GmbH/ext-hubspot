@@ -37,9 +37,10 @@ $columns = [
     'hubspot_cta' => [
         'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_cta',
         'config' => [
-            'type' => 'text',
-            'default' => '',
-        ],
+            'type' => 'select',
+            'foreign_table' => 'tx_hubspot_domain_model_cta',
+            'MM' => 'tx_hubspot_domain_model_cta_mm'
+        ]
     ]
 ];
 
