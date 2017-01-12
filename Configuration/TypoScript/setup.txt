@@ -32,15 +32,15 @@ tt_content.hubspot_form {
 
 tt_content.hubspot_cta = COA
 tt_content.hubspot_cta {
-    10 < lib.stdheader
-
-    20 = COA
-    20 {
-        wrap = <div class="hubspot-cta">|</div>
-
-        10 = TEXT
-        10.field = hubspot_cta
-        10.wrap = |
+    10 = RECORDS
+    10 {
+        source.field = hubspot_cta
+        tables = tx_hubspot_cta
+        conf.tx_hubspot_cta = TEXT
+        conf.tx_hubspot_cta {
+            field = hubspot_cta_code
+            wrap = <div class="hubspot-cta">|</div>
+        }
     }
 }
 
