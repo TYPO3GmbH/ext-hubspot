@@ -40,6 +40,9 @@
             <trans-unit id="tx_hubspot_cta.hubspot_cta_code">
                 <source>Call To Action Code (provided from Hubspot)</source>
             </trans-unit>
+            <trans-unit id="tx_hubspot_cta.hubspot_cta_code.description">
+                <source>Tip: Just copy and paste the code provided from Hubspot.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -115,7 +115,7 @@ return [
             'exclude' => 0,
             'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.hubspot_cta_code',
             'config' => [
-                'type' => 'text',
+                'type' => 'HubspotCallToAction',
                 'cols' => 40,
                 'rows' => 15,
                 'eval' => 'trim, required'
