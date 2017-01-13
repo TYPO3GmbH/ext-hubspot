@@ -3,6 +3,19 @@ declare (strict_types = 1);
 
 namespace T3G\Hubspot\Service\Form;
 
+/*
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
 /**
  * Class ConverterService
  */
@@ -11,6 +24,8 @@ class ConverterService
     const STRINGIFY = 'stringify-';
 
     /**
+     * Converts EXT:form structure to hubspot endpoint format
+     *
      * @param array $formData
      *
      * @return array
@@ -40,11 +55,13 @@ class ConverterService
     }
 
     /**
-     * @param $hubspotProperty
-     * @param $datum
+     * Convert string foo.1.bar.2 to a nested array structure
+     *
+     * @param string $hubspotProperty
+     * @param array $datum
      * @return array
      */
-    protected function convertToNestedStructure($hubspotProperty, $datum): array
+    protected function convertToNestedStructure(string $hubspotProperty, array $datum): array
     {
         $parts = explode('.', $hubspotProperty);
         array_walk(
@@ -67,6 +84,13 @@ class ConverterService
         return $parts;
     }
 
+    /**
+     * Normalize Keys (PHP is stupid - numerical keys needed to be prefixed for the nesting
+     * - now we need to remove the prefix again)
+     *
+     * @param array $input
+     * @return array
+     */
     protected static function normalizeKeys(array $input)
     {
         $return = [];
