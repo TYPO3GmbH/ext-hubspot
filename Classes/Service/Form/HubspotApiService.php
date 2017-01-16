@@ -27,7 +27,7 @@ class HubspotApiService
     public function __construct()
     {
         $this->client = new Client();
-        $this->url = getenv('HUBSPOT_MIDDLEWARE_BASEURL') . '?whatever&humweeekey=' . getenv('HUBSPOT_MIDDLEWARE_APIKEY');
+        $this->url = getenv('HUBSPOT_MIDDLEWARE_BASEURL') . '/api/genericFormData?humweeekey=' . getenv('HUBSPOT_FORM_FRAMEWORK_HUMWEEE_KEY');
     }
 
     /**
