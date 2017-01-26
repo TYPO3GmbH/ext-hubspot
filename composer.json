@@ -18,7 +18,7 @@
     }
   ],
   "require": {
-      "ryanwinchester/hubspot-php": "1.0.*@dev"
+      "ryanwinchester/hubspot-php": "dev-master"
   },
  "autoload": {
     "psr-4": {
