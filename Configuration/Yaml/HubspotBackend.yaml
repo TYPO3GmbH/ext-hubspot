@@ -20,14 +20,12 @@ TYPO3:
               # load custom javascript code
               additionalViewModelModules:
                 - 'TYPO3/CMS/Hubspot/Backend/FormEditor/ViewModel'
-            formEditorTemplates:
-              # search editor templates within this extension
-              templateRootPaths:
-                100: 'EXT:hubspot/Resources/Private/Backend/Templates/FormEditor/'
+            formEditorFluidConfiguration:
               partialRootPaths:
                 100: 'EXT:hubspot/Resources/Private/Backend/Partials/FormEditor/'
               layoutRootPaths:
                 100: 'EXT:hubspot/Resources/Private/Backend/Layouts/FormEditor/'
+            formEditorPartials:
               # custom select list for Hubspot properties
               Inspector-HubspotPropertySelectEditor: 'Inspector/HubspotPropertySelectEditor'
           formElementsDefinition:
