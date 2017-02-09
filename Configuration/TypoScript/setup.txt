@@ -1,9 +1,11 @@
-tt_content.hubspot_form = COA
+tt_content.hubspot_form =< lib.fluidContent
 tt_content.hubspot_form {
-    10 < lib.stdheader
+    templateName = HubspotForm
 
-    20 = COA
-    20 {
+    templateRootPaths.922017 = EXT:hubspot/Resources/Private/Frontend/Templates/
+
+    variables.content = COA
+    variables.content {
         wrap = <div class="hubspot-form">|</div>
         10 = TEXT
         10.value (
