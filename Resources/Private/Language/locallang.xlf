@@ -30,6 +30,12 @@
 			<trans-unit id="hubspot_integration.headline">
 				<source>Hubspot Integration</source>
 			</trans-unit>
+			<trans-unit id="message.hubspot_blocked.1">
+				<source>Here should be a form, apparently your browser blocks our forms.</source>
+			</trans-unit>
+			<trans-unit id="message.hubspot_blocked.2">
+				<source>Do you use an adblocker? If so, please try turning it off and reload this page.</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
