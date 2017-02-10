@@ -8,9 +8,11 @@
     msg += '<br/>';
     msg += '<f:translate key="message.hubspot_blocked.2" extensionName="Hubspot" />';
     window.setTimeout(function () {
-      if ($('.hubspot-form input').length === 0) {
+      require(['jquery'], function ($) {
+        if ($('.hubspot-form input').length !== 0) {
           $('.hubspot-form').empty().append('<p class="text-center" style="background-color: #eaeaea;"><strong>' + msg + '</strong></p>');
-      }
+        }
+      })
     }, 1000);
   </script>
 </f:section>
