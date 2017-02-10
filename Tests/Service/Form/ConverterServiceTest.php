@@ -1,6 +1,5 @@
 <?php
 declare (strict_types = 1);
-
 namespace T3G\Hubspot\Tests\Service\Form;
 
 /*
@@ -16,9 +15,10 @@ namespace T3G\Hubspot\Tests\Service\Form;
  * The TYPO3 project - inspiring people to share!
  */
 
+use PHPUnit\Framework\TestCase;
 use T3G\Hubspot\Service\Form\ConverterService;
 
-class ConverterServiceTest extends \PHPUnit_Framework_TestCase
+class ConverterServiceTest extends TestCase
 {
     /**
      * @test
