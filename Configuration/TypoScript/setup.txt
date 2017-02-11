@@ -11,7 +11,12 @@ tt_content.hubspot_form {
         10.value (
             <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
             <script>
-            hbspt.forms.create ({
+                window.onload = function() {
+                    hbspt.forms.create ({
+                        target: ".hubspot-form",
+                        onFormReady: function() {
+                            $("#hubspot-form-message").hide();
+                        },
         )
 
         20 = TEXT
@@ -27,6 +32,7 @@ tt_content.hubspot_form {
         40.wrap (
           formId: '|'
         });
+        }
         </script>
         )
     }
