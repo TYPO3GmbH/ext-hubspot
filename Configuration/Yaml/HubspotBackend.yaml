@@ -130,7 +130,7 @@ TYPO3:
                 20: 'TYPO3.CMS.Form.mixins.formElementMixins.hiddenElementMixin'
                 30: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
               formEditor:
-                label: 'Signup PP beta'
+                label: 'Hidden date field (store a datetime in hubspot)'
                 groupSorting: 600
           finishersDefinition:
             Hubspot:
