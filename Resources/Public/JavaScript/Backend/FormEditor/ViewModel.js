@@ -14,10 +14,11 @@
  * Module: TYPO3/CMS/ExtFormMarketingAutomatisation/Backend/FormEditor/ViewModel
  */
 define(['jquery',
-	'TYPO3/CMS/Form/Backend/FormEditor/Helper'
-], function ($, Helper) {
+		'TYPO3/CMS/Form/Backend/FormEditor/StageComponent',
+		'TYPO3/CMS/Form/Backend/FormEditor/Helper'
+], function ($, StageComponent, Helper) {
 	'use strict';
-	return (function ($, Helper) {
+	return (function ($, StageComponent, Helper) {
 		/**
 		 * @private
 		 *
@@ -101,10 +102,10 @@ define(['jquery',
 			 *
 			 * @param string
 			 * @param array
-			 *              args[0] = editorConfiguration
-			 *              args[1] = editorHtml
-			 *              args[2] = collectionElementIdentifier
-			 *              args[2] = collectionName
+			 *		  args[0] = editorConfiguration
+			 *		  args[1] = editorHtml
+			 *		  args[2] = collectionElementIdentifier
+			 *		  args[2] = collectionName
 			 * @return void
 			 * @subscribe view/inspector/editor/insert/perform
 			 */
@@ -118,7 +119,24 @@ define(['jquery',
 					);
 				}
 			});
+
+			/**
+			 * @private
+			 *
+			 * @param string
+			 * @param array
+			 *		  args[0] = formElement
+			 *		  args[1] = template
+			 * @return void
+			 * @subscribe view/stage/abstract/render/template/perform
+			 */
+			getPublisherSubscriber().subscribe('view/stage/abstract/render/template/perform', function(topic, args) {
+				if (args[0].get('type') === 'HiddenDate') {
+					StageComponent.renderSimpleTemplate(args[0], args[1]);
+				}
+			});
 		};
+
 		/**
 		 * @private
 		 *
@@ -207,5 +225,5 @@ define(['jquery',
 		return {
 			bootstrap: bootstrap
 		};
-	})($, Helper);
+	})($, StageComponent, Helper);
 });

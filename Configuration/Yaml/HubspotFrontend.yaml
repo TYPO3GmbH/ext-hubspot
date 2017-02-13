@@ -14,3 +14,14 @@ TYPO3:
               options:
                 #hubspotTableProperty: 'hubspotTable'
                 #hubspotPropertyProperty: 'hubspotProperty'
+
+          formElementsDefinition:
+            Form:
+              renderingOptions:
+                # additional fluid search paths.
+                partialRootPaths:
+                    1486978514: 'EXT:hubspot/Resources/Private/Frontend/Partials'
+            # Add a new form element that acts like a "Hidden" element but uses its own partial.
+            HiddenDate:
+              __inheritances:
+                10: 'TYPO3.CMS.Form.prototypes.standard.formElementsDefinition.Hidden'
