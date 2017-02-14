@@ -28,8 +28,15 @@ TYPO3:
             formEditorPartials:
               # custom select list for Hubspot properties
               Inspector-HubspotPropertySelectEditor: 'Inspector/HubspotPropertySelectEditor'
+              # Tell the form editor ViewModel to use the 'SimpleTemplate' inline partials for the
+              # new form elements 'HiddenDate'
+              FormElement-HiddenDate: 'Stage/SimpleTemplate'
           formElementsDefinition:
             Form:
+              renderingOptions:
+                # additional fluid search paths.
+                partialRootPaths:
+                    1486978514: 'EXT:hubspot/Resources/Private/Frontend/Partials'
               formEditor:
                 editors:
                   900:
@@ -108,16 +115,23 @@ TYPO3:
                 groupSorting: 500
                 iconIdentifier: 't3-form-icon-text'
                 predefinedDefaults:
-                  properties:
-                    value: ''
                   defaultValue: ''
                 editors:
                   400:
                     identifier: 'value'
                     templateName: 'Inspector-TextEditor'
                     label: 'value'
-                    propertyPath: 'properties.value'
+                    propertyPath: 'defaultValue'
                   800: null
+            # Make the element editable within the form editor by adding some inspector editors.
+            HiddenDate:
+              __inheritances:
+                10: 'TYPO3.CMS.Form.prototypes.standard.formElementsDefinition.Hidden'
+                20: 'TYPO3.CMS.Form.mixins.formElementMixins.hiddenElementMixin'
+                30: 'TYPO3.CMS.Form.mixins.formElementMixins.hubspotFormElementMixin'
+              formEditor:
+                label: 'Hidden date field (store a datetime in hubspot)'
+                groupSorting: 600
           finishersDefinition:
             Hubspot:
               implementationClassName: 'T3G\Hubspot\Domain\Finishers\HubspotFinisher'
@@ -142,3 +156,18 @@ TYPO3:
                   templateName: 'Inspector-HubspotPropertySelectEditor'
                   label: 'Hubspot Property Type'
                   propertyPath: 'properties.hubspotTable'
+          hiddenElementMixin:
+            formEditor:
+              label: 'Hidden'
+              group: input
+              groupSorting: 500
+              iconIdentifier: 't3-form-icon-text'
+              predefinedDefaults:
+                defaultValue: ''
+              editors:
+                400:
+                  identifier: 'value'
+                  templateName: 'Inspector-TextEditor'
+                  label: 'value'
+                  propertyPath: 'defaultValue'
+                800: null
