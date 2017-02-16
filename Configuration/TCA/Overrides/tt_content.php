@@ -43,11 +43,6 @@ $columns = [
             'size' => '3',
             'maxitems' => '1',
             'minitems' => '0',
-            'wizards' => [
-                'suggest' => [
-                    'type' => 'suggest',
-                ],
-            ],
         ]
     ]
 ];
