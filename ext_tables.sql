@@ -27,7 +27,7 @@ CREATE TABLE tx_hubspot_cta (
 	endtime int(11) unsigned DEFAULT '0' NOT NULL,
 
 	name varchar(255) DEFAULT '' NOT NULL,
-	hubspot_cta_code text NOT NULL,
+	hubspot_cta_code text,
 
 	sys_language_uid int(11) DEFAULT '0' NOT NULL,
 	l10n_parent int(11) DEFAULT '0' NOT NULL,
