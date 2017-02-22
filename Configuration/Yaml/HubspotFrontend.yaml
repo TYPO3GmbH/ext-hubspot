@@ -21,6 +21,8 @@ TYPO3:
                 # additional fluid search paths.
                 partialRootPaths:
                     1486978514: 'EXT:hubspot/Resources/Private/Frontend/Partials'
+                templateRootPaths:
+                    1486978514: 'EXT:hubspot/Resources/Private/Frontend/Templates'
             # Add a new form element that acts like a "Hidden" element but uses its own partial.
             HiddenDate:
               __inheritances:
