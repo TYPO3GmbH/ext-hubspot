@@ -26,6 +26,7 @@ if (TYPO3_MODE === 'BE') {
     $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
     $icons = [
         'ctype-hubspot-form' => 'EXT:hubspot/Resources/Public/Icons/ContentElements/hubspot_form.svg',
+        'ctype-hubspot-cta' => 'EXT:hubspot/Resources/Public/Icons/ContentElements/hubspot_cta.svg',
     ];
     foreach ($icons as $iconIdentifier => $source) {
         $iconRegistry->registerIcon(

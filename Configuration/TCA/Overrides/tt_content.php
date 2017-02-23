@@ -19,6 +19,9 @@
     'hubspot'
 );
 
+$GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['hubspot_cta'] = 'ctype-hubspot-cta';
+$GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['hubspot_form'] = 'ctype-hubspot-form';
+
 $columns = [
     'hubspot_guid' => [
         'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_form',
