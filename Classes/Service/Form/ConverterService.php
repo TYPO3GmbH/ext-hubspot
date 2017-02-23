@@ -42,8 +42,12 @@ class ConverterService
                 if (strpos($hubspotProperty, '.') > 0) {
                     $parts = $this->convertToNestedStructure($hubspotProperty, $datum);
                 } else {
+                    $value = $datum['value'];
+                    if (is_array($datum['value'])) {
+                        $value = implode(';',$value);
+                    }
                     $parts[$hubspotTable][] = [
-                        'value' => $datum['value'],
+                        'value' => $value,
                         'property' => $hubspotProperty,
                     ];
                 }
@@ -72,10 +76,14 @@ class ConverterService
             if (!empty($k)) {
                 $parts = [$v => $parts];
             } else {
+                $value = $datum['value'];
+                if (is_array($datum['value'])) {
+                    $value = implode(';',$value);
+                }
                 $parts = [
                     [
                         'property' => $v,
-                        'value' => $datum['value'],
+                        'value' => $value,
                     ],
                 ];
             }

@@ -132,6 +132,16 @@ class ConverterServiceTest extends TestCase
                     'hubspotTable' => 'deal',
                     'hubspotProperty' => 'dealname',
                 ],
+            15 =>
+                [
+                    'identifier' => 'multicheckbox-1',
+                    'value' => [
+                        'Slack',
+                        'Email'
+                    ],
+                    'hubspotTable' => 'contact',
+                    'hubspotProperty' => 'company.1.contact.1.pp_preferred_contact',
+                ],
         ];
         $expected = [
             'company' => [
@@ -149,6 +159,10 @@ class ConverterServiceTest extends TestCase
                             [
                                 'property' => 'email',
                                 'value' => 'mail1@example.com',
+                            ],
+                            [
+                                'property' => 'pp_preferred_contact',
+                                'value' => 'Slack;Email'
                             ],
                         ],
                     ],
