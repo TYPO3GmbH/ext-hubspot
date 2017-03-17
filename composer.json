@@ -1,7 +1,6 @@
 {
   "name": "t3g/hubspot",
   "description": "hubpot extension",
-  "minimum-stability": "dev",
   "type": "typo3-cms-extension",
   "license": "GPL-2.0+",
   "repositories": {
@@ -31,6 +30,6 @@
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "5.7.5"
+    "phpunit/phpunit": "^5"
   }
 }
