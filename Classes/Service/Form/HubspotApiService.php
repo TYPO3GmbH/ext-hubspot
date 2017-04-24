@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace T3G\Hubspot\Service\Form;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * Class HubspotApiService
@@ -32,6 +33,7 @@ class HubspotApiService
 
     /**
      * @param array $data
+     * @throws \GuzzleHttp\Exception\ClientException
      */
     public function sendToHubspot(array $data)
     {
@@ -40,6 +42,14 @@ class HubspotApiService
         $options = [
             'json' => $hubspotData
         ];
-        $this->client->post($this->url, $options);
+        try {
+            $this->client->post($this->url, $options);
+        } catch (ClientException $exception) {
+            // @todo we need a logger here!
+            // this happens if e.g. a form is sent from stage.typo3.com
+            if (strpos($exception->getMessage(), '401 Unauthorized') === false){
+                throw $exception;
+            }
+        }
     }
 }
