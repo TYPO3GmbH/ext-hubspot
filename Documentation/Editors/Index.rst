@@ -5,7 +5,7 @@ Hubspot provides you with many possibilities to create forms, which can be
 integrated into your website. The integration of these forms usually happens
 when a specific Javascript code snippet is added to your website. The
 Hubspot extension simplifies this task. After the extension is successfully
-installed and configurated, every TYPO3 editor is able to select exisiting
+installed and configured, every TYPO3 editor is able to select exisiting
 Hubspot forms and add them to the website. The forms are automatically
 rendered by the Hubspot Javascript framework and added to the site.
 
@@ -27,5 +27,5 @@ use. You are able to switch to the content element itself or directly edit
 the form in Hubspot. In order for it to work, you have to be logged into
 Hubspot.
 
-For this how to we are assuming that you are already comfortable working with
+For this how-to we are assuming that you are already comfortable working with
 TYPO3 as an editor and know your way around the TYPO3 backend.
