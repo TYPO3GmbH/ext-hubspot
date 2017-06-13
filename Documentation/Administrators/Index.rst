@@ -41,13 +41,13 @@ Authentication
 Hubspot authentication is done via ENV vars (HUBSPOT_PORTALID and
 HUBSPOT_SECRET). You need to know your Hubspot Portal-ID and API key.
 
-How to geht your API key
-^^^^^^^^^^^^^^^^^^^^^^^^
+How to get your API key
+^^^^^^^^^^^^^^^^^^^^^^^
 
 By clicking on your username in the upper right hand corner, you will find
 the menu item "Integrations". Here you can generate a new API key. Hubspot
 allows you to generate only one API key at a time. This means that each and
-every integration and apllicatoin share this one key. The key belongs to a
+every integration and aplication share this one key. The key belongs to a
 specific installation and not to an individual user.
 
 How to find your Portal ID
