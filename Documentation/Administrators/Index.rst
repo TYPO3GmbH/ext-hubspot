@@ -21,7 +21,7 @@ The extension needs to be installed as any other extension of TYPO3 CMS:
       downloading either the t3x or zip version. Upload
       the file afterwards in the Extension Manager.
 
-   #. **Use composer**: Use `composer require T3G/blog`.
+   #. **Use composer**: Use `composer require T3G/hubspot`.
 
 Latest version from git
 -----------------------
