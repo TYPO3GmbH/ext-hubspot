@@ -1,5 +1,6 @@
 <?php
 declare (strict_types=1);
+
 namespace T3G\Hubspot\Domain\Finishers;
 
 /*
@@ -57,12 +58,45 @@ class HubspotFinisher extends AbstractFinisher
                 continue;
             }
 
-            $hubspotData[] = [
-                'identifier' => $element->getIdentifier(),
-                'value' => $formRuntime[$element->getIdentifier()],
+            $identifier = $element->getIdentifier();
+            $hubspotData[$identifier] = [
+                'identifier' => $identifier,
+                'value' => $formRuntime[$identifier],
                 'hubspotTable' => $element->getProperties()[$hubspotTableProperty],
                 'hubspotProperty' => $element->getProperties()[$hubspotPropertyProperty],
             ];
+        }
+
+        /**
+         * This is a condition aimed only for any new freelancer.
+         * If the company field is empty it shall be filled with the first and last name of the
+         * freelancer to have a valid company name.
+         */
+        if ((int)$hubspotData['freelancer']['value'] === 1 && empty($hubspotData['company']['value'])) {
+            $hubspotData['company']['value'] = $hubspotData['first-name']['value'] . ' ' . $hubspotData['last-name']['value'];
+        }
+
+        /**
+         * If a starting date for a certificate is given, add the expiration date (+ 3 years) by default.
+         * This way we prevent the freelancer from entering any bogus data. 
+         */
+        foreach (['tcce', 'tcci', 'tccd', 'tccc'] as $certificate) {
+            $fieldName = $certificate . '_begin';
+            $untilFieldName = $certificate . '_until';
+            if ((int)$hubspotData['freelancer']['value'] === 1 && !empty($hubspotData[$fieldName]['value'])) {
+                /** @var \DateTime $start */
+                $start = $hubspotData[$fieldName]['value'];
+                /** @var \DateTime $end */
+                $end = clone $start;
+                $end->modify('+ 3 years');
+                $hubspotData[$fieldName]['value'] = $start->format('d/m/Y');
+                $hubspotData[$untilFieldName] = [
+                    'identifier' => $untilFieldName,
+                    'value' => $end->format('d/m/Y'),
+                    'hubspotTable' => 'company.1.contact.1.' . $untilFieldName,
+                    'hubspotProperty' => 'contact'
+                ];
+            }
         }
 
         if (!empty($hubspotData)) {
