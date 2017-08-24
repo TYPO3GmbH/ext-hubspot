@@ -47,7 +47,7 @@ How to get your API key
 By clicking on your username in the upper right hand corner, you will find
 the menu item "Integrations". Here you can generate a new API key. Hubspot
 allows you to generate only one API key at a time. This means that each and
-every integration and aplication share this one key. The key belongs to a
+every integration and application share this one key. The key belongs to a
 specific installation and not to an individual user.
 
 How to find your Portal ID
@@ -81,7 +81,7 @@ composer projects:
 `https://packagist.org/packages/helhum/dotenv-connector
       <https://packagist.org/packages/helhum/dotenv-connector>`_
 
-Add Typoscript and the static template
+Add TypoScript and the static template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Before using the Hubspot extension you need to include the static extension
@@ -91,9 +91,20 @@ Go to the “Include static (from extensions)” section and add the template
 "Hubspot Integration (hubspot)" from the list of available items.
 
 To include the Page TSConfig you need to switch to the Page module, select
-your toplevel page and edit the page properties. You can also find the
+your top level page and edit the page properties. You can also find the
 available template "Hubspot Integration (hubspot)" in the available list of
 items. You can add it to the "Include Page TSConfig (from extensions)" list
 by simply clicking it.
 
 You are now ready to use the hubspot extension!
+
+Backend Module
+--------------
+
+The hubspot extensions provides a backend module for administrators. You can find
+it in the module menu at `Admin Tools > Hubspot Integration`.
+The backend module contains two sub-modules: Forms and CTAs. Both work the same way:
+They display which pages and content elements (non-deleted) currently contain
+hubspot elements. You are able to switch to the content element itself or directly edit
+the form in Hubspot. In order for it to work, you have to be logged into
+Hubspot.
