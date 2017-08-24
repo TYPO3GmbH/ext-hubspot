@@ -39,3 +39,18 @@ page will now contain these parameters.
 
 .. figure:: ../Images/campaignlink.png
 	:alt: Campaign Parameters Extracted.
+
+Add Hubspot CTA to a page
+--------------------------
+
+The extension provides the possibility to insert hubspot CTAs on TYPO3 pages.
+The CTA has to be added to TYPO3 once and can then be reused in various content
+elements.
+
+Create a folder for your CTAs, then go to the list module and click on `new`.
+Choose `Hubspot Call to Action`. Enter a speaking name and paste the code
+you got for the CTA from hubspot. Save the record.
+
+Create a content element of typo `Hubspot CTA` on the page where you want the
+CTA and choose your CTA record. The CTA will now be rendered onto that page and
+clicks will be tracked via hubspot.

@@ -11,7 +11,8 @@ TYPO3 Blog Extension
 :License:   GPL 3.0
 :Rendered:  |today|
 :Description:
-   The Hubspot extension for TYPO3 provides an easy solution for adding Hubspot Forms directly by an editor.
+   The Hubspot extension for TYPO3 provides an easy solution for adding Hubspot Forms, CTAs and Campaign information
+   directly by an editor.
 
 .. toctree::
    :maxdepth: 2
