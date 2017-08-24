@@ -5,6 +5,7 @@ namespace T3G\Hubspot\Controller;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Error\ExceptionParser;
+use T3G\Hubspot\Repository\ContentElementRepository;
 use T3G\Hubspot\Service\UsedFormsService;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\MenuRegistry;
@@ -68,7 +69,8 @@ class BackendController extends ActionController
     /**
      * @param \T3G\Hubspot\Error\ExceptionParser $exceptionParser
      */
-    public function injectExceptionParser(ExceptionParser $exceptionParser) {
+    public function injectExceptionParser(ExceptionParser $exceptionParser)
+    {
         $this->exceptionParser = $exceptionParser;
     }
 
@@ -85,9 +87,11 @@ class BackendController extends ActionController
      */
     public function indexAction()
     {
-        $this->view->assign(
-            'formsView',
-            $this->uriBuilder->reset()->uriFor('forms', [], 'Backend')
+        $this->view->assignMultiple(
+            [
+                'formsView' => $this->uriBuilder->reset()->uriFor('forms', [], 'Backend'),
+                'ctasView'  => $this->uriBuilder->reset()->uriFor('ctas', [], 'Backend'),
+            ]
         );
     }
 
@@ -113,6 +117,16 @@ class BackendController extends ActionController
             $this->addFlashMessage($message, 'Bad Request', FlashMessage::ERROR);
             $this->redirect('index');
         }
+    }
+
+    /**
+     * Render all used CTAs
+     */
+    public function ctasAction()
+    {
+        $contentElementRepository = GeneralUtility::makeInstance(ContentElementRepository::class);
+        $contentElements = $contentElementRepository->getContentElementsWithHubspotCta();
+        $this->view->assign('ctasInUse', $contentElements);
     }
 
     /**
@@ -173,6 +187,7 @@ class BackendController extends ActionController
 
         $menu = $this->createMenuItem($menu, 'index', 'Overview');
         $menu = $this->createMenuItem($menu, 'forms', 'Forms');
+        $menu = $this->createMenuItem($menu, 'ctas', 'CTAs');
 
         $this->menuRegistry->addMenu($menu);
     }

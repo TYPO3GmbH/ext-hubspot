@@ -43,7 +43,7 @@ $columns = [
             'type' => 'group',
             'internal_type' => 'db',
             'allowed' => 'tx_hubspot_cta',
-            'size' => '3',
+            'size' => '1',
             'maxitems' => '1',
             'minitems' => '0',
         ]

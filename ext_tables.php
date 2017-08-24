@@ -18,7 +18,7 @@ call_user_func(
                 'tx_Hubspot',
                 'top',
                 [
-                    'Backend' => 'index, forms, hubspotForm'
+                    'Backend' => 'index, forms, hubspotForm, ctas'
                 ],
                 [
                     'access' => 'admin',
