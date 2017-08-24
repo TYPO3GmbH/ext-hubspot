@@ -1,13 +1,16 @@
 <?php
-declare (strict_types = 1);
+declare (strict_types=1);
 
 namespace T3G\Hubspot\Controller;
 
+use SevenShores\Hubspot\Exceptions\BadRequest;
+use T3G\Hubspot\Error\ExceptionParser;
 use T3G\Hubspot\Service\UsedFormsService;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\MenuRegistry;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -20,6 +23,10 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 class BackendController extends ActionController
 {
+    /**
+     * @var ExceptionParser
+     */
+    protected $exceptionParser;
 
     /**
      * @var ModuleTemplate
@@ -41,6 +48,7 @@ class BackendController extends ActionController
      */
     protected $defaultViewObjectName = BackendTemplateView::class;
 
+
     /**
      * Initialize view and add Css
      *
@@ -58,6 +66,13 @@ class BackendController extends ActionController
     }
 
     /**
+     * @param \T3G\Hubspot\Error\ExceptionParser $exceptionParser
+     */
+    public function injectExceptionParser(ExceptionParser $exceptionParser) {
+        $this->exceptionParser = $exceptionParser;
+    }
+
+    /**
      * Initialize actions
      */
     public function initializeAction()
@@ -71,7 +86,8 @@ class BackendController extends ActionController
     public function indexAction()
     {
         $this->view->assign(
-            'formsView', $this->uriBuilder->reset()->uriFor('forms', [], 'Backend')
+            'formsView',
+            $this->uriBuilder->reset()->uriFor('forms', [], 'Backend')
         );
     }
 
@@ -80,15 +96,23 @@ class BackendController extends ActionController
      */
     public function formsAction()
     {
-        $usedFormsService = GeneralUtility::makeInstance(UsedFormsService::class);
-        $formsInUse = $usedFormsService->getFormsInUseWithDetails();
-        $this->view
-            ->assign(
-                'formsInUse', $formsInUse
-            )
-            ->assign(
-                'returnUrl', urlencode($this->uriBuilder->reset()->uriFor('forms', [], 'Backend'))
-            );
+        try {
+            $usedFormsService = GeneralUtility::makeInstance(UsedFormsService::class);
+            $formsInUse = $usedFormsService->getFormsInUseWithDetails();
+            $this->view
+                ->assign(
+                    'formsInUse',
+                    $formsInUse
+                )
+                ->assign(
+                    'returnUrl',
+                    urlencode($this->uriBuilder->reset()->uriFor('forms', [], 'Backend'))
+                );
+        } catch (BadRequest $badRequest) {
+            $message = $this->exceptionParser->getBadRequestMessage($badRequest);
+            $this->addFlashMessage($message, 'Bad Request', FlashMessage::ERROR);
+            $this->redirect('index');
+        }
     }
 
     /**
@@ -123,12 +147,14 @@ class BackendController extends ActionController
      */
     private function setBackendModuleTemplates()
     {
-        $frameworkConfiguration = $this->configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+        $frameworkConfiguration = $this->configurationManager->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK
+        );
         $viewConfiguration = [
             'view' => [
                 'templateRootPaths' => ['EXT:hubspot/Resources/Private/Backend/Templates'],
-                'partialRootPaths' => ['EXT:hubspot/Resources/Private/Backend/Partials'],
-                'layoutRootPaths' => ['EXT:hubspot/Resources/Private/Backend/Layouts'],
+                'partialRootPaths'  => ['EXT:hubspot/Resources/Private/Backend/Partials'],
+                'layoutRootPaths'   => ['EXT:hubspot/Resources/Private/Backend/Layouts'],
             ],
         ];
         $this->configurationManager->setConfiguration(array_merge($frameworkConfiguration, $viewConfiguration));
@@ -153,12 +179,13 @@ class BackendController extends ActionController
 
     /**
      * @param \TYPO3\CMS\Backend\Template\Components\Menu\Menu $menu
-     * @param string $action
-     * @param string $title
+     * @param string                                           $action
+     * @param string                                           $title
+     *
      * @return Menu
      * @throws \InvalidArgumentException
      */
-    private function createMenuItem(Menu $menu, string $action, string $title) : Menu
+    private function createMenuItem(Menu $menu, string $action, string $title): Menu
     {
         $menuItem = $menu->makeMenuItem();
         $isActive = $this->request->getControllerActionName() === $action;
