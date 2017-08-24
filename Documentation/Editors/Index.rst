@@ -51,6 +51,6 @@ Create a folder for your CTAs, then go to the list module and click on `new`.
 Choose `Hubspot Call to Action`. Enter a speaking name and paste the code
 you got for the CTA from hubspot. Save the record.
 
-Create a content element of typo `Hubspot CTA` on the page where you want the
-CTA and choose your CTA record. The CTA will now be rendered onto that page and
-clicks will be tracked via hubspot.
+Create a content element of type `Hubspot CTA` on the page where you want the
+CTA to appear and choose your CTA record. The CTA will now be rendered onto that
+page and clicks will be tracked via hubspot.
