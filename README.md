@@ -14,6 +14,16 @@ Hubspot authentication is done via ENV var "HUBSPOT_SECRET" - add your hapi key 
 
 Forms can be inserted as content elements and will be rendered via the Hubspot Forms JS.
 
+## CTAs
+
+CTAs can be included as content elements anywhere on your web site.
+
+## Campaigns
+
+The extension provides the possibility to add campaign tracking information to any 
+page in TYPO3. The tracking information will thereafter be included in every link
+generated to that page by TYPO3.
+
 ## The backend module
 
 The Hubspot integration backend module displays an overview of all used hubspot elements and
