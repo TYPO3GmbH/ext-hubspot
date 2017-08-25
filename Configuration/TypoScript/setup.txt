@@ -51,19 +51,3 @@ tt_content.hubspot_cta {
         }
     }
 }
-
-plugin.tx_form {
-    settings {
-        yamlConfigurations {
-            1483353750 = EXT:hubspot/Configuration/Yaml/HubspotFrontend.yaml
-        }
-    }
-}
-
-module.tx_form {
-    settings {
-        yamlConfigurations {
-            1483353750 = EXT:hubspot/Configuration/Yaml/HubspotBackend.yaml
-        }
-    }
-}
