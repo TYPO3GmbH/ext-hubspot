@@ -1,4 +1,4 @@
-tt_content.hubspot_form =< lib.fluidContent
+tt_content.hubspot_form =< lib.contentElement
 tt_content.hubspot_form {
     templateName = HubspotForm
 
@@ -38,10 +38,11 @@ tt_content.hubspot_form {
     }
 }
 
-tt_content.hubspot_cta = COA
+tt_content.hubspot_cta =< lib.contentElement
 tt_content.hubspot_cta {
-    10 = RECORDS
-    10 {
+    templateName = Generic
+    20 = RECORDS
+    20 {
         source.field = hubspot_cta
         tables = tx_hubspot_cta
         conf.tx_hubspot_cta = TEXT
