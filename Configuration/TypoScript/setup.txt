@@ -24,7 +24,7 @@ tt_content.hubspot_form {
         20.if.directReturn = {$hubspot_form.disableCss}
 
         30 = TEXT
-        30.data = getenv : HUBSPOT_PORTALID
+        30.data = getenv : APP_HUBSPOT_PORTALID
         30.wrap = portalId: '|',
 
         40 = TEXT

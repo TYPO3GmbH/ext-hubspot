@@ -11,20 +11,19 @@ use SevenShores\Hubspot\Factory;
  */
 class HubspotFormRepository
 {
-
     /**
      * Hubspot API client.
      *
      * @var Factory
      */
-    protected $client;
+    protected $factory;
 
     /**
      * HubspotFormRepository constructor.
      */
     public function __construct()
     {
-        $this->client = new Factory();
+        $this->factory = Factory::create(getenv('APP_HUBSPOT_SECRET'));
     }
 
     /**
@@ -32,11 +31,9 @@ class HubspotFormRepository
      *
      * @param array &$configuration
      */
-    public function getFormsForItemsProcFunc(array &$configuration)
+    public function getFormsForItemsProcFunc(array &$configuration): void
     {
-        $response = $this->client->forms()->all();
-        $forms = $response->toArray();
-        foreach ($forms as $form) {
+        foreach ($this->factory->forms()->all()->toArray() as $form) {
             $fieldName = $form['name'];
             $value = $form['guid'];
             $configuration['items'][] = [$fieldName, $value];
@@ -49,9 +46,9 @@ class HubspotFormRepository
      * @param string $guid
      * @return array
      */
-    public function getFormForPreview(string $guid) : array
+    public function getFormForPreview(string $guid): array
     {
-        return $this->client->forms()->getById($guid)->toArray();
+        return $this->factory->forms()->getById($guid)->toArray();
     }
 
     /**
@@ -59,11 +56,10 @@ class HubspotFormRepository
      *
      * @return array
      */
-    public function getAllFormsWithGuidAsKey() : array
+    public function getAllFormsWithGuidAsKey(): array
     {
         $allForms = [];
-        $forms = $this->client->forms()->all()->toArray();
-        foreach ($forms as $form) {
+        foreach ($this->factory->forms()->all()->toArray() as $form) {
             $allForms[$form['guid']] = $form;
         }
         return $allForms;

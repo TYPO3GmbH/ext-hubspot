@@ -150,7 +150,7 @@ class BackendController extends ActionController
         $this->menuRegistry->addMenu($menu);
 
         $this->view
-            ->assign('portalId', (int)$_ENV['HUBSPOT_PORTALID'])
+            ->assign('portalId', (int)$_ENV['APP_HUBSPOT_PORTALID'])
             ->assign('hubspotGuid', $hubspotGuid);
     }
 

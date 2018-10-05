@@ -2,13 +2,13 @@
 
 ## Authentication
 
-Hubspot authentication is done via ENV var "HUBSPOT_SECRET" - add your hapi key there.
+Hubspot authentication is done via ENV var "APP_HUBSPOT_SECRET" - add your hapi key there.
 
 ## Configuration
 
 - Add the TypoScript template at "Include static"
 - Include the Page TSConfig
-- Set the ENV vars HUBSPOT_SECRET (see Authentication) and HUBSPOT_PORTALID (to your Hubspot hapi key and portal ID)
+- Set the ENV vars APP_HUBSPOT_SECRET (see Authentication) and APP_HUBSPOT_PORTALID (to your Hubspot hapi key and portal ID)
 
 ## Forms
 

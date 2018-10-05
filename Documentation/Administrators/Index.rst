@@ -38,8 +38,8 @@ Setup
 Authentication
 ^^^^^^^^^^^^^^
 
-Hubspot authentication is done via ENV vars (HUBSPOT_PORTALID and
-HUBSPOT_SECRET). You need to know your Hubspot Portal-ID and API key.
+Hubspot authentication is done via ENV vars (APP_HUBSPOT_PORTALID and
+APP_HUBSPOT_SECRET). You need to know your Hubspot Portal-ID and API key.
 
 How to get your API key
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -67,8 +67,8 @@ easily do this inside your .htaccess file:
 
    # Add your own rules here.
    SetEnv TYPO3_CONTEXT Development
-   SetEnv HUBSPOT_PORTALID 1234567
-   SetEnv HUBSPOT_SECRET 12345678-1234-1234-1234-123456789012
+   SetEnv APP_HUBSPOT_PORTALID 1234567
+   SetEnv APP_HUBSPOT_SECRET 12345678-1234-1234-1234-123456789012
 
 When working in composer mode there is the popular package "dotenv-connector"
 from Helmut Hummel, which makes it possible to set environment variables for
