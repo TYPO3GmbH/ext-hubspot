@@ -14,7 +14,6 @@ CREATE TABLE tt_content (
 # Table structure for table 'tx_hubspot_cta'
 #
 CREATE TABLE tx_hubspot_cta (
-
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 
@@ -34,6 +33,5 @@ CREATE TABLE tx_hubspot_cta (
 	l10n_diffsource mediumblob,
 
 	PRIMARY KEY (uid),
- KEY language (l10n_parent,sys_language_uid)
-
+	KEY language (l10n_parent,sys_language_uid)
 );
