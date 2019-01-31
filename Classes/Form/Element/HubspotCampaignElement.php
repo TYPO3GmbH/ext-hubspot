@@ -12,7 +12,6 @@ namespace T3G\Hubspot\Form\Element;
 
 use TYPO3\CMS\Backend\Form\Element\AbstractFormElement;
 use TYPO3\CMS\Backend\Form\NodeFactory;
-use TYPO3\CMS\Lang\LanguageService;
 
 class HubspotCampaignElement extends AbstractFormElement
 {
@@ -66,9 +65,6 @@ class HubspotCampaignElement extends AbstractFormElement
         return $resultArray;
     }
 
-    /**
-     * @return LanguageService
-     */
     protected function getLanguageService()
     {
         return $GLOBALS['LANG'];

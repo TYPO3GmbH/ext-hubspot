@@ -13,7 +13,6 @@ namespace T3G\Hubspot\Form\Element;
 use TYPO3\CMS\Backend\Form\Element\TextElement;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Lang\LanguageService;
 
 class HubspotCallToActionElement extends TextElement
 {
@@ -27,9 +26,6 @@ class HubspotCallToActionElement extends TextElement
         return $resultArray;
     }
 
-    /**
-     * @return LanguageService
-     */
     protected function getLanguageService()
     {
         return $GLOBALS['LANG'];
