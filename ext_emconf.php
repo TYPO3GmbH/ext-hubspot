@@ -23,7 +23,7 @@ $EM_CONF[$_EXTKEY] = [
             'T3G\\Hubspot\\' => 'Classes'
         ],
     ],
-    'state' => 'alpha',
+    'state' => 'beta',
     'uploadfolder' => 0,
     'createDirs' => '',
     'clearCacheOnLoad' => 1,
