@@ -33,7 +33,7 @@ class HubspotCampaignElement extends AbstractFormElement
      */
     public function render()
     {
-        $helpText = $this->getLanguageService()->sL('LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:hubspot_campaign_fullink_helptext');
+        $helpText = $this->getLanguageService()->sL('LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:hubspot_campaign_fullink_helptext');
         $row = $this->data['databaseRow'];
         $parameterArray = $this->data['parameterArray'];
         $resultArray = $this->initializeResultArray();

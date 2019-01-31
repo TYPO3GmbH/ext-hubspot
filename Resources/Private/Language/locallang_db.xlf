@@ -6,17 +6,30 @@
             <authorEmail>info@typo3.com</authorEmail>
         </header>
         <body>
+
+            <trans-unit id="content_group.hubspot">
+                <source>HubSpot</source>
+            </trans-unit>
+
+            <trans-unit id="content_element.cta.title">
+                <source>HubSpot: Call To Action</source>
+            </trans-unit>
+            <trans-unit id="content_element.cta.description">
+                <source>Add call to action configured in HubSpot</source>
+            </trans-unit>
+
+            <trans-unit id="content_element.form.title">
+                <source>HubSpot: Form</source>
+            </trans-unit>
+            <trans-unit id="content_element.form.description">
+                <source>Add form configured in HubSpot</source>
+            </trans-unit>
+
             <trans-unit id="plugin.hubspot_form">
-                <source>Hubspot Form</source>
-            </trans-unit>
-            <trans-unit id="hubspot_form.wizard.title">
-                <source>Hubspot Form</source>
-            </trans-unit>
-            <trans-unit id="hubspot_form.wizard.description">
-                <source>Add form configured in Hubspot</source>
+                <source>HubSpot Form</source>
             </trans-unit>
             <trans-unit id="hubspot_campaign_fullink_helptext">
-                <source>Paste hubspot generated campaign URL here.</source>
+                <source>Paste HubSpot generated campaign URL here.</source>
             </trans-unit>
             <trans-unit id="pages.utm_campaign_main_label">
                 <source>UTM Campaign Link</source>
@@ -25,24 +38,25 @@
                 <source>Hubspot</source>
             </trans-unit>
             <trans-unit id="tt_content.hubspot_form">
-                <source>Hubspot Form</source>
+                <source>HubSpot Form</source>
             </trans-unit>
             <trans-unit id="tt_content.hubspot_cta">
-                <source>Hubspot Call To Action</source>
+                <source>HubSpot Call To Action</source>
             </trans-unit>
 
             <trans-unit id="tx_hubspot_cta">
-                <source>Hubspot Call To Action</source>
+                <source>HubSpot Call To Action</source>
             </trans-unit>
             <trans-unit id="tx_hubspot_cta.name">
                 <source>Name</source>
             </trans-unit>
             <trans-unit id="tx_hubspot_cta.hubspot_cta_code">
-                <source>Call To Action Code (provided from Hubspot)</source>
+                <source>Call To Action Code (provided from HubSpot)</source>
             </trans-unit>
             <trans-unit id="tx_hubspot_cta.hubspot_cta_code.description">
-                <source>Tip: Just copy and paste the code provided from Hubspot.</source>
+                <source>Tip: Just copy and paste the code provided from HubSpot.</source>
             </trans-unit>
+
         </body>
     </file>
 </xliff>

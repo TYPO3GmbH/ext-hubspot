@@ -9,7 +9,7 @@
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     [
-        'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:plugin.hubspot_form',
+        'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:plugin.hubspot_form',
         'hubspot_form',
         'EXT:hubspot/Resources/Public/Icons/ContentElements/hubspot_form.svg'
     ],
@@ -19,7 +19,7 @@
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
     [
-        'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_cta',
+        'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tt_content.hubspot_cta',
         'hubspot_cta',
         'EXT:hubspot/Resources/Public/Icons/ContentElements/hubspot_cta.svg'
     ],
@@ -32,7 +32,7 @@ $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['hubspot_form'] = 'cty
 
 $columns = [
     'hubspot_guid' => [
-        'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_form',
+        'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tt_content.hubspot_form',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectSingle',
@@ -46,7 +46,7 @@ $columns = [
         ]
     ],
     'hubspot_cta' => [
-        'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tt_content.hubspot_cta',
+        'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tt_content.hubspot_cta',
         'config' => [
             'type' => 'group',
             'internal_type' => 'db',

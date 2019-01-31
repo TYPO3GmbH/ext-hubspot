@@ -21,7 +21,7 @@ class HubspotCallToActionElement extends TextElement
         $resultArray = parent::render();
         $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
         $pageRenderer->loadRequireJsModule('TYPO3/CMS/Hubspot/HubspotCtaModule');
-        $descriptionHtml = $this->getLanguageService()->sL('LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.hubspot_cta_code.description');
+        $descriptionHtml = $this->getLanguageService()->sL('LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta.hubspot_cta_code.description');
         $resultArray['html'] .= '<p class="help-block">' . $descriptionHtml . '</p>';
         return $resultArray;
     }

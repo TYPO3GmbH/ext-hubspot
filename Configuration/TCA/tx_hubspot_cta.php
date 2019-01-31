@@ -13,7 +13,7 @@ if (!defined('TYPO3_MODE')) {
 
 return [
     'ctrl' => [
-        'title' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta',
+        'title' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta',
         'label' => 'name',
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
@@ -112,7 +112,7 @@ return [
         ],
         'name' => [
             'exclude' => 0,
-            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.name',
+            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
@@ -121,7 +121,7 @@ return [
         ],
         'hubspot_cta_code' => [
             'exclude' => 0,
-            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.hubspot_cta_code',
+            'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta.hubspot_cta_code',
             'config' => [
                 'type' => 'text',
                 'renderType' => 'HubspotCallToAction',

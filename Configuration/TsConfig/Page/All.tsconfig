@@ -1,0 +1,35 @@
+####################
+#### CATEGORIES ####
+####################
+mod.wizards.newContentElement.wizardItems {
+    hubspot.header = LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:content_group.hubspot
+}
+
+##########################
+#### CONTENT ELEMENTS ####
+##########################
+mod.wizards.newContentElement.wizardItems.hubspot {
+    elements {
+
+        hubspot_form {
+            iconIdentifier = ctype-hubspot-form
+            title = LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:content_element.form.title
+            description = LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:content_element.form.description
+            tt_content_defValues {
+                CType = hubspot_form
+            }
+        }
+
+        hubspot_cta {
+            iconIdentifier = ctype-hubspot-cta
+            title = LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:content_element.cta.title
+            description = LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:content_element.cta.description
+            tt_content_defValues {
+                CType = hubspot_cta
+            }
+        }
+
+    }
+    show := addToList(hubspot_form)
+    show := addToList(hubspot_cta)
+}
