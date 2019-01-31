@@ -1,13 +1,10 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:layout name="Default"/>
 <f:section name="Main">
-    <p class="text-center" id="hubspot-form-message" style="background-color: #eaeaea;">
-        <strong>
-            <f:translate key="message.hubspot_blocked.1" extensionName="Hubspot"/>
-            <br/>
-            <f:translate key="message.hubspot_blocked.2" extensionName="Hubspot"/>
-        </strong>
-    </p>
+    <div class="hubspot-form-message" id="hubspot-form-message">
+        <p><f:translate key="message.hubspot_blocked.1" extensionName="Hubspot" /></p>
+        <p><f:translate key="message.hubspot_blocked.2" extensionName="Hubspot" /></p>
+    </div>
     <f:format.raw>{content}</f:format.raw>
 </f:section>
 </html>
