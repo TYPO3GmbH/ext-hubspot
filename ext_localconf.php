@@ -1,5 +1,12 @@
 <?php
 
+/*
+ * This file is part of the package t3g/hubspot.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
+
 if (!defined('TYPO3_MODE')) {
     die('Access denied.');
 }
@@ -8,7 +15,6 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php'][
     \T3G\Hubspot\Hooks\PageLayoutView\HubspotPreviewRenderer::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass']['Hubspot'] = \T3G\Hubspot\Hooks\DataHandler\DataHandlerHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typolinkProcessing']['typolinkModifyParameterForPageLinks'][] = \T3G\Hubspot\Hooks\Typolink\ModifyParameterForPageLinksHook::class;
-
 
 if (TYPO3_MODE === 'BE') {
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1483626131161] = [
@@ -35,5 +41,4 @@ if (TYPO3_MODE === 'BE') {
             ['source' => $source]
         );
     }
-
 }

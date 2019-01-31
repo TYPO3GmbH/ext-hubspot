@@ -1,10 +1,12 @@
-.idea/
+.build
+.idea
+.idea_modules
+.vscode
 /out/
-.idea_modules/
+.php_cs.cache
+composer.lock
 atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
-composer.phar
-/vendor/
-
+vendor

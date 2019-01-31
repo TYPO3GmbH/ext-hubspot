@@ -1,5 +1,12 @@
 <?php
-declare (strict_types = 1);
+declare(strict_types = 1);
+
+/*
+ * This file is part of the package t3g/hubspot.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace T3G\Hubspot\Form\Element;
 
@@ -8,8 +15,8 @@ use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Lang\LanguageService;
 
-class HubspotCallToActionElement extends TextElement {
-
+class HubspotCallToActionElement extends TextElement
+{
     public function render()
     {
         $resultArray = parent::render();
@@ -18,7 +25,6 @@ class HubspotCallToActionElement extends TextElement {
         $descriptionHtml = $this->getLanguageService()->sL('LLL:EXT:hubspot/Resources/Private/Language/Tca.xlf:tx_hubspot_cta.hubspot_cta_code.description');
         $resultArray['html'] .= '<p class="help-block">' . $descriptionHtml . '</p>';
         return $resultArray;
-
     }
 
     /**
@@ -28,5 +34,4 @@ class HubspotCallToActionElement extends TextElement {
     {
         return $GLOBALS['LANG'];
     }
-
 }

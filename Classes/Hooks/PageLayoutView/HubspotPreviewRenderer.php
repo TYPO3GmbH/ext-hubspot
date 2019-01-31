@@ -1,5 +1,12 @@
 <?php
-declare (strict_types = 1);
+declare(strict_types = 1);
+
+/*
+ * This file is part of the package t3g/hubspot.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
+ */
 
 namespace T3G\Hubspot\Hooks\PageLayoutView;
 
@@ -10,11 +17,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Renders the content element preview for hubspot content elements in page module.
- *
  */
 class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
 {
-
     /**
      * Preprocesses the preview rendering of a content element of type "hubspot_form".
      *
@@ -23,7 +28,6 @@ class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
      * @param string $headerContent Header content
      * @param string $itemContent Item content
      * @param array $row Record row of tt_content
-     *
      * @return void
      */
     public function preProcess(

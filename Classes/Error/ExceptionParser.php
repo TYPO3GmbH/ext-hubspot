@@ -1,25 +1,20 @@
 <?php
 declare(strict_types=1);
-namespace T3G\Hubspot\Error;
 
 /*
- * This file is part of TYPO3 GmbHs software toolkit.
+ * This file is part of the package t3g/hubspot.
  *
- * It is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License, either version 2
- * of the License, or any later version.
- *
- * The TYPO3 project - inspiring people to share!
+ * For the full copyright and license information, please read the
+ * LICENSE file that was distributed with this source code.
  */
+
+namespace T3G\Hubspot\Error;
 
 use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
-
 /**
  * Class ExceptionParser - Get more details out of exceptions
- *
- * @package T3G\Hubspot\Error
  */
 class ExceptionParser
 {
@@ -27,10 +22,10 @@ class ExceptionParser
      * Loops through exceptions to set message to underlying cause of error
      *
      * @param \Exception $badRequest
-     *
      * @return string
      */
-    public function getBadRequestMessage(\Exception $badRequest): string {
+    public function getBadRequestMessage(\Exception $badRequest): string
+    {
         $exception = $badRequest;
         while ($exception->getPrevious() instanceof \Exception) {
             $exception = $exception->getPrevious();
