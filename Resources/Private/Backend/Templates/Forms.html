@@ -1,0 +1,55 @@
+{namespace hs = T3G\Hubspot\ViewHelpers}
+{namespace core = TYPO3\CMS\Core\ViewHelpers}
+<div xmlns="http://www.w3.org/1999/xhtml" lang="en"
+     xmlns:f="http://xsd.helhum.io/ns/typo3/cms-fluid/master/ViewHelpers">
+  <f:layout name="Main"/>
+  <f:section name="content">
+    <h2>
+      <f:translate key="hubspot_integration.form.formsInUse"/>
+    </h2>
+    <table class="table table-striped table-hover">
+      <thead>
+      <tr>
+        <th>
+          <f:translate key="hubspot_integration.form.pid"/>
+        </th>
+        <th>
+          <f:translate key="hubspot_integration.form.header"/>
+        </th>
+        <th colspan="2">
+          <f:translate key="hubspot_integration.form.formName"/>
+        </th>
+      </tr>
+      </thead>
+      <f:for each="{formsInUse}" as="formElement">
+        <tr>
+          <td>
+            <a href="{hs:editRecord(parameters:'edit[pages][{formElement.pid}]=edit&returnUrl={returnUrl}')}">
+              <core:iconForRecord table="pages" row="{uid: formElement.pid, hidden: formElement.pageHidden, starttime: formElement.pageStarttime, endtime: formElement.pageEndtime}" /> {formElement.title}</a></td>
+          <td><a href="{hs:editRecord(parameters:'edit[tt_content][{formElement.uid}]=edit&returnUrl={returnUrl}')}">
+            <core:iconForRecord table="tt_content" row="{formElement}"/>
+            <f:if condition="{formElement.header}">
+              <f:then>{formElement.header}</f:then>
+              <f:else><em>
+                <f:translate key="hubspot_integration.form.noTitle"/>
+              </em></f:else>
+            </f:if>
+          </a></td>
+          <td>
+            <f:link.action action="hubspotForm" controller="Backend" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}">{formElement.form_name}</f:link.action>
+          </td>
+          <td align="right">
+              <a href="{hs:editRecord(parameters:'edit[tt_content][{formElement.uid}]=edit&returnUrl={returnUrl}')}" class="btn btn-default btn-sm">
+                <core:icon identifier="actions-open" size="small"/>
+                <f:translate key="hubspot_integration.form.editForm"/>
+              </a>
+              <f:link.action action="hubspotForm" controller="Backend" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}" class="btn btn-default btn-sm">
+                <core:icon identifier="actions-view" size="small"/>
+                <f:translate key="hubspot_integration.form.editFormInHubspot"/>
+              </f:link.action>
+          </td>
+        </tr>
+      </f:for>
+    </table>
+  </f:section>
+</div>

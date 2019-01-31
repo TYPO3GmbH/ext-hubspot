@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-06-23T11:36:30Z">
+		<header>
+			<authorName>TYPO3</authorName>
+			<authorEmail>info@typo3.com</authorEmail>
+		</header>
+		<body>
+			<trans-unit id="hubspot_integration.form.pid">
+				<source>On Page</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.header">
+				<source>In Content Element</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.formName">
+				<source>Form Name</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.noTitle">
+				<source>[no title given]</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.editForm">
+				<source>Edit Form</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.editFormInHubspot">
+				<source>Edit Form in Hubspot</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.form.formsInUse">
+				<source>Forms currently in use:</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.pid">
+				<source>On Page</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.header">
+				<source>In Content Element</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.ctaName">
+				<source>Name</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.noTitle">
+				<source>[no title given]</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.editForm">
+				<source>Edit CTA</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.ctas.ctasInUse">
+				<source>CTAs currently in use:</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.headline">
+				<source>Hubspot Integration</source>
+			</trans-unit>
+			<trans-unit id="message.hubspot_blocked.1">
+				<source>Here should be a form, apparently your browser blocks our forms.</source>
+			</trans-unit>
+			<trans-unit id="message.hubspot_blocked.2">
+				<source>Do you use an adblocker? If so, please try turning it off and reload this page.</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

@@ -1,0 +1,54 @@
+tt_content.hubspot_form =< lib.contentElement
+tt_content.hubspot_form {
+    templateName = HubspotForm
+
+    templateRootPaths.922017 = EXT:hubspot/Resources/Private/Frontend/Templates/
+
+    variables.content = COA
+    variables.content {
+        wrap = <div class="hubspot-form">|</div>
+        10 = TEXT
+        10.value (
+            <script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/v2.js"></script>
+            <script>
+                window.onload = function() {
+                    hbspt.forms.create ({
+                        target: ".hubspot-form",
+                        onFormReady: function() {
+                            $("#hubspot-form-message").hide();
+                        },
+        )
+
+        20 = TEXT
+        20.value = css: '',
+        20.if.directReturn = {$hubspot_form.disableCss}
+
+        30 = TEXT
+        30.data = getenv : APP_HUBSPOT_PORTALID
+        30.wrap = portalId: '|',
+
+        40 = TEXT
+        40.field = hubspot_guid
+        40.wrap (
+          formId: '|'
+        });
+        }
+        </script>
+        )
+    }
+}
+
+tt_content.hubspot_cta =< lib.contentElement
+tt_content.hubspot_cta {
+    templateName = Generic
+    20 = RECORDS
+    20 {
+        source.field = hubspot_cta
+        tables = tx_hubspot_cta
+        conf.tx_hubspot_cta = TEXT
+        conf.tx_hubspot_cta {
+            field = hubspot_cta_code
+            wrap = <div class="hubspot-cta">|</div>
+        }
+    }
+}

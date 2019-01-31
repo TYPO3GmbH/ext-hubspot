@@ -1,0 +1,35 @@
+{
+  "name": "t3g/hubspot",
+  "description": "hubpot extension",
+  "type": "typo3-cms-extension",
+  "license": "GPL-2.0+",
+  "repositories": {
+    "0": {
+      "type": "composer",
+      "url": "https://composer.typo3.org/"
+    }
+  },
+  "authors": [
+    {
+      "name": "TYPO3 GmbH",
+      "role": "Developer",
+      "homepage": "https://typo3.com/"
+    }
+  ],
+  "require": {
+      "ryanwinchester/hubspot-php": "^1.0"
+  },
+ "autoload": {
+    "psr-4": {
+      "T3G\\Hubspot\\": "Classes/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "T3G\\Hubspot\\Tests\\": "Tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5"
+  }
+}
