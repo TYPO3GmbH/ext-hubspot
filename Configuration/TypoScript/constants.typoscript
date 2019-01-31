@@ -1,2 +1,2 @@
 #cat=hubspot/enable; type=boolean; label=Disable Hubspot Form CSS
-hubspot_form.disableCss = 0
+hubspot_form.disableCss = 1
