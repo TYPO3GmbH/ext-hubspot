@@ -109,15 +109,10 @@ class BackendController extends ActionController
         try {
             $usedFormsService = GeneralUtility::makeInstance(UsedFormsService::class);
             $formsInUse = $usedFormsService->getFormsInUseWithDetails();
-            $this->view
-                ->assign(
-                    'formsInUse',
-                    $formsInUse
-                )
-                ->assign(
-                    'returnUrl',
-                    urlencode($this->uriBuilder->reset()->uriFor('forms', [], 'Backend'))
-                );
+            $this->view->assignMultiple([
+                'formsInUse' => $formsInUse,
+                'returnUrl' => urlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
+            ]);
         } catch (BadRequest $badRequest) {
             $message = $this->exceptionParser->getBadRequestMessage($badRequest);
             $this->addFlashMessage($message, 'Bad Request', FlashMessage::ERROR);
@@ -132,7 +127,10 @@ class BackendController extends ActionController
     {
         $contentElementRepository = GeneralUtility::makeInstance(ContentElementRepository::class);
         $contentElements = $contentElementRepository->getContentElementsWithHubspotCta();
-        $this->view->assign('ctasInUse', $contentElements);
+        $this->view->assignMultiple([
+            'ctasInUse' => $contentElements,
+            'returnUrl' => urlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
+        ]);
     }
 
     /**
