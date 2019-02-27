@@ -18,7 +18,6 @@ return [
         'tstamp' => 'tstamp',
         'crdate' => 'crdate',
         'cruser_id' => 'cruser_id',
-        'dividers2tabs' => true,
         'languageField' => 'sys_language_uid',
         'transOrigPointerField' => 'l10n_parent',
         'transOrigDiffSourceField' => 'l10n_diffsource',
@@ -29,36 +28,51 @@ return [
             'endtime' => 'endtime',
         ],
         'searchFields' => 'name',
-        'iconfile' => 'EXT:hubspot/Resources/Public/Icons/tx_hubspot_cta.svg'
+        'iconfile' => 'EXT:hubspot/Resources/Public/Icons/tx_hubspot_cta.svg',
     ],
     'interface' => [
         'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, hubspot_cta_code',
     ],
+    'palettes' => [
+        'language' => [
+            'showitem' => 'sys_language_uid, l10n_parent',
+        ],
+        'access' => [
+            'showitem' =>
+                'starttime,endtime',
+        ],
+    ],
     'types' => [
         '0' => [
-            'showitem' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, hubspot_cta_code,
-            --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden, --palette--;;1, starttime, endtime'
+            'showitem' =>
+                '--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,'
+                . 'name, hubspot_cta_code,'
+                . '--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access,'
+                . '    hidden,'
+                . '    --palette--;;access,'
+                . '--div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language,'
+                . '    --palette--;;language',
         ],
     ],
     'columns' => [
         'sys_language_uid' => [
-            'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.language',
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.language',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
                 'foreign_table' => 'sys_language',
                 'foreign_table_where' => 'ORDER BY sys_language.title',
                 'items' => [
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.allLanguages', -1],
-                    ['LLL:EXT:lang/locallang_general.xlf:LGL.default_value', 0]
+                    ['LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.allLanguages', -1],
+                    ['LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.default_value', 0],
                 ],
             ],
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.l18n_parent',
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectSingle',
@@ -74,17 +88,24 @@ return [
                 'type' => 'passthrough',
             ],
         ],
-
         'hidden' => [
-            'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.hidden',
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.hidden',
             'config' => [
                 'type' => 'check',
+                'renderType' => 'checkboxToggle',
+                'items' => [
+                    [
+                        0 => '',
+                        1 => '',
+                        'invertStateDisplay' => true,
+                    ],
+                ],
             ],
         ],
         'starttime' => [
-            'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.starttime',
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
@@ -92,13 +113,14 @@ return [
                 'eval' => 'datetime',
                 'default' => 0,
                 'range' => [
-                    'lower' => mktime(0, 0, 0, (int)date('m'), (int)date('d'), (int)date('Y'))
+                    'lower' => 0,
+                    'upper' => mktime(0, 0, 0, 1, 1, 2038),
                 ],
             ],
         ],
         'endtime' => [
-            'exclude' => 1,
-            'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.endtime',
+            'exclude' => true,
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
             'config' => [
                 'type' => 'input',
                 'renderType' => 'inputDateTime',
@@ -106,29 +128,30 @@ return [
                 'eval' => 'datetime',
                 'default' => 0,
                 'range' => [
-                    'lower' => mktime(0, 0, 0, (int)date('m'), (int)date('d'), (int)date('Y'))
+                    'lower' => 0,
+                    'upper' => mktime(0, 0, 0, 1, 1, 2038),
                 ],
             ],
         ],
         'name' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta.name',
             'config' => [
                 'type' => 'input',
                 'size' => 30,
-                'eval' => 'trim,required'
+                'eval' => 'trim,required',
             ],
         ],
         'hubspot_cta_code' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:tx_hubspot_cta.hubspot_cta_code',
             'config' => [
                 'type' => 'text',
                 'renderType' => 'HubspotCallToAction',
                 'cols' => 40,
                 'rows' => 15,
-                'eval' => 'trim,required'
+                'eval' => 'trim,required',
             ],
-        ]
+        ],
     ],
 ];

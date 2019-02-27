@@ -25,7 +25,7 @@
                 <source>Add form configured in HubSpot</source>
             </trans-unit>
 
-            <trans-unit id="plugin.hubspot_form">
+            <trans-unit id="tt_content.hubspot_form">
                 <source>HubSpot Form</source>
             </trans-unit>
             <trans-unit id="hubspot_campaign_fullink_helptext">

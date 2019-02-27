@@ -7,8 +7,10 @@
  * LICENSE file that was distributed with this source code.
  */
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
-    'hubspot',
-    'Configuration/TypoScript',
-    'Hubspot Integration'
-);
+call_user_func(function (string $extensionName) {
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+        $extensionName,
+        'Configuration/TypoScript',
+        'Hubspot Integration'
+    );
+}, 'hubspot');
