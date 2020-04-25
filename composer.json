@@ -11,16 +11,18 @@
         }
     ],
     "require": {
-        "typo3/cms-backend": "^8.7 || ^9.5",
-        "typo3/cms-core": "^8.7 || ^9.5",
-        "typo3/cms-extbase": "^8.7 || ^9.5",
-        "typo3/cms-frontend": "^8.7 || ^9.5",
-        "typo3/cms-fluid": "^8.7 || ^9.5",
-        "ryanwinchester/hubspot-php": "^1.0"
+        "typo3/cms-backend": "^8.7 || ^9.5 || ^10.4",
+        "typo3/cms-core": "^8.7 || ^9.5 || ^10.4",
+        "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4",
+        "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4",
+        "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4",
+        "hubspot/hubspot-php": "^1.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^2.3.1",
-        "phpunit/phpunit": "^5"
+        "friendsofphp/php-cs-fixer": "^2.14",
+        "roave/security-advisories": "dev-master",
+        "typo3/testing-framework": "^2 || ^4.9 || ^5.0 || ^6.2",
+        "overtrue/phplint": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -32,18 +34,34 @@
             "T3G\\Hubspot\\Tests\\": "Tests/"
         }
     },
-    "replace": {
-        "hubspot": "self.version",
-        "typo3-ter/hubspot": "self.version"
+    "scripts": {
+        "t3g:test:php:lint": [
+            "phplint"
+        ],
+        "t3g:test:php:unit": [
+            "phpunit -c Build/UnitTests.xml"
+        ],
+        "t3g:test": [
+            "@t3g:test:php:lint", "@t3g:test:php:unit"
+        ],
+        "t3g:cgl": [
+            "php-cs-fixer --diff -v fix"
+        ],
+        "post-autoload-dump": [
+            "mkdir -p .build/web/typo3conf/ext/", "[ -L .build/web/typo3conf/ext/hubspot_forms ] || ln -snvf ../../../../. .build/web/typo3conf/ext/hubspot_forms"
+        ]
     },
     "config": {
-        "optimize-autoloader": true,
+        "sort-packages": true,
+        "discard-changes": true,
         "vendor-dir": ".build/vendor",
         "bin-dir": ".build/bin"
     },
-    "scripts": {
-        "t3g:cgl": [
-            "php-cs-fixer fix --config Build/.php_cs.dist --format=junit > .build/logs/php-cs-fixer.xml"
-        ]
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "hubspot",
+            "app-dir": ".build",
+            "web-dir": ".build/public"
+        }
     }
 }
