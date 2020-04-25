@@ -7,7 +7,7 @@
  * LICENSE file that was distributed with this source code.
  */
 
-call_user_func(function(string $extensionName, string $table) {
+call_user_func(function (string $extensionName, string $table) {
     $columns = [
         'hubspot_utmcampaign_fulllink' => [
             'label' => 'LLL:EXT:hubspot/Resources/Private/Language/locallang_db.xlf:pages.utm_campaign_main_label',
@@ -40,5 +40,4 @@ call_user_func(function(string $extensionName, string $table) {
         $table,
         '--div--;LLL:EXT:' . $extensionName . '/Resources/Private/Language/locallang_db.xlf:pages.tab_label,' . implode(',', array_keys($columns))
     );
-
 }, 'hubspot', 'pages');
