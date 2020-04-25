@@ -4,7 +4,7 @@
 .. _Start:
 
 ===========================
-TYPO3 Blog Extension
+TYPO3 Hubspot Extension
 ===========================
 
 :Author:    TYPO3 GmbH Team <info@typo3.com>
