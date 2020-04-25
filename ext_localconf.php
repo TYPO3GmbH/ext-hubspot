@@ -10,6 +10,9 @@
 defined('TYPO3_MODE') || die();
 
 call_user_func(function (string $extensionName) {
+    if (!\TYPO3\CMS\Core\Core\Environment::isComposerMode()) {
+        @include 'phar://' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('hubspot') . 'Libraries/hubspot-php.phar/vendor/autoload.php';
+    }
     /***************
      * PageTS
      */
