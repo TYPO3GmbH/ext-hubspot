@@ -29,7 +29,7 @@ You can get the latest version from git by using the git command:
 
 .. code-block:: bash
 
-   git clone ssh://git@bitbucket.typo3.com:7999/ext/hubspot.git
+   git clone https://github.com/TYPO3GmbH/ext-hubspot.git
 
 
 Setup
