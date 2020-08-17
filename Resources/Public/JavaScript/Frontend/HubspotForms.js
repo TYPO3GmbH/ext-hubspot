@@ -1,5 +1,7 @@
 var script = document.createElement("script");
 script.src = '//js.hsforms.net/forms/v2.js';
+script.type = 'text/plain';
+script.dataset.usercentrics = 'HubSpot Forms';
 document.head.appendChild(script);
 
 window.addEventListener('load', function () {
