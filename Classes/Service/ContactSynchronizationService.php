@@ -24,15 +24,9 @@ class ContactSynchronizationService
      */
     protected $contactRepository = null;
 
-    /**
-     * @var FrontendUserRepository
-     */
-    protected $frontendUserRepository = null;
-
     public function __construct()
     {
         $this->contactRepository = GeneralUtility::makeInstance(HubspotContactRepository::class);
-        $this->frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
     }
 
     /**
