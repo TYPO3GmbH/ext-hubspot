@@ -12,7 +12,6 @@ namespace T3G\Hubspot\Service;
 
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Domain\Repository\FrontendUserRepository;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
