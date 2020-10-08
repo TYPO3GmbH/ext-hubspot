@@ -13,6 +13,7 @@ CREATE TABLE tt_content (
 CREATE TABLE fe_users (
 	hubspot_id int(11) unsigned DEFAULT '0' NOT NULL,
 	hubspot_sync_timestamp int(11) unsigned DEFAULT '0' NOT NULL,
+	hubspot_sync_pass int(11) unsigned DEFAULT '0' NOT NULL,
 );
 
 #

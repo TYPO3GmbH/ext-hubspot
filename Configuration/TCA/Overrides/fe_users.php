@@ -18,6 +18,11 @@ call_user_func(function (string $extensionName, string $table) {
             'config' => [
                 'type' => 'passthrough',
             ],
+        ],
+        'hubspot_sync_pass' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
         ]
     ];
 
