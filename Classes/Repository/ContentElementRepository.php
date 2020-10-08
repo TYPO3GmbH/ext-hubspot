@@ -17,8 +17,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Repository for the selection of ContentElements
  */
-class ContentElementRepository
+class ContentElementRepository extends AbstractDatabaseRepository
 {
+    const TABLE_NAME = 'tt_content';
 
     /**
      * Select all content elements (non-deleted) on pages (non-deleted) that
@@ -28,8 +29,7 @@ class ContentElementRepository
      */
     public function getContentElementsWithHubspotForm(): array
     {
-        $table = 'tt_content';
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = $this->getQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll()->add(new DeletedRestriction());
         return $queryBuilder
             ->select(
@@ -60,9 +60,8 @@ class ContentElementRepository
      */
     public function getContentElementsWithHubspotCta(): array
     {
-        $table = 'tt_content';
         /** @var \TYPO3\CMS\Core\Database\Query\QueryBuilder $queryBuilder */
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($table);
+        $queryBuilder = $this->getQueryBuilder();
         $queryBuilder->getRestrictions()->removeAll()->add(new DeletedRestriction());
         return $queryBuilder
             ->select(
