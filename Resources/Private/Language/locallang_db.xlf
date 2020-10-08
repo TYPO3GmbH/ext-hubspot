@@ -37,6 +37,9 @@
             <trans-unit id="pages.tab_label">
                 <source>Hubspot</source>
             </trans-unit>
+            <trans-unit id="fe_users.tab_label">
+                <source>Hubspot</source>
+            </trans-unit>
             <trans-unit id="tt_content.hubspot_form">
                 <source>HubSpot Form</source>
             </trans-unit>
