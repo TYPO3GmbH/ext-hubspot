@@ -12,6 +12,7 @@ namespace T3G\Hubspot\Service;
 
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use T3G\Hubspot\Repository\FrontendUserRepository;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
@@ -23,9 +24,15 @@ class ContactSynchronizationService
      */
     protected $contactRepository = null;
 
+    /**
+     * @var FrontendUserRepository
+     */
+    protected $frontendUserRepository = null;
+
     public function __construct()
     {
         $this->contactRepository = GeneralUtility::makeInstance(HubspotContactRepository::class);
+        $this->frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
     }
 
     /**
