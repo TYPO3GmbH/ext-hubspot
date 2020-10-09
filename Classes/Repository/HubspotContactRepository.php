@@ -23,12 +23,6 @@ class HubspotContactRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 
-    const PROPERTY_TYPO3_UID = 'typo3_uid';
-
-    const PROPERTY_SYNC_TIMESTAMP = 'typo3_sync_timestamp';
-
-    const REGISTRY_PROPERTIES_CREATED = 'hubspot_properties_created';
-
     /**
      *
      */
@@ -81,6 +75,11 @@ class HubspotContactRepository extends AbstractHubspotRepository
         return $response->toArray();
     }
 
+    public function findNew()
+    {
+
+    }
+
     /**
      * Creates a new contact
      *
@@ -119,64 +118,6 @@ class HubspotContactRepository extends AbstractHubspotRepository
             $identifier,
             $this->convertAssociativeArrayToHubspotProperties($properties)
         );
-    }
-
-    /**
-     * Create the default properties in the Hubspot contact for synchronization tracking
-     */
-    public function createDefaultProperties()
-    {
-        $registry = GeneralUtility::makeInstance(Registry::class);
-
-        if ($registry->get('tx_hubspot', static::REGISTRY_PROPERTIES_CREATED)) {
-            return;
-        }
-
-        try {
-            $this->factory->contactProperties()->createGroup([
-                'name' => 'typo3',
-                'displayName' => 'TYPO3'
-            ]);
-        } catch (BadRequest $exception) {
-            // Dismiss if the property group already exists
-            if ($exception->getCode() !== 409) {
-                throw $exception;
-            }
-        }
-
-        try {
-            $this->factory->contactProperties()->create([
-                'name' => static::PROPERTY_TYPO3_UID,
-                'label' => 'TYPO3 ID',
-                'formField' => false,
-                'type' => 'number',
-                'fieldType' => 'number',
-                'groupName' => 'typo3'
-            ]);
-        } catch (BadRequest $exception) {
-            // Dismiss if the property already exists
-            if ($exception->getCode() !== 409) {
-                throw $exception;
-            }
-        }
-
-        try {
-            $this->factory->contactProperties()->create([
-                'name' => static::PROPERTY_SYNC_TIMESTAMP,
-                'label' => 'Last TYPO3 sync',
-                'formField' => false,
-                'type' => 'datetime',
-                'fieldType' => 'date',
-                'groupName' => 'typo3'
-            ]);
-        } catch (BadRequest $exception) {
-            // Dismiss if the property already exists
-            if ($exception->getCode() !== 409) {
-                throw $exception;
-            }
-        }
-
-        $registry->set('tx_hubspot', static::REGISTRY_PROPERTIES_CREATED, true);
     }
 
     /**
