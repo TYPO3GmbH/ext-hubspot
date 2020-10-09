@@ -24,11 +24,17 @@ class HubspotContactRepository extends AbstractHubspotRepository
     use LimitResultTrait;
 
     /**
-     *
+     * Returns up to $this->limit contacts.
      */
-    public function getContacts()
+    public function findAll(): array
     {
-        return $this->factory->contacts()->all()->toArray();
+        $parameters = [];
+
+        if ($this->getLimit() > 0) {
+            $parameters['count'] = $this->getLimit();
+        }
+
+        return $this->factory->contacts()->all($parameters)->toArray()['contacts'];
     }
 
     /**
@@ -75,9 +81,25 @@ class HubspotContactRepository extends AbstractHubspotRepository
         return $response->toArray();
     }
 
-    public function findNew()
+    /**
+     * @param int $timestamp
+     * @return array
+     */
+    public function findNewSince(int $timestamp): array
     {
+        if ($timestamp === 0) {
+            return $this->findAll();
+        }
 
+        $parameters = [
+            'timeOffset' => $timestamp,
+        ];
+
+        if ($this->getLimit() > 0) {
+            $parameters['count'] = $this->getLimit();
+        }
+
+        return $this->factory->contacts()->recentNew($parameters)->toArray()['contacts'];
     }
 
     /**

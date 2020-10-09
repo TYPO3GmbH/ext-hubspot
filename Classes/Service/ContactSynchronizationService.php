@@ -73,6 +73,18 @@ class ContactSynchronizationService
     public function synchronizeContacts($limit = 10)
     {
         $this->frontendUserRepository->setLimit($limit);
+        $this->hubspotContactRepository->setLimit($limit);
+
+        $lastSynchronizationTimestamp = $this->frontendUserRepository->getLatestSynchronizationTimestamp();
+        $newHubspotContacts = $this->hubspotContactRepository->findNewSince($lastSynchronizationTimestamp);
+
+        if (count($newHubspotContacts) > 0) {
+            foreach ($newHubspotContacts as $newHubspotContact) {
+                
+            }
+
+            return; // Do more on next run
+        }
 
         $frontendUsers = $this->frontendUserRepository->findReadyForSyncPass();
 
@@ -108,6 +120,11 @@ class ContactSynchronizationService
     public function getProcessedRecords(): array
     {
         return $this->processedRecords;
+    }
+
+    protected function addHubspotContactToFrontendUsers()
+    {
+        
     }
 
     protected function addFrontendUserToHubspot(array $frontendUser)

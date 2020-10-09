@@ -134,6 +134,24 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     }
 
     /**
+     * Get the latest synchronization timestamp
+     *
+     * @return int Unix timestamp
+     */
+    public function getLatestSynchronizationTimestamp()
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        return (int)$queryBuilder
+            ->addSelectLiteral(
+                $queryBuilder->expr()->max('hubspot_sync_timestamp')
+            )
+            ->from(static::TABLE_NAME)
+            ->execute()
+            ->fetchColumn(0);
+    }
+
+    /**
      * Returns an instance of the DataHandler
      *
      * @return DataHandler
