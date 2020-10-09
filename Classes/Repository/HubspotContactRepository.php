@@ -10,15 +10,14 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
+use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+
 /**
  * Repository for manipulating contact data via the Hubspot API
  */
 class HubspotContactRepository extends AbstractHubspotRepository
 {
-    /**
-     * @var int Max records to include in batch operations
-     */
-    protected $limit = 10;
+    use LimitResultTrait;
 
     /**
      *
@@ -26,25 +25,5 @@ class HubspotContactRepository extends AbstractHubspotRepository
     public function getContacts()
     {
         return $this->factory->contacts()->all()->toArray();
-    }
-
-    /**
-     * Get max records to include in batch operations
-     *
-     * @return int
-     */
-    public function getLimit(): int
-    {
-        return $this->limit;
-    }
-
-    /**
-     * Set max records to include in batch operations
-     *
-     * @param int $limit
-     */
-    public function setLimit(int $limit)
-    {
-        $this->limit = $limit;
     }
 }

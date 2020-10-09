@@ -11,12 +11,15 @@ declare(strict_types=1);
 namespace T3G\Hubspot\Repository;
 
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
+use T3G\Hubspot\Repository\Traits\LimitResultTrait;
 
 /**
  * Repository class for TYPO3 frontend users
  */
 class FrontendUserRepository extends AbstractDatabaseRepository
 {
+    use LimitResultTrait;
+
     const TABLE_NAME = 'fe_users';
 
     /**
