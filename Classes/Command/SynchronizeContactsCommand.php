@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Service\ContactSynchronizationService;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -45,6 +46,8 @@ class SynchronizeContactsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        Bootstrap::initializeBackendAuthentication();
+
         $this->synchronizationService->synchronizeContacts($input->getOption('limit'));
     }
 
