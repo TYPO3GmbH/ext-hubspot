@@ -10,6 +10,8 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
+use SevenShores\Hubspot\Exceptions\BadRequest;
+use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
 
 /**
@@ -25,5 +27,60 @@ class HubspotContactRepository extends AbstractHubspotRepository
     public function getContacts()
     {
         return $this->factory->contacts()->all()->toArray();
+    }
+
+    /**
+     * Creates a new contact
+     *
+     * @param array $contactProperties Associative array of propertyName => value
+     * @return int Contact identifier. Negative identifier of existing contact if the contact email address exists.
+     */
+    public function createContact(array $contactProperties): int
+    {
+        try {
+            $response = $this->factory->contacts()->create(
+                $this->convertAssociativeArrayToHubspotProperties($contactProperties)
+            );
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 409) {
+                throw new HubspotExistingContactConflictException(
+                    $exception->getMessage(),
+                    1602243653
+                );
+            }
+
+            throw $exception;
+        }
+
+        return $response['vid'];
+    }
+
+    /**
+     * Converts an associative array to the type Hubspot likes
+     *
+     * [ 'propertyName' => 'theValue' ]
+     *
+     * becomes
+     *
+     * [
+     *      'property' => 'propertyName',
+     *      'value' => 'theValue',
+     * ]
+     *
+     * @param array $associativeProperties
+     * @return array
+     */
+    protected function convertAssociativeArrayToHubspotProperties(array $associativeProperties): array
+    {
+        $hubspotProperties = [];
+
+        foreach ($associativeProperties as $property => $value) {
+            $hubspotProperties[] = [
+                'property' => $property,
+                'value' => $value,
+            ];
+        }
+
+        return $hubspotProperties;
     }
 }
