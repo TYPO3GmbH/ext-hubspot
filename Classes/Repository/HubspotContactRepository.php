@@ -13,6 +13,7 @@ namespace T3G\Hubspot\Repository;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Repository for manipulating contact data via the Hubspot API
@@ -27,6 +28,31 @@ class HubspotContactRepository extends AbstractHubspotRepository
     public function getContacts()
     {
         return $this->factory->contacts()->all()->toArray();
+    }
+
+    /**
+     * Finds a contact by email address
+     *
+     * @param string $email
+     * @return array|null
+     */
+    public function findByEmail(string $email): ?array
+    {
+        if (!GeneralUtility::validEmail($email)) {
+            return null;
+        }
+
+        try {
+            $response = $this->factory->contacts()->getByEmail($email);
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 404) {
+                return null;
+            }
+
+            throw $exception;
+        }
+
+        return $response->toArray();
     }
 
     /**

@@ -11,6 +11,8 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Service;
 
 use Psr\Log\LoggerAwareTrait;
+use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
+use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use T3G\Hubspot\Repository\FrontendUserRepository;
@@ -93,9 +95,29 @@ class ContactSynchronizationService
 
     protected function addFrontendUserToHubspot(array $frontendUser)
     {
-        $hubspotContactIdentifier = $this->contactRepository->createContact(
-            $this->mapFrontendUserToHubspotContactProperties($frontendUser)
-        );
+        try {
+            $hubspotContactIdentifier = $this->contactRepository->createContact(
+                $this->mapFrontendUserToHubspotContactProperties($frontendUser)
+            );
+        } catch (HubspotExistingContactConflictException $existingContactException) {
+            $hubspotContact = $this->contactRepository->findByEmail($frontendUser['email']);
+
+            if ($hubspotContact !== null) {
+                $frontendUser['hubspot_id'] = $hubspotContact['vid'];
+
+                $this->frontendUserRepository->updateUser(
+                    $frontendUser['uid'],
+                    ['hubspot_id' => $frontendUser['hubspot_id']]
+                );
+
+                return $this->synchronizeFrontendUser($frontendUser);
+            }
+
+            throw new UnexpectedMissingContactException(
+                'Hubspot says a contact with email "' . $frontendUser['email'] . '" exists, but it can\'t be found.',
+                1602244843
+            );
+        }
 
         $this->frontendUserRepository->updateUser(
             $frontendUser['uid'],

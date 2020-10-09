@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Repository;
 
+use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Core\Bootstrap;
@@ -60,21 +61,28 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     {
         unset($row['uid']);
 
-        $data = [
-            static::TABLE_NAME => [
-                $uid => $row
-            ]
-        ];
-
         $row['hubspot_sync_timestamp'] = time();
 
         if ($setSyncPassIdentifier) {
             $row['hubspot_sync_pass'] = $this->getSyncPassIdentifier();
         }
 
+        $data = [
+            static::TABLE_NAME => [
+                $uid => $row
+            ]
+        ];
+
         $dataHandler = $this->getDataHandler();
         $dataHandler->start($data, []);
         $dataHandler->process_datamap();
+
+        if (count($dataHandler->errorLog) > 0) {
+            throw new DataHandlerErrorException(
+                'The DataHandler reported error: ' . implode(', ', $dataHandler->errorLog),
+                1602246099
+            );
+        }
     }
 
     /**
