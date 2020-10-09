@@ -42,7 +42,6 @@ class ContactSynchronizationService
      */
     public function synchronizeContacts($limit = 10)
     {
-        $contacts = $this->contactRepository->getContacts();
-        var_dump($contacts['contacts'][0]);
+        var_dump($this->frontendUserRepository->getSyncPassIdentifier());
     }
 }
