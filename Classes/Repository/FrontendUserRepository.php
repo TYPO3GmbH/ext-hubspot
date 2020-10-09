@@ -12,6 +12,7 @@ namespace T3G\Hubspot\Repository;
 
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 
 /**
  * Repository class for TYPO3 frontend users
@@ -21,6 +22,29 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     use LimitResultTrait;
 
     const TABLE_NAME = 'fe_users';
+
+    /**
+     * Finds frontend users not yet included in current sync pass
+     *
+     * @return array Frontend user rows
+     */
+    public function findReadyForSyncPass(): array
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        $queryBuilder
+            ->select('*')
+            ->from(static::TABLE_NAME)
+            ->where(
+                $queryBuilder->expr()->neq('hubspot_sync_pass', $this->getSyncPassIdentifier())
+            );
+
+        if ($this->getLimit() > 0) {
+            $queryBuilder->setMaxResults($this->getLimit());
+        }
+
+        return $queryBuilder->execute()->fetchAll();
+    }
 
     /**
      * Calculates the syncPassIdentifier to use when updating a FrontendUser. This value identifies whether a record
