@@ -84,6 +84,23 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     }
 
     /**
+     * Silently sets the sync pass value (i.e. without updating tstamp)
+     *
+     * @param int $frontendUserUid
+     * @return bool
+     */
+    public function setSyncPassSilently(int $frontendUserUid): bool
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        return (bool)$queryBuilder
+            ->update(static::TABLE_NAME)
+            ->setValue('hubspot_sync_pass', $this->getSyncPassIdentifier())
+            ->where($queryBuilder->expr()->eq('uid', $frontendUserUid))
+            ->execute();
+    }
+
+    /**
      * Calculates the syncPassIdentifier to use when updating a FrontendUser. This value identifies whether a record
      * has been
      *

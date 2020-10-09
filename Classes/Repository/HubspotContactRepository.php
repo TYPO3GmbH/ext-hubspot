@@ -55,13 +55,32 @@ class HubspotContactRepository extends AbstractHubspotRepository
         return $response->toArray();
     }
 
+    public function findByIdentifier(int $identifier): ?array
+    {
+        if ($identifier <= 0) {
+            return null;
+        }
+
+        try {
+            $response = $this->factory->contacts()->getById($identifier);
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 404) {
+                return null;
+            }
+
+            throw $exception;
+        }
+
+        return $response->toArray();
+    }
+
     /**
      * Creates a new contact
      *
      * @param array $contactProperties Associative array of propertyName => value
      * @return int Contact identifier. Negative identifier of existing contact if the contact email address exists.
      */
-    public function createContact(array $contactProperties): int
+    public function create(array $contactProperties): int
     {
         try {
             $response = $this->factory->contacts()->create(
@@ -79,6 +98,20 @@ class HubspotContactRepository extends AbstractHubspotRepository
         }
 
         return $response['vid'];
+    }
+
+    /**
+     * Update a Hubspot Contact
+     *
+     * @param int $identifier Hubspot VID
+     * @param array $properties as associative array
+     */
+    public function update(int $identifier, array $properties)
+    {
+        $this->factory->contacts()->update(
+            $identifier,
+            $this->convertAssociativeArrayToHubspotProperties($properties)
+        );
     }
 
     /**
