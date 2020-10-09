@@ -55,7 +55,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
      * @param array $row The row properties to be updated. UID will be removed.
      * @param bool $setSyncPassIdentifier
      */
-    public function updateUser(int $uid, array $row, $setSyncPassIdentifier = true)
+    public function updateUser(int $uid, array $row, bool $setSyncPassIdentifier = true)
     {
         unset($row['uid']);
 
@@ -102,16 +102,16 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
 
-        if ((int)$maxPass === (int)$minPass) {
+        if ($maxPass === $minPass) {
             return $maxPass + 1;
         }
 
-        if ((int)$minPass === (int)$maxPass - 1) {
+        if ($minPass === $maxPass - 1) {
             return $maxPass;
         }
 
         throw new InvalidSyncPassIdentifierScopeException(
-            'Sync pass identifier out of scope. Max was ' . (int)$maxPass . ' and min ' . (int)$minPass . '.',
+            'Sync pass identifier out of scope. Max was ' . $maxPass . ' and min ' . $minPass . '.',
             1602173860
         );
     }
