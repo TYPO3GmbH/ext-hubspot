@@ -13,8 +13,6 @@ namespace T3G\Hubspot\Repository;
 use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
-use TYPO3\CMS\Core\Core\Bootstrap;
-use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
