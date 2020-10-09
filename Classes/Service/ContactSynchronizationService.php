@@ -110,7 +110,9 @@ class ContactSynchronizationService
                     ['hubspot_id' => $frontendUser['hubspot_id']]
                 );
 
-                return $this->synchronizeFrontendUser($frontendUser);
+                $this->synchronizeFrontendUser($frontendUser);
+
+                return;
             }
 
             throw new UnexpectedMissingContactException(
