@@ -55,7 +55,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
      * @param array $row The row properties to be updated. UID will be removed.
      * @param bool $setSyncPassIdentifier
      */
-    public function updateUser(int $uid, array $row, bool $setSyncPassIdentifier = true)
+    public function update(int $uid, array $row, bool $setSyncPassIdentifier = true)
     {
         unset($row['uid']);
 
@@ -68,6 +68,34 @@ class FrontendUserRepository extends AbstractDatabaseRepository
         $data = [
             static::TABLE_NAME => [
                 $uid => $row
+            ]
+        ];
+
+        $dataHandler = $this->getDataHandler();
+        $dataHandler->start($data, []);
+        $dataHandler->process_datamap();
+
+        if (count($dataHandler->errorLog) > 0) {
+            throw new DataHandlerErrorException(
+                'The DataHandler reported error: ' . implode(', ', $dataHandler->errorLog),
+                1602246099
+            );
+        }
+    }
+
+    public function create(array $row, bool $setSyncPassIdentifier = true)
+    {
+        unset($row['uid']);
+
+        $row['hubspot_sync_timestamp'] = time();
+
+        if ($setSyncPassIdentifier) {
+            $row['hubspot_sync_pass'] = $this->getSyncPassIdentifier();
+        }
+
+        $data = [
+            static::TABLE_NAME => [
+                uniqid('NEW') => $row
             ]
         ];
 
@@ -145,6 +173,24 @@ class FrontendUserRepository extends AbstractDatabaseRepository
         return (int)$queryBuilder
             ->addSelectLiteral(
                 $queryBuilder->expr()->max('hubspot_sync_timestamp')
+            )
+            ->from(static::TABLE_NAME)
+            ->execute()
+            ->fetchColumn(0);
+    }
+
+    /**
+     * Get the latest recorded record created timestamp
+     *
+     * @return int Unix timestamp
+     */
+    public function getLatestHubspotCreatedTimestamp()
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        return (int)$queryBuilder
+            ->addSelectLiteral(
+                $queryBuilder->expr()->max('hubspot_created_timestamp')
             )
             ->from(static::TABLE_NAME)
             ->execute()

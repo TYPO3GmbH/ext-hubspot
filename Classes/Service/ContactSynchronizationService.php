@@ -75,12 +75,18 @@ class ContactSynchronizationService
         $this->frontendUserRepository->setLimit($limit);
         $this->hubspotContactRepository->setLimit($limit);
 
-        $lastSynchronizationTimestamp = $this->frontendUserRepository->getLatestSynchronizationTimestamp();
-        $newHubspotContacts = $this->hubspotContactRepository->findNewSince($lastSynchronizationTimestamp);
+        $latestTimestamp = $this->frontendUserRepository->getLatestSynchronizationTimestamp();
+
+        // If we haven't synced yet, we might still have created records
+        if ($latestTimestamp === 0) {
+            $latestTimestamp = $this->frontendUserRepository->getLatestHubspotCreatedTimestamp();
+        }
+
+        $newHubspotContacts = $this->hubspotContactRepository->findNewSince($latestTimestamp);
 
         if (count($newHubspotContacts) > 0) {
             foreach ($newHubspotContacts as $newHubspotContact) {
-                
+                $this->addHubspotContactToFrontendUsers($newHubspotContact);
             }
 
             return; // Do more on next run
@@ -122,9 +128,13 @@ class ContactSynchronizationService
         return $this->processedRecords;
     }
 
-    protected function addHubspotContactToFrontendUsers()
+    protected function addHubspotContactToFrontendUsers(array $hubspotContact)
     {
-        
+        $frontendUserIdentifier = $this->frontendUserRepository->create(
+            $this->mapHubspotContactToFrontendUserProperties($hubspotContact)
+        );
+
+        $this->processedRecords['addedToFrontendUsers'][] = $hubspotContact['vid'];
     }
 
     protected function addFrontendUserToHubspot(array $frontendUser)
@@ -139,9 +149,12 @@ class ContactSynchronizationService
             if ($hubspotContact !== null) {
                 $frontendUser['hubspot_id'] = $hubspotContact['vid'];
 
-                $this->frontendUserRepository->updateUser(
+                $this->frontendUserRepository->update(
                     $frontendUser['uid'],
-                    ['hubspot_id' => $frontendUser['hubspot_id']]
+                    [
+                        'hubspot_id' => $frontendUser['hubspot_id'],
+                        'hubspot_created_timestamp' => time(),
+                    ]
                 );
 
                 $this->synchronizeFrontendUser($frontendUser);
@@ -155,7 +168,7 @@ class ContactSynchronizationService
             );
         }
 
-        $this->frontendUserRepository->updateUser(
+        $this->frontendUserRepository->update(
             $frontendUser['uid'],
             ['hubspot_id' => $hubspotContactIdentifier]
         );
@@ -199,7 +212,7 @@ class ContactSynchronizationService
         }
 
         if (count($frontendUserChanges) > 0) {
-            $this->frontendUserRepository->updateUser($frontendUser['uid'], $frontendUserChanges);
+            $this->frontendUserRepository->update($frontendUser['uid'], $frontendUserChanges);
             $this->processedRecords['modifiedInHubspot'][] = $frontendUser['uid'];
         } else {
             $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
@@ -212,7 +225,7 @@ class ContactSynchronizationService
         }
     }
 
-    protected function mapFrontendUserToHubspotContactProperties(array $frontendUser)
+    protected function mapFrontendUserToHubspotContactProperties(array $frontendUser): array
     {
         $hubspotContactProperties = [];
 
@@ -232,6 +245,23 @@ class ContactSynchronizationService
         }
 
         return $hubspotContactProperties;
+    }
+
+    protected function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
+    {
+        $frontendUserProperties = [];
+
+        $hubspotContactToFrontendUserProperty = array_flip(static::FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING);
+
+        foreach ($hubspotContactToFrontendUserProperty as $hubspotMapping => $frontendUserMapping) {
+            if (isset($hubspotContact[$hubspotMapping]) && $hubspotMapping !== '') {
+                $frontendUserProperties[$frontendUserMapping] = $hubspotContact[$hubspotMapping];
+            }
+        }
+
+        $frontendUserProperties['hubspot_created_timestamp'] = $hubspotContact['addedAt'];
+
+        return $frontendUserProperties;
     }
 
     protected function getLatestTimestampFromHubspotProperty(array $hubspotProperty): int

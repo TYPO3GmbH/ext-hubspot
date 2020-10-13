@@ -14,6 +14,11 @@ call_user_func(function (string $extensionName, string $table) {
                 'type' => 'passthrough',
             ],
         ],
+        'hubspot_created_timestamp' => [
+            'config' => [
+                'type' => 'passthrough',
+            ],
+        ],
         'hubspot_sync_timestamp' => [
             'config' => [
                 'type' => 'passthrough',
