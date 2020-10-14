@@ -16,6 +16,7 @@ use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use T3G\Hubspot\Repository\FrontendUserRepository;
+use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
@@ -33,6 +34,21 @@ class ContactSynchronizationService
      * @var FrontendUserRepository
      */
     protected $frontendUserRepository = null;
+
+    /**
+     * @var array Default values for TypoScript configuration
+     */
+    protected $defaultConfiguration = [];
+
+    /**
+     * @var array Configuration array
+     */
+    protected $configuration = [];
+
+    /**
+     * @var int To track active configuration PID
+     */
+    protected $activeConfigurationPageId = 0;
 
     const FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING = [
         'email' => 'email',
@@ -68,12 +84,13 @@ class ContactSynchronizationService
     /**
      * Synchronize TYPO3 frontend users and Hubspot contacts
      *
-     * @param int $limit
+     * @param int $defaultPid
      */
-    public function synchronizeContacts($limit = 10)
+    public function synchronizeContacts(int $defaultPid = null)
     {
-        $this->frontendUserRepository->setLimit($limit);
-        $this->hubspotContactRepository->setLimit($limit);
+        $this->configureForPageId(
+            $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronize.']['defaultPid']
+        );
 
         $latestTimestamp = $this->frontendUserRepository->getLatestSynchronizationTimestamp();
 
@@ -126,6 +143,52 @@ class ContactSynchronizationService
     public function getProcessedRecords(): array
     {
         return $this->processedRecords;
+    }
+
+    /**
+     * Set default TypoScript values
+     *
+     * @param array $defaultConfiguration
+     */
+    public function setDefaultConfiguration(array $defaultConfiguration)
+    {
+        $this->defaultConfiguration = $defaultConfiguration;
+    }
+
+    /**
+     * Fetches TypoScript configuration from page and sets $this->configuration to what's in module.tx_hubspot
+     *
+     * Also configures repository defaults
+     *
+     * @param int $pageId
+     */
+    protected function configureForPageId(int $pageId)
+    {
+        if ($this->activeConfigurationPageId === $pageId) {
+            return;
+        }
+
+        $configuration = GeneralUtility::makeInstance(BackendConfigurationManager::class)
+                ->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
+
+        $this->configuration = array_merge_recursive($this->defaultConfiguration, $configuration);
+
+        $this->activeConfigurationPageId = $pageId;
+
+        $this->configureRepositoryDefaults();
+    }
+
+    /**
+     * Sets repository default values based on $this->configuration
+     */
+    protected function configureRepositoryDefaults()
+    {
+        $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid']);
+
+        if ($this->configuration['synchronize.']['limit']) {
+            $this->frontendUserRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
+            $this->hubspotContactRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
+        }
     }
 
     protected function addHubspotContactToFrontendUsers(array $hubspotContact)

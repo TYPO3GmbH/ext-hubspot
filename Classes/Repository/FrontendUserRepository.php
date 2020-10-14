@@ -26,6 +26,11 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     const TABLE_NAME = 'fe_users';
 
     /**
+     * @var int Default storage PID
+     */
+    protected $defaultPageId = 0;
+
+    /**
      * Finds frontend users not yet included in current sync pass
      *
      * @return array Frontend user rows
@@ -91,6 +96,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
 
         if ($setSyncPassIdentifier) {
             $row['hubspot_sync_pass'] = $this->getSyncPassIdentifier();
+        }
+
+        if (!isset($row['pid'])) {
+            $row['pid'] = $this->getDefaultPageId();
         }
 
         $data = [
@@ -195,6 +204,22 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->from(static::TABLE_NAME)
             ->execute()
             ->fetchColumn(0);
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultPageId(): int
+    {
+        return $this->defaultPageId;
+    }
+
+    /**
+     * @param int $defaultPageId
+     */
+    public function setDefaultPageId(int $defaultPageId)
+    {
+        $this->defaultPageId = $defaultPageId;
     }
 
     /**

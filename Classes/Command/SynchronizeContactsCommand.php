@@ -13,6 +13,7 @@ namespace T3G\Hubspot\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Service\ContactSynchronizationService;
 use TYPO3\CMS\Core\Core\Bootstrap;
@@ -41,14 +42,41 @@ class SynchronizeContactsCommand extends Command
         $this
             ->setDescription('Synchronize HubSpot contacts.')
             ->setHelp('This command synchronizes HubSpot contact records with TYPO3 frontend users.')
-            ->addOption('limit', 'l', InputArgument::OPTIONAL, 'Max records to synchronize', 10);
+            ->addOption(
+                'default-pid',
+                'p',
+                InputOption::VALUE_REQUIRED,
+                'Default PID for storage and TypoScript settings'
+            )
+            ->addOption(
+                'limit',
+                'l',
+                InputOption::VALUE_REQUIRED,
+                'Max records to synchronize',
+                null
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         Bootstrap::initializeBackendAuthentication();
 
-        $this->synchronizationService->synchronizeContacts($input->getOption('limit'));
+        $configuration = [
+            'persistence.' => [
+                'synchronize.' => [
+                    'defaultPid' => $input->getOption('default-pid')
+                ]
+            ],
+            'settings.' => [
+                'synchronize.' => [
+                    'limit' => $input->getOption('limit')
+                ]
+            ]
+        ];
+
+        $this->synchronizationService->setDefaultConfiguration($configuration);
+
+        $this->synchronizationService->synchronizeContacts();
     }
 
 

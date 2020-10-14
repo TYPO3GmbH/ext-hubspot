@@ -39,3 +39,18 @@ tt_content.hubspot_cta {
 }
 
 page.includeJS.hubspot = EXT:hubspot/Resources/Public/JavaScript/Frontend/HubspotForms.js
+
+module.tx_hubspot {
+    persistence {
+        synchronize.storagePid =
+    }
+
+    settings {
+        synchronize {
+            limit = 10
+
+            createNewInHubspot = 1
+            createNewInTypo3 = 0
+        }
+    }
+}
