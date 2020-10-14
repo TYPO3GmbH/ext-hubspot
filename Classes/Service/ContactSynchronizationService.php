@@ -17,6 +17,7 @@ use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
@@ -310,9 +311,22 @@ class ContactSynchronizationService
         return $hubspotContactProperties;
     }
 
+    /**
+     * Maps a hubspot contact to frontend user properties
+     *
+     * Uses configuration from module.tx_hubspot.settings.synchronize.toFrontendUser
+     *
+     * @param array $hubspotContact
+     * @return array Frontend User row
+     */
     protected function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
     {
-        $hubspotContactProperties = $hubspotContact['properties'];
+        $hubspotContactProperties = [];
+
+        // Flatten the properties
+        foreach ($hubspotContact['properties'] as $key => $property) {
+            $hubspotContactProperties[$key] = $property['value'];
+        }
 
         // Make email into a property
         if (!isset($hubspotContactProperties['email'])) {
@@ -323,14 +337,23 @@ class ContactSynchronizationService
             }
         }
 
+        $toFrontendUser = $this->configuration['settings.']['synchronize.']['toFrontendUser.'];
+
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->start($hubspotContactProperties);
+
         $frontendUserProperties = [];
+        foreach (array_keys($toFrontendUser) as $frontendUserProperty) {
+            $frontendUserProperty = rtrim($frontendUserProperty, '.');
 
-        $hubspotContactToFrontendUserProperty = array_flip(static::FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING);
-
-        foreach ($hubspotContactToFrontendUserProperty as $hubspotMapping => $frontendUserMapping) {
-            if (isset($hubspotContactProperties[$hubspotMapping]['value']) && $hubspotMapping !== '') {
-                $frontendUserProperties[$frontendUserMapping] = $hubspotContactProperties[$hubspotMapping]['value'];
+            if (in_array($frontendUserProperty, $frontendUserProperties)) {
+                continue;
             }
+
+            $frontendUserProperties[$frontendUserProperty] = $contentObjectRenderer->stdWrap(
+                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty]] ?? '',
+                $toFrontendUser[$frontendUserProperty . '.'] ?? []
+            );
         }
 
         $frontendUserProperties['hubspot_created_timestamp'] = $hubspotContact['addedAt'];

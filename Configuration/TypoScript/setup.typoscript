@@ -51,6 +51,31 @@ module.tx_hubspot {
 
             createNewInHubspot = 1
             createNewInTypo3 = 0
+
+            toHubspot {
+                email.field = email
+                firstname.field = first_name
+                lastname.field = last_name
+                company.field = company
+                phone.field = telephone
+                address.field = address
+                city.field = city
+                state.field = state
+                website.field = www
+            }
+
+            toFrontendUser {
+                username.field = email
+                email.field = email
+                first_name.field = firstname
+                last_name.field = lastname
+                company.field = company
+                telephone.field = phone
+                address.field = address
+                city.field = city
+                state.field = state
+                www.field = website
+            }
         }
     }
 }
