@@ -125,6 +125,8 @@ class ContactSynchronizationService
             return;
         }
 
+        $this->configureForPageId($frontendUser['pid']);
+
         if ($frontendUser['hubspot_id'] === 0) {
             $this->addFrontendUserToHubspot($frontendUser);
             return;
