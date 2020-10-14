@@ -312,13 +312,24 @@ class ContactSynchronizationService
 
     protected function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
     {
+        $hubspotContactProperties = $hubspotContact['properties'];
+
+        // Make email into a property
+        if (!isset($hubspotContactProperties['email'])) {
+            foreach ($hubspotContact['identity-profiles'][0]['identities'] as $identity) {
+                if ($identity['type'] === 'EMAIL' && $identity['is-primary']) {
+                    $hubspotContactProperties['email'] = $identity['value'];
+                }
+            }
+        }
+
         $frontendUserProperties = [];
 
         $hubspotContactToFrontendUserProperty = array_flip(static::FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING);
 
         foreach ($hubspotContactToFrontendUserProperty as $hubspotMapping => $frontendUserMapping) {
-            if (isset($hubspotContact[$hubspotMapping]) && $hubspotMapping !== '') {
-                $frontendUserProperties[$frontendUserMapping] = $hubspotContact[$hubspotMapping];
+            if (isset($hubspotContactProperties[$hubspotMapping]['value']) && $hubspotMapping !== '') {
+                $frontendUserProperties[$frontendUserMapping] = $hubspotContactProperties[$hubspotMapping]['value'];
             }
         }
 
