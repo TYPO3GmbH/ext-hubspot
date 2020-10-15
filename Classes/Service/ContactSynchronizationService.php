@@ -94,16 +94,18 @@ class ContactSynchronizationService
             $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronize.']['defaultPid']
         );
 
-        $newHubspotContacts = $this->hubspotContactRepository->findNewBefore(
-            $this->frontendUserRepository->getOldestHubspotCreatedTimestamp()
-        );
+        if ($this->configuration['settings.']['synchronize.']['createNewInTypo3']) {
+            $newHubspotContacts = $this->hubspotContactRepository->findNewBefore(
+                $this->frontendUserRepository->getOldestHubspotCreatedTimestamp()
+            );
 
-        if (count($newHubspotContacts) > 0) {
-            foreach ($newHubspotContacts as $newHubspotContact) {
-                $this->addHubspotContactToFrontendUsers($newHubspotContact);
+            if (count($newHubspotContacts) > 0) {
+                foreach ($newHubspotContacts as $newHubspotContact) {
+                    $this->addHubspotContactToFrontendUsers($newHubspotContact);
+                }
+
+                return; // Do more on next run
             }
-
-            return; // Do more on next run
         }
 
         $frontendUsers = $this->frontendUserRepository->findReadyForSyncPass();
