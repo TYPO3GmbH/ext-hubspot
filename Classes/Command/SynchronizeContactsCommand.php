@@ -76,7 +76,7 @@ class SynchronizeContactsCommand extends Command
 
         $this->synchronizationService->setDefaultConfiguration($configuration);
 
-        $this->synchronizationService->synchronizeContacts();
+        $this->synchronizationService->synchronize();
     }
 
 

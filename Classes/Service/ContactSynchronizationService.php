@@ -88,7 +88,7 @@ class ContactSynchronizationService
      *
      * @param int $defaultPid
      */
-    public function synchronizeContacts(int $defaultPid = null)
+    public function synchronize(int $defaultPid = null)
     {
         $this->configureForPageId(
             $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronize.']['defaultPid']
