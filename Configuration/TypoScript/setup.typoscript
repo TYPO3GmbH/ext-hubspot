@@ -54,7 +54,7 @@ module.tx_hubspot {
 
             toHubspot {
                 email.field = email
-                firstname.field = first_name
+                firstname = first_name
                 lastname.field = last_name
                 company.field = company
                 phone.field = telephone
@@ -69,6 +69,7 @@ module.tx_hubspot {
                 email.field = email
                 first_name.field = firstname
                 last_name.field = lastname
+                name.dataWrap = {field:firstname} {field:lastname}
                 company.field = company
                 telephone.field = phone
                 address.field = address

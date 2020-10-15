@@ -189,11 +189,30 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     }
 
     /**
-     * Get the latest recorded record created timestamp
+     * Get oldest non-zero millisecond timestamp for a record created in hubspot
      *
-     * @return int Unix timestamp
+     * @return int Millisecond timestamp
      */
-    public function getLatestHubspotCreatedTimestamp()
+    public function getOldestHubspotCreatedTimestamp(): int
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        return (int)$queryBuilder
+            ->addSelectLiteral(
+                $queryBuilder->expr()->min('hubspot_created_timestamp')
+            )
+            ->from(static::TABLE_NAME)
+            ->where($queryBuilder->expr()->neq('hubspot_created_timestamp', 0))
+            ->execute()
+            ->fetchColumn(0);
+    }
+
+    /**
+     * Get most recent millisecond timestamp for a record created in hubspot
+     *
+     * @return int Millisecond timestamp
+     */
+    public function getLatestHubspotCreatedTimestamp(): int
     {
         $queryBuilder = $this->getQueryBuilder();
 

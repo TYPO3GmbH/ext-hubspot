@@ -62,6 +62,13 @@ class HubspotContactRepository extends AbstractHubspotRepository
         return $response->toArray();
     }
 
+    /**
+     * Find contact by identifier
+     *
+     * @param int $identifier Hubspot identifier
+     * @return array|null
+     * @throws BadRequest
+     */
     public function findByIdentifier(int $identifier): ?array
     {
         if ($identifier <= 0) {
@@ -82,24 +89,57 @@ class HubspotContactRepository extends AbstractHubspotRepository
     }
 
     /**
-     * @param int $timestamp
-     * @return array
+     * Find multiple contacts by their identifiers
+     *
+     * @param array $identifiers
+     * @return array|null
      */
-    public function findNewSince(int $timestamp): array
+    public function findMultipleByIdentifier(array $identifiers): ?array
     {
-        if ($timestamp === 0) {
-            return $this->findAll();
+        if (count($identifiers) === 0) {
+            return null;
         }
 
-        $parameters = [
-            'timeOffset' => $timestamp,
-        ];
+        $parameters = [];
 
         if ($this->getLimit() > 0) {
             $parameters['count'] = $this->getLimit();
         }
 
-        return $this->factory->contacts()->recentNew($parameters)->toArray()['contacts'];
+        $response = $this->factory->contacts()->getBatchByIds($identifiers, $parameters);
+
+        if (count($response->toArray()) === 0) {
+            return null;
+        }
+
+        return array_values($response->toArray());
+    }
+
+    /**
+     * Find new Hubspot records from before millisecondTimestamp
+     *
+     * @param int $millisecondTimestamp Millisecond timestamp
+     * @return array
+     */
+    public function findNewBefore(int $millisecondTimestamp): array
+    {
+        $parameters = [];
+
+        if ($millisecondTimestamp > 0) {
+            $parameters['timeOffset'] = $millisecondTimestamp;
+        }
+
+        if ($this->getLimit() > 0) {
+            $parameters['count'] = $this->getLimit();
+        }
+
+        $identifiers = array_column($this->factory->contacts()->recentNew($parameters)->toArray()['contacts'], 'vid');
+
+        if (count($identifiers) === 0) {
+            return [];
+        }
+
+        return array_values($this->findMultipleByIdentifier($identifiers));
     }
 
     /**
