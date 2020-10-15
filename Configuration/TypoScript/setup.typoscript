@@ -54,7 +54,7 @@ module.tx_hubspot {
 
             toHubspot {
                 email.field = email
-                firstname = first_name
+                firstname.field = first_name
                 lastname.field = last_name
                 company.field = company
                 phone.field = telephone
@@ -63,6 +63,9 @@ module.tx_hubspot {
                 state.field = state
                 website.field = www
             }
+
+            ignoreOnHubspotCreate =
+            ignoreOnHubspotUpdate =
 
             toFrontendUser {
                 username.field = email
@@ -77,6 +80,9 @@ module.tx_hubspot {
                 state.field = state
                 www.field = website
             }
+
+            ignoreOnFrontendUserCreate =
+            ignoreOnFrontendUserUpdate = username
         }
     }
 }

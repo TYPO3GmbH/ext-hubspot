@@ -132,7 +132,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
 
         return (bool)$queryBuilder
             ->update(static::TABLE_NAME)
-            ->setValue('hubspot_sync_pass', $this->getSyncPassIdentifier())
+            ->set('hubspot_sync_pass', $this->getSyncPassIdentifier())
             ->where($queryBuilder->expr()->eq('uid', $frontendUserUid))
             ->execute();
     }

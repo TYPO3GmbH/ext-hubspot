@@ -194,9 +194,18 @@ class ContactSynchronizationService
 
     protected function addHubspotContactToFrontendUsers(array $hubspotContact)
     {
-        $frontendUserIdentifier = $this->frontendUserRepository->create(
-            $this->mapHubspotContactToFrontendUserProperties($hubspotContact)
+        $mappedFrontendUserProperties = $this->mapHubspotContactToFrontendUserProperties($hubspotContact);
+
+        $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
+            ',',
+            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserCreate'],
+            true
         );
+        foreach ($ignoreOnFrontendUserUpdate as $propertyName) {
+            unset($mappedFrontendUserProperties[$propertyName]);
+        }
+
+        $frontendUserIdentifier = $this->frontendUserRepository->create($mappedFrontendUserProperties);
 
         $this->processedRecords['addedToFrontendUsers'][] = $hubspotContact['vid'];
     }
@@ -204,9 +213,18 @@ class ContactSynchronizationService
     protected function addFrontendUserToHubspot(array $frontendUser)
     {
         try {
-            $hubspotContactIdentifier = $this->hubspotContactRepository->create(
-                $this->mapFrontendUserToHubspotContactProperties($frontendUser)
+            $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
+
+            $ignoreOnFrontendUserCreate = GeneralUtility::trimExplode(
+                ',',
+                $this->configuration['settings.']['synchronize.']['ignoreOnHubspotCreate'],
+                true
             );
+            foreach ($ignoreOnFrontendUserCreate as $propertyName) {
+                unset($mappedHubspotProperties[$propertyName]);
+            }
+
+            $hubspotContactIdentifier = $this->hubspotContactRepository->create($mappedHubspotProperties);
         } catch (HubspotExistingContactConflictException $existingContactException) {
             $hubspotContact = $this->hubspotContactRepository->findByEmail($frontendUser['email']);
 
@@ -241,8 +259,12 @@ class ContactSynchronizationService
 
     protected function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
     {
-        if ($frontendUser['hubspot_id'] === 0) {
+        if (
+            $frontendUser['hubspot_id'] === 0
+            && $this->configuration['settings.']['synchronize.']['createNewInHubspot']
+        ) {
             $this->addFrontendUserToHubspot($frontendUser);
+            return;
         }
 
         $hubspotContact = $this->hubspotContactRepository->findByIdentifier($frontendUser['hubspot_id']);
@@ -263,12 +285,12 @@ class ContactSynchronizationService
             }
         }
 
-        $frontendUserChanges = [];
-        $hubspotContactChanges = [];
-
         $modifiedHubspotProperties = [];
         foreach ($hubspotContactProperties as $propertyName => $property) {
-            if ($this->getLatestMillisecondTimestampFromHubspotProperty($property) > $frontendUser['tstamp'] * 1000) {
+            if (
+                $this->getLatestMillisecondTimestampFromHubspotProperty($property) > $frontendUser['tstamp'] * 1000
+                && $this->getLatestMillisecondTimestampFromHubspotProperty($property) > $frontendUser['hubspot_sync_timestamp'] * 1000
+            ) {
                 $modifiedHubspotProperties[] = $propertyName;
             }
         }
@@ -277,16 +299,16 @@ class ContactSynchronizationService
 
         foreach ($mappedHubspotProperties as $propertyName => $value) {
             // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
-            if (!in_array($propertyName, $modifiedHubspotProperties)) {
-                unset($mappedHubspotProperties[$propertyName]);
             // Remove hubspot properties if there is no changed content
-            } elseif ($value === $hubspotContactProperties[$propertyName]) {
+            if (in_array($propertyName, $modifiedHubspotProperties) || $value === $hubspotContactProperties[$propertyName]['value']) {
                 unset($mappedHubspotProperties[$propertyName]);
             }
 
             // Remove hubspot properties that are older in Hubspot so we don't write them to frontend user
-            if (in_array($propertyName, $hubspotContact)) {
-                unset($hubspotContact[$propertyName]);
+            if (!in_array($propertyName, $modifiedHubspotProperties)) {
+                if (isset($mappedHubspotProperties[$propertyName])) {
+                    $hubspotContact['properties'][$propertyName]['value'] = $mappedHubspotProperties[$propertyName];
+                }
             }
         }
 
@@ -299,38 +321,38 @@ class ContactSynchronizationService
             }
         }
 
-        var_dump($mappedHubspotProperties, $mappedFrontendUserProperties); die();
-
-        foreach (static::FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING as $frontendUserMapping => $hubspotMapping) {
-            if (!isset($hubspotContact['properties'][$hubspotMapping])) {
-                continue; // There's no mapping to this on the hubspot side
-            }
-
-            $frontendUserValue = $frontendUser[$frontendUserMapping];
-            $hubspotContactProperty = $hubspotContact['properties'][$hubspotMapping];
-
-            if (trim($frontendUserValue) === trim($hubspotContactProperty['value'])) {
-                continue; // No change in value
-            }
-
-            if ($this->getLatestMillisecondTimestampFromHubspotProperty($hubspotContactProperty) > $frontendUser['tstamp']) {
-                $frontendUserChanges[$frontendUserMapping] = $hubspotContactProperty['value'];
-                continue;
-            }
-
-            $hubspotContactChanges[$hubspotMapping] = $frontendUserValue;
+        $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
+            ',',
+            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'],
+            true
+        );
+        foreach ($ignoreOnFrontendUserUpdate as $propertyName) {
+            unset($mappedFrontendUserProperties[$propertyName]);
         }
 
-        if (count($frontendUserChanges) > 0) {
-            $this->frontendUserRepository->update($frontendUser['uid'], $frontendUserChanges);
+        if ($frontendUser['hubspot_created_timestamp'] !== 0) {
+            unset($mappedFrontendUserProperties['hubspot_created_timestamp']);
+        }
+
+        $ignoreOnHubspotUpdate = GeneralUtility::trimExplode(
+            ',',
+            $this->configuration['settings.']['synchronize.']['ignoreOnHubspotUpdate'],
+            true
+        );
+        foreach ($ignoreOnHubspotUpdate as $propertyName) {
+            unset($mappedHubspotProperties[$propertyName]);
+        }
+
+        if (count($mappedFrontendUserProperties) > 0) {
+            $this->frontendUserRepository->update($frontendUser['uid'], $mappedFrontendUserProperties);
             $this->processedRecords['modifiedInHubspot'][] = $frontendUser['uid'];
         } else {
             $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
             $this->processedRecords['frontendUsersNotSynchronized'][] = $frontendUser['uid'];
         }
 
-        if (count($hubspotContactChanges) > 0) {
-            $this->hubspotContactRepository->update($frontendUser['hubspot_id'], $hubspotContactChanges);
+        if (count($mappedHubspotProperties) > 0) {
+            $this->hubspotContactRepository->update($frontendUser['hubspot_id'], $mappedHubspotProperties);
             $this->processedRecords['modifiedInFrontendUsers'][] = $frontendUser['uid'];
         }
     }
