@@ -88,6 +88,13 @@ class FrontendUserRepository extends AbstractDatabaseRepository
         }
     }
 
+    /**
+     * Create a frontend user
+     *
+     * @param array $row Frontend user row
+     * @param bool $setSyncPassIdentifier If true, the sync pass identifier is set.
+     * @throws DataHandlerErrorException
+     */
     public function create(array $row, bool $setSyncPassIdentifier = true)
     {
         unset($row['uid']);

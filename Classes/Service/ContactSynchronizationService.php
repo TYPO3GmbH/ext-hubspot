@@ -77,6 +77,9 @@ class ContactSynchronizationService
         'frontendUsersWithError' => []
     ];
 
+    /**
+     * ContactSynchronizationService constructor.
+     */
     public function __construct()
     {
         $this->hubspotContactRepository = GeneralUtility::makeInstance(HubspotContactRepository::class);
@@ -115,6 +118,14 @@ class ContactSynchronizationService
         }
     }
 
+    /**
+     * Update a frontend user with hubspot contact or create a new hubspot contact based on the frontend user
+     *
+     * @param array $frontendUser
+     * @throws UnexpectedMissingContactException
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     */
     public function synchronizeFrontendUser(array $frontendUser)
     {
         if (!GeneralUtility::validEmail($frontendUser['email'])) {
@@ -192,6 +203,12 @@ class ContactSynchronizationService
         }
     }
 
+    /**
+     * Use a hubspot contact to create a new frontend user
+     *
+     * @param array $hubspotContact
+     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     */
     protected function addHubspotContactToFrontendUsers(array $hubspotContact)
     {
         $mappedFrontendUserProperties = $this->mapHubspotContactToFrontendUserProperties($hubspotContact);
@@ -210,6 +227,14 @@ class ContactSynchronizationService
         $this->processedRecords['addedToFrontendUsers'][] = $hubspotContact['vid'];
     }
 
+    /**
+     * Use a frontend user to create a hubspot user
+     *
+     * @param array $frontendUser
+     * @throws UnexpectedMissingContactException
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     */
     protected function addFrontendUserToHubspot(array $frontendUser)
     {
         try {
@@ -257,6 +282,14 @@ class ContactSynchronizationService
         $this->processedRecords['addedToHubspot'][] = $frontendUser['uid'];
     }
 
+    /**
+     * Compare a frontend user with the connected hubspot contact and update both based on their respective changes
+     *
+     * @param array $frontendUser
+     * @throws UnexpectedMissingContactException
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     */
     protected function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
     {
         if (
