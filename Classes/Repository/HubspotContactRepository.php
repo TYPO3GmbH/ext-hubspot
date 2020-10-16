@@ -13,7 +13,6 @@ namespace T3G\Hubspot\Repository;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
-use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

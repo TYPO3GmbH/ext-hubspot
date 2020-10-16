@@ -10,6 +10,7 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Service;
 
+use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
@@ -23,7 +24,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
  */
-class ContactSynchronizationService
+class ContactSynchronizationService implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
@@ -111,6 +112,16 @@ class ContactSynchronizationService
             }
         }
 
+        $frontendUsers = $this->frontendUserRepository->findNotYetSynchronized();
+
+        if (count($frontendUsers) > 0) {
+            $this->frontendUserRepository->fixSyncPassIdentifierScope();
+
+            foreach ($frontendUsers as $frontendUser) {
+                $this->synchronizeFrontendUser($frontendUser);
+            }
+        }
+
         $frontendUsers = $this->frontendUserRepository->findReadyForSyncPass();
 
         foreach ($frontendUsers as $frontendUser) {
@@ -142,9 +153,6 @@ class ContactSynchronizationService
         }
 
         $this->compareAndUpdateFrontendUserAndHubspotContact($frontendUser);
-
-
-        var_dump($this->processedRecords);
     }
 
     /**
@@ -297,6 +305,8 @@ class ContactSynchronizationService
             && $this->configuration['settings.']['synchronize.']['createNewInHubspot']
         ) {
             $this->addFrontendUserToHubspot($frontendUser);
+            return;
+        } elseif ($frontendUser['hubspot_id'] === 0) {
             return;
         }
 

@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Repository;
 
+use Doctrine\DBAL\FetchMode;
+use phpDocumentor\Reflection\Types\Static_;
 use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
@@ -31,6 +33,29 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     protected $defaultPageId = 0;
 
     /**
+     * Finds frontend users that have not yet been synced
+     *
+     * @return array Frontend user rows
+     */
+    public function findNotYetSynchronized(): array
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        $queryBuilder
+            ->select('*')
+            ->from(static::TABLE_NAME)
+            ->where(
+                $queryBuilder->expr()->eq('hubspot_sync_timestamp', 0)
+            );
+
+        if ($this->getLimit() > 0) {
+            $queryBuilder->setMaxResults($this->getLimit());
+        }
+
+        return $queryBuilder->execute()->fetchAll(FetchMode::ASSOCIATIVE) ?? [];
+    }
+
+    /**
      * Finds frontend users not yet included in current sync pass
      *
      * @return array Frontend user rows
@@ -50,7 +75,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             $queryBuilder->setMaxResults($this->getLimit());
         }
 
-        return $queryBuilder->execute()->fetchAll();
+        return $queryBuilder->execute()->fetchAll(FetchMode::ASSOCIATIVE) ?? [];
     }
 
     /**
@@ -148,9 +173,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
      * Calculates the syncPassIdentifier to use when updating a FrontendUser. This value identifies whether a record
      * has been
      *
+     * @param bool $ignoreScopeError Internal. Return value don't throw InvalidSyncPassIdentifierScopeException
      * @return int The syncPassIdentifier
      */
-    public function getSyncPassIdentifier(): int
+    public function getSyncPassIdentifier(bool $ignoreScopeError = false): int
     {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -167,7 +193,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             return $maxPass + 1;
         }
 
-        if ($minPass === $maxPass - 1) {
+        if ($minPass === $maxPass - 1 || $ignoreScopeError) {
             return $maxPass;
         }
 
@@ -175,6 +201,24 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             'Sync pass identifier out of scope. Max was ' . $maxPass . ' and min ' . $minPass . '.',
             1602173860
         );
+    }
+
+    /**
+     * Fixes sync pass identifier scope issues
+     *
+     * Sets all hubspot_sync_pass to $syncPassIdentifier - 1 where hubspot_sync_pass is less than max
+     */
+    public function fixSyncPassIdentifierScope()
+    {
+        $syncPassIdentifier = $this->getSyncPassIdentifier(true);
+
+        $queryBuilder = $this->getQueryBuilder();
+
+        $queryBuilder
+            ->update(static::TABLE_NAME)
+            ->set('hubspot_sync_pass', $syncPassIdentifier - 1)
+            ->where($queryBuilder->expr()->neq('hubspot_sync_pass', $syncPassIdentifier))
+            ->execute();
     }
 
     /**
