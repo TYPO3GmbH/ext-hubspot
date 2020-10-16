@@ -19,6 +19,15 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  */
 class CompatibilityUtility
 {
+    public static function isComposerMode()
+    {
+        if (\T3G\Hubspot\Utility\CompatibilityUtility::typo3VersionIsLessThan('9.2')) {
+            return TYPO3_COMPOSER_MODE;
+        }
+
+        return \TYPO3\CMS\Core\Core\Environment::isComposerMode();
+    }
+
     /**
      * Returns true if the current TYPO3 version is less than $version
      *
