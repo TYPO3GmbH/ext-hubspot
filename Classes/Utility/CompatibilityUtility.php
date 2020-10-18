@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Utility;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
 
 /**
@@ -21,11 +23,26 @@ use TYPO3\CMS\Core\Core\Environment;
 class CompatibilityUtility
 {
     /**
+     * Compatibility for Bootstrap::initializeBackendAuthentication()
+     *
+     * Became stateless in TYPO3 9.2
+     */
+    public static function initializeBackendAuthentication()
+    {
+        if (self::typo3VersionIsGreaterThanOrEqualTo('9.2')) {
+            Bootstrap::initializeBackendAuthentication();
+            return;
+        }
+
+        Bootstrap::getInstance()->initializeBackendAuthentication();
+    }
+
+    /**
      * Returns true if the installation is in composer mode
      *
      * @return bool
      */
-    public static function isComposerMode()
+    public static function isComposerMode(): bool
     {
         if (self::typo3VersionIsLessThan('9.2')) {
             return TYPO3_COMPOSER_MODE;
