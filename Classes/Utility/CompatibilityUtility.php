@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace T3G\Hubspot\Utility;
 
 use TYPO3\CMS\Core\Utility\VersionNumberUtility;
+use TYPO3\CMS\Core\Core\Environment;
 
 /**
  * Miscellaneous functions relating to compatibility with different TYPO3 versions
@@ -19,13 +20,18 @@ use TYPO3\CMS\Core\Utility\VersionNumberUtility;
  */
 class CompatibilityUtility
 {
+    /**
+     * Returns true if the installation is in composer mode
+     *
+     * @return bool
+     */
     public static function isComposerMode()
     {
-        if (\T3G\Hubspot\Utility\CompatibilityUtility::typo3VersionIsLessThan('9.2')) {
+        if (self::typo3VersionIsLessThan('9.2')) {
             return TYPO3_COMPOSER_MODE;
         }
 
-        return \TYPO3\CMS\Core\Core\Environment::isComposerMode();
+        return Environment::isComposerMode();
     }
 
     /**
