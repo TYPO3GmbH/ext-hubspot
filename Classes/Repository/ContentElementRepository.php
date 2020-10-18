@@ -45,7 +45,7 @@ class ContentElementRepository extends AbstractDatabaseRepository
                 'ce.starttime AS starttime',
                 'ce.endtime AS endtime'
             )
-            ->from($table, 'ce')
+            ->from(self::TABLE_NAME, 'ce')
             ->join('ce', 'pages', 'p', 'p.uid = ce.pid AND p.deleted = 0')
             ->where('hubspot_guid <> \'\'')
             ->execute()
@@ -77,7 +77,7 @@ class ContentElementRepository extends AbstractDatabaseRepository
                 'ce.starttime AS starttime',
                 'ce.endtime AS endtime'
             )
-            ->from($table, 'ce')
+            ->from(self::TABLE_NAME, 'ce')
             ->join('ce', 'pages', 'p', 'p.uid = ce.pid AND p.deleted = 0')
             ->join('ce', 'tx_hubspot_cta', 'cta', 'ce.hubspot_cta = cta.uid AND cta.deleted = 0')
             ->where('hubspot_cta <> \'\'')
