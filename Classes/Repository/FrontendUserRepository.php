@@ -52,7 +52,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             $queryBuilder->setMaxResults($this->getLimit());
         }
 
-        return $queryBuilder->execute()->fetchAll(FetchMode::ASSOCIATIVE) ?? [];
+        return $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC) ?? [];
     }
 
     /**
@@ -75,7 +75,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             $queryBuilder->setMaxResults($this->getLimit());
         }
 
-        return $queryBuilder->execute()->fetchAll(FetchMode::ASSOCIATIVE) ?? [];
+        return $queryBuilder->execute()->fetchAll(\PDO::FETCH_ASSOC) ?? [];
     }
 
     /**
