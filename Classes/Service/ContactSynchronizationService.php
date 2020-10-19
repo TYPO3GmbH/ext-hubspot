@@ -328,6 +328,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
         }
 
+        // Get names of properties that are newer in Hubspot than in TYPO3
         $modifiedHubspotProperties = [];
         foreach ($hubspotContactProperties as $propertyName => $property) {
             if (
@@ -357,6 +358,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $mappedFrontendUserProperties = $this->mapHubspotContactToFrontendUserProperties($hubspotContact);
 
+        // Remove unchanged properties
         foreach ($mappedFrontendUserProperties as $propertyName => $value) {
             // Remove if value is unchanged
             if ($value === $frontendUser[$propertyName]) {
@@ -364,6 +366,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
         }
 
+        // Remove ignored fields on update
         $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
             ',',
             $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'],
