@@ -50,5 +50,9 @@ call_user_func(function (string $extensionName) {
                 ['source' => $source]
             );
         }
+
+        if (\T3G\Hubspot\Utility\CompatibilityUtility::typo3VersionIsLessThan('9.3')) {
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['be'][] = 'T3G\\Hubspot\\ViewHelpers\\Compatibility\\Backend';
+        }
     }
 }, 'hubspot');
