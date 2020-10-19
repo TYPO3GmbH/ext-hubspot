@@ -48,6 +48,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
                 $queryBuilder->expr()->eq('hubspot_sync_timestamp', 0)
             );
 
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
         if ($this->getLimit() > 0) {
             $queryBuilder->setMaxResults($this->getLimit());
         }
@@ -70,6 +74,11 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->where(
                 $queryBuilder->expr()->neq('hubspot_sync_pass', $this->getSyncPassIdentifier())
             );
+
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
 
         if ($this->getLimit() > 0) {
             $queryBuilder->setMaxResults($this->getLimit());
@@ -180,6 +189,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     {
         $queryBuilder = $this->getQueryBuilder();
 
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
         list($maxPass, $minPass) = $queryBuilder
             ->addSelectLiteral(
                 $queryBuilder->expr()->max('hubspot_sync_pass'),
@@ -217,8 +230,14 @@ class FrontendUserRepository extends AbstractDatabaseRepository
         $queryBuilder
             ->update(static::TABLE_NAME)
             ->set('hubspot_sync_pass', $syncPassIdentifier - 1)
-            ->where($queryBuilder->expr()->neq('hubspot_sync_pass', $syncPassIdentifier))
-            ->execute();
+            ->where($queryBuilder->expr()->neq('hubspot_sync_pass', $syncPassIdentifier));
+
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
+        $queryBuilder->execute();
     }
 
     /**
@@ -229,6 +248,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     public function getLatestSynchronizationTimestamp()
     {
         $queryBuilder = $this->getQueryBuilder();
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
 
         return (int)$queryBuilder
             ->addSelectLiteral(
@@ -248,12 +271,19 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     {
         $queryBuilder = $this->getQueryBuilder();
 
-        return (int)$queryBuilder
+        $queryBuilder
             ->addSelectLiteral(
                 $queryBuilder->expr()->min('hubspot_created_timestamp')
             )
             ->from(static::TABLE_NAME)
-            ->where($queryBuilder->expr()->neq('hubspot_created_timestamp', 0))
+            ->where($queryBuilder->expr()->neq('hubspot_created_timestamp', 0));
+
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
+        return (int)$queryBuilder
             ->execute()
             ->fetchColumn(0);
     }
@@ -266,6 +296,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
     public function getLatestHubspotCreatedTimestamp(): int
     {
         $queryBuilder = $this->getQueryBuilder();
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
 
         return (int)$queryBuilder
             ->addSelectLiteral(

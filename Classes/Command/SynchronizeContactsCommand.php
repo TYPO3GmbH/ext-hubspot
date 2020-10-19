@@ -48,6 +48,13 @@ class SynchronizeContactsCommand extends Command
                 'Default PID for storage and TypoScript settings'
             )
             ->addOption(
+                'limit-to-pids',
+                's',
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
+                'Array of PIDs to search within. Default is to ignore PID.',
+                []
+            )
+            ->addOption(
                 'limit',
                 'l',
                 InputOption::VALUE_REQUIRED,
@@ -68,6 +75,7 @@ class SynchronizeContactsCommand extends Command
             ],
             'settings.' => [
                 'synchronize.' => [
+                    'limitToPids' => implode(',',$input->getOption('limit-to-pids')),
                     'limit' => $input->getOption('limit')
                 ]
             ]

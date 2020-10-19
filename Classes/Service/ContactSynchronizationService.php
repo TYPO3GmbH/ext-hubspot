@@ -209,6 +209,10 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->frontendUserRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
             $this->hubspotContactRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
         }
+
+       $this->frontendUserRepository->setSearchPids(
+           GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
+       );
     }
 
     /**

@@ -21,6 +21,11 @@ trait LimitResultTrait
     protected $limit = 10;
 
     /**
+     * @var array PIDs to search within. Empty array means ignore PID
+     */
+    protected $searchPids = [];
+
+    /**
      * Get max records to include in batch operations
      *
      * @return int
@@ -39,4 +44,35 @@ trait LimitResultTrait
     {
         $this->limit = $limit;
     }
+
+    /**
+     * Get PIDs to search within. Empty array means ignore PID
+     *
+     * @return array
+     */
+    public function getSearchPids(): array
+    {
+        return $this->searchPids;
+    }
+
+    /**
+     * Set PIDs to search within. Empty array means ignore PID
+     *
+     * @param array $searchPids
+     */
+    public function setSearchPids(array $searchPids)
+    {
+        $this->searchPids = $searchPids;
+    }
+
+    /**
+     * Check if there are search PIDs available
+     *
+     * @return bool True if there are PIDs available
+     */
+    public function hasSearchPids(): bool
+    {
+        return count($this->searchPids) > 0;
+    }
+
 }
