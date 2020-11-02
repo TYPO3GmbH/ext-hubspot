@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Configuration;
 
-
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager as ExtbaseBackendConfigurationManager;
 
 class BackendConfigurationManager extends ExtbaseBackendConfigurationManager
@@ -30,5 +29,4 @@ class BackendConfigurationManager extends ExtbaseBackendConfigurationManager
     {
         $this->currentPageId = $currentPageId;
     }
-
 }

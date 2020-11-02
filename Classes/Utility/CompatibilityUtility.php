@@ -10,10 +10,9 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Utility;
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Utility\VersionNumberUtility;
 
 /**
  * Miscellaneous functions relating to compatibility with different TYPO3 versions

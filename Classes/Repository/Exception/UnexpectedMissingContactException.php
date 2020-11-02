@@ -17,5 +17,4 @@ use SevenShores\Hubspot\Exceptions\HubspotException;
  */
 class UnexpectedMissingContactException extends HubspotException
 {
-
 }

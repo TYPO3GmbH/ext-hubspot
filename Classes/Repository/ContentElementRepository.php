@@ -10,9 +10,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Repository;
 
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Repository for the selection of ContentElements

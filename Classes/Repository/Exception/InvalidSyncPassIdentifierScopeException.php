@@ -16,5 +16,4 @@ namespace T3G\Hubspot\Repository\Exception;
  */
 class InvalidSyncPassIdentifierScopeException extends \UnexpectedValueException
 {
-
 }

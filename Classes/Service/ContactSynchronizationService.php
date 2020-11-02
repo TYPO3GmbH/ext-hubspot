@@ -14,10 +14,10 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
+use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use T3G\Hubspot\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
@@ -220,7 +220,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->hubspotContactRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
         }
 
-       $this->frontendUserRepository->setSearchPids(
+        $this->frontendUserRepository->setSearchPids(
            GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
        );
     }
@@ -512,7 +512,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         foreach (array_keys($toHubspot) as $hubspotProperty) {
             $hubspotProperty = rtrim($hubspotProperty, '.');
 
-            if (key_exists($hubspotProperty, $hubspotProperties)) {
+            if (array_key_exists($hubspotProperty, $hubspotProperties)) {
                 continue;
             }
 
@@ -578,7 +578,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         foreach (array_keys($toFrontendUser) as $frontendUserProperty) {
             $frontendUserProperty = rtrim($frontendUserProperty, '.');
 
-            if (key_exists($frontendUserProperty, $frontendUserProperties)) {
+            if (array_key_exists($frontendUserProperty, $frontendUserProperties)) {
                 continue;
             }
 

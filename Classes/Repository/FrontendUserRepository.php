@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Repository;
 
-use Doctrine\DBAL\FetchMode;
-use phpDocumentor\Reflection\Types\Static_;
 use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
@@ -74,7 +72,6 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->where(
                 $queryBuilder->expr()->neq('hubspot_sync_pass', $this->getSyncPassIdentifier())
             );
-
 
         if ($this->hasSearchPids()) {
             $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
@@ -232,7 +229,6 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->set('hubspot_sync_pass', $syncPassIdentifier - 1)
             ->where($queryBuilder->expr()->neq('hubspot_sync_pass', $syncPassIdentifier));
 
-
         if ($this->hasSearchPids()) {
             $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
         }
@@ -277,7 +273,6 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             )
             ->from(static::TABLE_NAME)
             ->where($queryBuilder->expr()->neq('hubspot_created_timestamp', 0));
-
 
         if ($this->hasSearchPids()) {
             $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));

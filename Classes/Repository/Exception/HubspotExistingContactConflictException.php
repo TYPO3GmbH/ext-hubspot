@@ -17,5 +17,4 @@ use SevenShores\Hubspot\Exceptions\BadRequest;
  */
 class HubspotExistingContactConflictException extends BadRequest
 {
-
 }

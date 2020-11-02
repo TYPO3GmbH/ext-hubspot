@@ -11,11 +11,9 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Repository;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Exception\HubspotInvalidContactListTypeException;
 use T3G\Hubspot\Repository\Exception\HubspotNoSuchContactListException;
 use T3G\Hubspot\Repository\Traits\LimitResultTrait;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Repository for manipulating contact lists via the Hubspot API

@@ -74,5 +74,4 @@ trait LimitResultTrait
     {
         return count($this->searchPids) > 0;
     }
-
 }

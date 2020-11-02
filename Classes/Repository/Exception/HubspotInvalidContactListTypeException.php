@@ -15,5 +15,4 @@ namespace T3G\Hubspot\Repository\Exception;
  */
 class HubspotInvalidContactListTypeException extends \Exception
 {
-
 }

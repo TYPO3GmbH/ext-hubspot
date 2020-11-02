@@ -35,7 +35,6 @@ class SynchronizeContactsCommand extends Command
         $this->synchronizationService = GeneralUtility::makeInstance(ContactSynchronizationService::class);
     }
 
-
     protected function configure()
     {
         $this
@@ -75,7 +74,7 @@ class SynchronizeContactsCommand extends Command
             ],
             'settings.' => [
                 'synchronize.' => [
-                    'limitToPids' => implode(',',$input->getOption('limit-to-pids')),
+                    'limitToPids' => implode(',', $input->getOption('limit-to-pids')),
                     'limit' => $input->getOption('limit')
                 ]
             ]
@@ -85,6 +84,4 @@ class SynchronizeContactsCommand extends Command
 
         $this->synchronizationService->synchronize();
     }
-
-
 }
