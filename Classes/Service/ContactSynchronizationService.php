@@ -19,6 +19,8 @@ use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -53,6 +55,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected $activeConfigurationPageId = 0;
 
+    /**
+     * @var Dispatcher
+     */
+    protected $signalSlotDispatcher = null;
+
     const FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING = [
         'email' => 'email',
         'first_name' => 'firstname',
@@ -85,6 +92,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
     {
         $this->hubspotContactRepository = GeneralUtility::makeInstance(HubspotContactRepository::class);
         $this->frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
+        $this->signalSlotDispatcher = GeneralUtility::makeInstance(ObjectManager::class)->get(Dispatcher::class);
     }
 
     /**
@@ -96,6 +104,10 @@ class ContactSynchronizationService implements LoggerAwareInterface
     {
         $this->configureForPageId(
             $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronize.']['defaultPid']
+        );
+
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before'
         );
 
         if ($this->configuration['settings.']['synchronize.']['createNewInTypo3']) {
@@ -127,6 +139,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
         foreach ($frontendUsers as $frontendUser) {
             $this->synchronizeFrontendUser($frontendUser);
         }
+
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-after',
+            ['processedRecords' => $this->processedRecords]
+        );
     }
 
     /**
@@ -139,6 +156,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     public function synchronizeFrontendUser(array $frontendUser)
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['frontendUser' => $frontendUser]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
         if (!GeneralUtility::validEmail($frontendUser['email'])) {
             $this->logger->warning('Frontend user has invalid email and can\'t be synced.', $frontendUser);
             $this->processedRecords['frontendUsersWithError'][] = $frontendUser['uid'];
@@ -223,6 +246,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function addHubspotContactToFrontendUsers(array $hubspotContact)
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['hubspotContact' => $hubspotContact]
+        );
+        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
+
         $mappedFrontendUserProperties = $this->mapHubspotContactToFrontendUserProperties($hubspotContact);
 
         $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
@@ -237,6 +266,14 @@ class ContactSynchronizationService implements LoggerAwareInterface
         $frontendUserIdentifier = $this->frontendUserRepository->create($mappedFrontendUserProperties);
 
         $this->processedRecords['addedToFrontendUsers'][] = $hubspotContact['vid'];
+
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-after',
+            [
+                'hubspotContact' => $hubspotContact,
+                'frontendUserIdentifier' => $frontendUserIdentifier
+            ]
+        );
     }
 
     /**
@@ -249,6 +286,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function addFrontendUserToHubspot(array $frontendUser)
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['frontendUser' => $frontendUser]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
         try {
             $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
 
@@ -277,6 +320,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
                 $this->synchronizeFrontendUser($frontendUser);
 
+                $signalArguments = $this->dispatchSignal(
+                    __FUNCTION__ . '-afterSynchronize',
+                    ['frontendUser' => $frontendUser]
+                );
+
                 return;
             }
 
@@ -291,6 +339,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
             ['hubspot_id' => $hubspotContactIdentifier]
         );
 
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-after',
+            ['frontendUser' => $frontendUser]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
         $this->processedRecords['addedToHubspot'][] = $frontendUser['uid'];
     }
 
@@ -304,6 +358,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['frontendUser' => $frontendUser]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
         if (
             $frontendUser['hubspot_id'] === 0
             && $this->configuration['settings.']['synchronize.']['createNewInHubspot']
@@ -315,6 +375,16 @@ class ContactSynchronizationService implements LoggerAwareInterface
         }
 
         $hubspotContact = $this->hubspotContactRepository->findByIdentifier($frontendUser['hubspot_id']);
+
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-findHubspotContact',
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotContact' => $hubspotContact
+            ]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
 
         if ($hubspotContact === null) {
             return; // We expect the user has been deleted from Hubspot
@@ -393,6 +463,19 @@ class ContactSynchronizationService implements LoggerAwareInterface
             unset($mappedHubspotProperties[$propertyName]);
         }
 
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-beforePersist',
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotContact' => $hubspotContact,
+                'mappedFrontendUserProperties' => $mappedFrontendUserProperties,
+                'mappedHubspotProperties' => $mappedHubspotProperties,
+            ]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+        $mappedFrontendUserProperties = $signalArguments['mappedFrontendUserProperties'] ?? $mappedFrontendUserProperties;
+        $mappedHubspotProperties = $signalArguments['mappedHubspotProperties'] ?? $mappedHubspotProperties;
+
         if (count($mappedFrontendUserProperties) > 0) {
             $this->frontendUserRepository->update($frontendUser['uid'], $mappedFrontendUserProperties);
             $this->processedRecords['modifiedInHubspot'][] = $frontendUser['uid'];
@@ -405,6 +488,16 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->hubspotContactRepository->update($frontendUser['hubspot_id'], $mappedHubspotProperties);
             $this->processedRecords['modifiedInFrontendUsers'][] = $frontendUser['uid'];
         }
+
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-afterPersist',
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotContact' => $hubspotContact,
+                'mappedFrontendUserProperties' => $mappedFrontendUserProperties,
+                'mappedHubspotProperties' => $mappedHubspotProperties,
+            ]
+        );
     }
 
     /**
@@ -417,6 +510,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function mapFrontendUserToHubspotContactProperties(array $frontendUser): array
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['frontendUser' => $frontendUser]
+        );
+        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
         $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'];
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
@@ -438,6 +537,15 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
 
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-after',
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotProperties' => $hubspotProperties
+            ]
+        );
+        $hubspotProperties = $signalArguments['hubspotProperties'] ?? $hubspotProperties;
+
         return $hubspotProperties;
     }
 
@@ -451,6 +559,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
     {
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-before',
+            ['hubspotContact' => $hubspotContact]
+        );
+        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
+
         $hubspotContactProperties = [];
 
         // Flatten the properties
@@ -493,7 +607,46 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $frontendUserProperties = ArrayUtility::removeNullValuesRecursive($frontendUserProperties);
 
+        $signalArguments = $this->dispatchSignal(
+            __FUNCTION__ . '-after',
+            [
+                'frontendUserProperties' => $frontendUserProperties,
+                'hubspotContact' => $hubspotContact
+            ]
+        );
+        $frontendUserProperties = $signalArguments['hubspotProperties'] ?? $frontendUserProperties;
+
         return $frontendUserProperties;
+    }
+
+    /**
+     * @param string $name
+     * @param array $signalArguments
+     * @return array
+     */
+    protected function dispatchSignal(string $name, array $signalArguments = []): array
+    {
+        $originalSignalArguments = $signalArguments;
+
+        $signalArguments['configuration'] = $this->configuration;
+        $signalArguments['caller'] = $this;
+
+        $signalArguments = (array)$this->signalSlotDispatcher->dispatch(
+            __CLASS__,
+            $name,
+            $signalArguments
+        );
+
+        $this->configuration = $signalArguments['configuration'] ?? $this->configuration;
+
+        unset($signalArguments['configuration']);
+        unset($signalArguments['caller']);
+
+        foreach ($originalSignalArguments as $key => $originalValue) {
+            $signalArguments[$key] = $signalArguments[$key] ?? $originalSignalArguments[$key];
+        }
+
+        return $signalArguments;
     }
 
     /**
