@@ -60,19 +60,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected $signalSlotDispatcher = null;
 
-    const FRONTEND_USER_TO_HUBSPOT_CONTACT_PROPERTY_MAPPING = [
-        'email' => 'email',
-        'first_name' => 'firstname',
-        'last_name' => 'lastname',
-        'company' => 'company',
-        'telephone' => 'phone',
-        'address' => 'address',
-        'city' => 'city',
-        'state' => 'state',
-        'country' => '',
-        'www' => 'website',
-    ];
-
     /**
      * @var array[] UIDs of frontend users processed
      */
