@@ -27,8 +27,8 @@ abstract class AbstractHubspotRepository
     /**
      * HubspotFormRepository constructor.
      */
-    public function __construct()
+    public function __construct(Factory $factory = null)
     {
-        $this->factory = Factory::create(getenv('APP_HUBSPOT_SECRET'));
+        $this->factory = $factory ?? Factory::create(getenv('APP_HUBSPOT_SECRET'));
     }
 }

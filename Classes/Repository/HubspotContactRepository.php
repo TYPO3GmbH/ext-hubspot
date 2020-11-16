@@ -196,7 +196,7 @@ class HubspotContactRepository extends AbstractHubspotRepository
      * @param array $associativeProperties
      * @return array
      */
-    protected function convertAssociativeArrayToHubspotProperties(array $associativeProperties): array
+    public function convertAssociativeArrayToHubspotProperties(array $associativeProperties): array
     {
         $hubspotProperties = [];
 

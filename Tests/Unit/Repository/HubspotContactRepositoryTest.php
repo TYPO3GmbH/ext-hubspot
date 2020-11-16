@@ -15,18 +15,38 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class HubspotContactRepositoryTest extends UnitTestCase
 {
+    public $subject = null;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-
+        $this->subject = new HubspotContactRepository();
     }
 
     /**
      * @test
      */
-    public function testConvertAssociativeArrayToHubspotProperties()
+    public function convertAssociativeArrayToHubspotPropertiesReturnsCorrectData()
     {
+        $input = [
+            'property1' => 'value1',
+            'property2' => 'value2',
+        ];
 
+        $expected = [
+            [
+                'property' => 'property1',
+                'value' => 'value1'
+            ],            [
+                'property' => 'property2',
+                'value' => 'value2'
+            ],
+        ];
+
+        $this->assertEquals(
+            $expected,
+            $this->subject->convertAssociativeArrayToHubspotProperties($input)
+        );
     }
 }
