@@ -119,6 +119,8 @@ class ContactSynchronizationService implements LoggerAwareInterface
             foreach ($frontendUsers as $frontendUser) {
                 $this->synchronizeFrontendUser($frontendUser);
             }
+
+            return; // Do more on next run
         }
 
         $frontendUsers = $this->frontendUserRepository->findReadyForSyncPass();
