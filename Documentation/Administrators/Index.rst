@@ -12,3 +12,4 @@ as well as some of the features available to administrators.
    Configuration/Index
    BackendModule/Index
    CommandLineAndSchedulerActions/Index
+   HowSynchronizationWorks/Index
