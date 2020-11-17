@@ -21,6 +21,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: mbstring, intl, json
+          ini-values: error_reporting=E_ALL ^ E_NOTICE
 
       - name: Validate composer.json and composer.lock
         run: composer validate
