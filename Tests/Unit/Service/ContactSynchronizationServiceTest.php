@@ -199,7 +199,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
         $frontendUserData['hubspot_id'] = 0;
 
         $subjectMock = $this->subjectMockBuilder
-            ->onlyMethods(['addFrontendUserToHubspot'])
+            ->setMethods(['addFrontendUserToHubspot'])
             ->getMock();
 
         $this->setConfigurationOnObject(
@@ -302,7 +302,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             $this->createMock(Dispatcher::class)
         ]);
 
-        $this->subjectMockBuilder->onlyMethods([]);
+        $this->subjectMockBuilder->setMethods(null);
 
         $subjectMock = $this->subjectMockBuilder->getMock();
 
