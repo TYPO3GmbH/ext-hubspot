@@ -11,8 +11,6 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Tests\Unit\Service;
 
 use PHPUnit\Framework\MockObject\MockBuilder;
-use PHPUnit\Framework\MockObject\MockObject;
-use Prophecy\Prophecy\ObjectProphecy;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
@@ -52,8 +50,8 @@ class ContactSynchronizationServiceTest extends UnitTestCase
                     0 => [
                         'value' => '02139',
                         'source-type' => 'API',
-                        'source-id' => NULL,
-                        'source-label' => NULL,
+                        'source-id' => null,
+                        'source-label' => null,
                         'timestamp' => 1484026585538,
                         'selected' => false,
                     ],
@@ -65,24 +63,24 @@ class ContactSynchronizationServiceTest extends UnitTestCase
                     0 => [
                         'value' => 'Codey',
                         'source-type' => 'BATCH_UPDATE',
-                        'source-id' => NULL,
-                        'source-label' => NULL,
+                        'source-id' => null,
+                        'source-label' => null,
                         'timestamp' => 1484858430193,
                         'selected' => false,
                     ],
                     1 => [
                         'value' => 'HubSpot',
                         'source-type' => 'API',
-                        'source-id' => NULL,
-                        'source-label' => NULL,
+                        'source-id' => null,
+                        'source-label' => null,
                         'timestamp' => 1484857783087,
                         'selected' => false,
                     ],
                     2 => [
                         'value' => 'Adrian',
                         'source-type' => 'API',
-                        'source-id' => NULL,
-                        'source-label' => NULL,
+                        'source-id' => null,
+                        'source-label' => null,
                         'timestamp' => 1484026585536,
                         'selected' => false,
                     ],
@@ -419,5 +417,4 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             $result['email']
         );
     }
-
 }
