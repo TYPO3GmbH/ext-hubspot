@@ -12,13 +12,13 @@ namespace T3G\Hubspot\Service;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -230,8 +230,8 @@ class ContactSynchronizationService implements LoggerAwareInterface
         }
 
         $this->frontendUserRepository->setSearchPids(
-           GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
-       );
+            GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
+        );
     }
 
     /**
@@ -366,7 +366,8 @@ class ContactSynchronizationService implements LoggerAwareInterface
         ) {
             $this->addFrontendUserToHubspot($frontendUser);
             return;
-        } elseif ($frontendUser['hubspot_id'] === 0) {
+        }
+        if ($frontendUser['hubspot_id'] === 0) {
             return;
         }
 
