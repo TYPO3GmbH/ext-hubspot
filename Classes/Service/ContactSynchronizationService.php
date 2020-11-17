@@ -18,7 +18,7 @@ use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\BackendConfigurationManager;
+use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -75,11 +75,18 @@ class ContactSynchronizationService implements LoggerAwareInterface
     /**
      * ContactSynchronizationService constructor.
      */
-    public function __construct()
-    {
-        $this->hubspotContactRepository = GeneralUtility::makeInstance(HubspotContactRepository::class);
-        $this->frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
-        $this->signalSlotDispatcher = GeneralUtility::makeInstance(ObjectManager::class)->get(Dispatcher::class);
+    public function __construct(
+        HubspotContactRepository $hubspotContactRepository = null,
+        FrontendUserRepository $frontendUserRepository = null,
+        Dispatcher $signalSlotDispatcher = null
+    ) {
+        $this->hubspotContactRepository =
+            $hubspotContactRepository ?? GeneralUtility::makeInstance(HubspotContactRepository::class);
+        $this->frontendUserRepository =
+            $frontendUserRepository ?? GeneralUtility::makeInstance(FrontendUserRepository::class);
+        $this->signalSlotDispatcher =
+            $signalSlotDispatcher ?? GeneralUtility::makeInstance(ObjectManager::class)
+                ->get(Dispatcher::class);
     }
 
     /**
@@ -194,7 +201,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
      *
      * @param int $pageId
      */
-    protected function configureForPageId(int $pageId)
+    public function configureForPageId(int $pageId)
     {
         if ($this->activeConfigurationPageId === $pageId) {
             return;
@@ -273,7 +280,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * @throws \SevenShores\Hubspot\Exceptions\BadRequest
      * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
      */
-    protected function addFrontendUserToHubspot(array $frontendUser)
+    public function addFrontendUserToHubspot(array $frontendUser)
     {
         $signalArguments = $this->dispatchSignal(
             __FUNCTION__ . '-before',
@@ -345,7 +352,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * @throws \SevenShores\Hubspot\Exceptions\BadRequest
      * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
      */
-    protected function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
+    public function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
     {
         $signalArguments = $this->dispatchSignal(
             __FUNCTION__ . '-before',
@@ -497,7 +504,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * @param array $frontendUser
      * @return array
      */
-    protected function mapFrontendUserToHubspotContactProperties(array $frontendUser): array
+    public function mapFrontendUserToHubspotContactProperties(array $frontendUser): array
     {
         $signalArguments = $this->dispatchSignal(
             __FUNCTION__ . '-before',
@@ -546,7 +553,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * @param array $hubspotContact
      * @return array Frontend User row
      */
-    protected function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
+    public function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
     {
         $signalArguments = $this->dispatchSignal(
             __FUNCTION__ . '-before',
@@ -571,7 +578,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
         }
 
-        $toFrontendUser = $this->configuration['settings.']['synchronize.']['toFrontendUser.'];
+        $toFrontendUser = $this->configuration['settings.']['synchronize.']['toFrontendUser.'] ?? [];
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($hubspotContactProperties);
@@ -646,6 +653,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     protected function getLatestMillisecondTimestampFromHubspotProperty(array $hubspotProperty): int
     {
-        return $hubspotProperty['versions'][0]['timestamp'];
+        return $hubspotProperty['versions'][0]['timestamp'] ?? $hubspotProperty['timestamp'];
     }
 }

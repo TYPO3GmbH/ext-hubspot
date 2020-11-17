@@ -15,6 +15,9 @@ use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class HubspotContactRepositoryTest extends UnitTestCase
 {
+    /**
+     * @var HubspotContactRepository
+     */
     public $subject = null;
 
     protected function setUp(): void
