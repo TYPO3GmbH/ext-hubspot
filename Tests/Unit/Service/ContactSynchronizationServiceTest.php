@@ -178,6 +178,10 @@ class ContactSynchronizationServiceTest extends UnitTestCase
      */
     protected function setConfigurationOnObject(array $configuration, ContactSynchronizationService $object)
     {
+        if (!isset($configuration['persistence.']['synchronize.']['storagePid'])) {
+            $configuration['persistence.']['synchronize.']['storagePid'] = 0;
+        }
+
         $object->setDefaultConfiguration($configuration);
         $object->configureForPageId(1);
     }
