@@ -182,6 +182,10 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             $configuration['persistence.']['synchronize.']['storagePid'] = 0;
         }
 
+        if (!isset($configuration['synchronize.']['limit'])) {
+            $configuration['synchronize.']['limit'] = 10;
+        }
+
         $object->setDefaultConfiguration($configuration);
         $object->configureForPageId(1);
     }
