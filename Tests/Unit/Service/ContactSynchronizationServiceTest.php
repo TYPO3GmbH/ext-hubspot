@@ -224,14 +224,6 @@ class ContactSynchronizationServiceTest extends UnitTestCase
     /**
      * @test
      */
-    public function compareAndUpdateFrontendUserAndHubspotContactCorrectlyCreatesNewFrontendUser()
-    {
-
-    }
-
-    /**
-     * @test
-     */
     public function compareAndUpdateFrontendUserAndHubspotContactCorrectlyUpdatesProperties()
     {
         $frontendUserData1 = self::EXAMPLE_FRONTEND_USER_DATA;
