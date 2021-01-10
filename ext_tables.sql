@@ -15,6 +15,8 @@ CREATE TABLE fe_users (
 	hubspot_created_timestamp bigint(14) unsigned DEFAULT '0' NOT NULL,
 	hubspot_sync_timestamp int(11) unsigned DEFAULT '0' NOT NULL,
 	hubspot_sync_pass int(11) unsigned DEFAULT '0' NOT NULL,
+
+	KEY hubspot_identifier (hubspot_id)
 );
 
 #
@@ -41,4 +43,24 @@ CREATE TABLE tx_hubspot_cta (
 
 	PRIMARY KEY (uid),
 	KEY language (l10n_parent,sys_language_uid)
+);
+
+#
+# Table structure for table 'tx_hubspot_object_foreigntable_mm'
+#
+# Tracks a table row's synchronization status for a hubspot object
+#
+CREATE TABLE tx_hubspot_object_foreigntable_mm
+(
+	object_type varchar(255) DEFAULT ''  NOT NULL,
+	hubspot_id int(11) unsigned DEFAULT '0' NOT NULL,
+	uid_foreign int(11)      DEFAULT '0' NOT NULL,
+	table_foreign varchar(255) DEFAULT ''  NOT NULL,
+
+	hubspot_created_timestamp bigint(14) unsigned DEFAULT '0' NOT NULL,
+	hubspot_sync_timestamp int(11) unsigned DEFAULT '0' NOT NULL,
+	hubspot_sync_pass int(11) unsigned DEFAULT '0' NOT NULL,
+
+	KEY type_hubspot_identifier (object_type, hubspot_id),
+	KEY type_uid_foreign_table (object_type, uid_foreign, table_foreign(40))
 );
