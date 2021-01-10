@@ -10,7 +10,7 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
-use SevenShores\Hubspot\Factory;
+use T3G\Hubspot\Hubspot\Factory;
 
 /**
  * Abstract class for Hubspot repositories
