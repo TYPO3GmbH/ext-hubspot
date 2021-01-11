@@ -85,5 +85,52 @@ module.tx_hubspot {
             ignoreOnFrontendUserCreate =
             ignoreOnFrontendUserUpdate = username
         }
+
+        synchronizeCustomObjects {
+            # Any key, but the Hubspot object name is recommended. Still, there could be multiple syncs to the same object
+            sight {
+                # The object name in Hubspot
+                objectName = sight
+
+                # PIDs to search in
+                limitToPids =< module.tx_hubspot.persistence.synchronize.storagePid
+                # Table name for local representation of object
+                table =
+                # If needed, see https://docs.typo3.org/m/typo3/reference-typoscript/10.4/en-us/Functions/Select.html
+                select {
+
+                }
+
+                createNewInHubspot = 1
+                createNewInTypo3 = 0
+
+                toHubspot {
+
+                }
+
+                # Comma-separated list of fields that together make up a unique object
+                uniqueFields =
+
+                # Hubspot relations.
+                relations {
+                    # E.g. a sight_to_contact relation.
+                    contact {
+                        # The local UID. Used to look up the Hubspot ID
+                        localUid.field =
+                    }
+                }
+
+                ignoreOnHubspotCreate =
+                ignoreOnHubspotUpdate =
+
+                toLocal {
+
+                }
+
+                ignoreOnLocalCreate =
+                ignoreOnLocalUpdate =
+            }
+        }
+
     }
 }
