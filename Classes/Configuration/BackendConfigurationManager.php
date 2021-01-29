@@ -19,7 +19,7 @@ class BackendConfigurationManager extends ExtbaseBackendConfigurationManager
      */
     public function getCurrentPageId(): int
     {
-        return $this->currentPageId;
+        return (int)$this->currentPageId;
     }
 
     /**
