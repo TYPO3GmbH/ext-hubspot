@@ -207,8 +207,13 @@ class ContactSynchronizationService implements LoggerAwareInterface
             return;
         }
 
-        $configuration = GeneralUtility::makeInstance(BackendConfigurationManager::class)
-                ->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
+        /** @var BackendConfigurationManager $configurationManager */
+        $configurationManager = GeneralUtility::makeInstance(ObjectManager::class)
+            ->get(BackendConfigurationManager::class);
+
+        $configurationManager->setCurrentPageId($pageId);
+
+        $configuration = $configurationManager->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
 
         $this->configuration = array_merge_recursive($this->defaultConfiguration, $configuration);
 
@@ -513,7 +518,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         );
         $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
 
-        $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'];
+        $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? [];
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $contentObjectRenderer->start($frontendUser);
