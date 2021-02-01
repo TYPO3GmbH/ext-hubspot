@@ -144,7 +144,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
 
         $mockConfigurationManager = $this->getAccessibleMock(
             BackendConfigurationManager::class,
-            ['getTypoScriptSetup', 'setCurrentPageId'],
+            ['getTypoScriptSetup'],
             [],
             '',
             false
