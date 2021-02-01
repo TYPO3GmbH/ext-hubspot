@@ -163,6 +163,8 @@ class ContactSynchronizationServiceTest extends UnitTestCase
         $mockObjectManager
             ->method('get')
             ->willReturn($this->returnValue($mockConfigurationManager));
+        $mockObjectManager
+            ->method('setCurrentPageId');
 
         GeneralUtility::setSingletonInstance(ObjectManager::class, $mockObjectManager);
     }
