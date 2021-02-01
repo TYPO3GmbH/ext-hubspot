@@ -152,7 +152,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
 
         $mockConfigurationManager
             ->method('setCurrentPageId')
-            ->willReturn(null);
+            ->willReturn($this->returnValue(null));
 
         $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
 
