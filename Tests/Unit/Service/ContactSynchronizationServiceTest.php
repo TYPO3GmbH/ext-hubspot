@@ -147,8 +147,6 @@ class ContactSynchronizationServiceTest extends UnitTestCase
 
         $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
 
-        //$mockConfigurationManager->_set('typoScriptService', $mockTypoScriptService);
-
         GeneralUtility::setSingletonInstance(
             BackendConfigurationManager::class,
             $mockConfigurationManager
