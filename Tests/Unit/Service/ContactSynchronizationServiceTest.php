@@ -143,14 +143,6 @@ class ContactSynchronizationServiceTest extends UnitTestCase
                 $signalSlotDispatcherMock
             ]);
 
-        /*$mockConfigurationManager = $this->getAccessibleMock(
-            BackendConfigurationManager::class,
-            ['getTypoScriptSetup'],
-            [],
-            '',
-            false
-        );*/
-        var_dump(Version::id());
         $mockConfigurationManager = $this->createMock(BackendConfigurationManager::class);
 
         $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
@@ -165,7 +157,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
         $mockObjectManager = $this->createMock(ObjectManager::class);
         $mockObjectManager
             ->method('get')
-            ->willReturn($this->returnValue($mockConfigurationManager));
+            ->will($this->returnValue($mockConfigurationManager));
 
         GeneralUtility::setSingletonInstance(ObjectManager::class, $mockObjectManager);
     }
