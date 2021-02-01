@@ -142,14 +142,18 @@ class ContactSynchronizationServiceTest extends UnitTestCase
                 $signalSlotDispatcherMock
             ]);
 
-        $mockConfigurationManager = $this->getAccessibleMock(
+        /*$mockConfigurationManager = $this->getAccessibleMock(
             BackendConfigurationManager::class,
             ['getTypoScriptSetup'],
             [],
             '',
             false
-        );
+        );*/
         $mockConfigurationManager = $this->createMock(BackendConfigurationManager::class);
+        $mockConfigurationManager = $this->getMock(
+            BackendConfigurationManager::class,
+            ['getTypoScriptSetup', 'setCurrentPageId']
+        );
 
         $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
 
