@@ -10,7 +10,7 @@
 defined('TYPO3_MODE') || die();
 
 call_user_func(function (string $extensionName) {
-    if (!\TYPO3\CMS\Core\Core\Environment::isComposerMode()) {
+    if (!\T3G\Hubspot\Utility\CompatibilityUtility::isComposerMode()) {
         @include 'phar://' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('hubspot') . 'Libraries/hubspot-php.phar/vendor/autoload.php';
     }
     /***************
@@ -49,6 +49,10 @@ call_user_func(function (string $extensionName) {
                 \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
                 ['source' => $source]
             );
+        }
+
+        if (\T3G\Hubspot\Utility\CompatibilityUtility::typo3VersionIsLessThan('9.3')) {
+            $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['be'][] = 'T3G\\Hubspot\\ViewHelpers\\Compatibility\\Backend';
         }
     }
 }, 'hubspot');
