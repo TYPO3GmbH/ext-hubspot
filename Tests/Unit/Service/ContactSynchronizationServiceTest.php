@@ -11,6 +11,7 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Tests\Unit\Service;
 
 use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Runner\Version;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
@@ -149,11 +150,8 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             '',
             false
         );*/
+        var_dump(Version::id());
         $mockConfigurationManager = $this->createMock(BackendConfigurationManager::class);
-        $mockConfigurationManager = $this->getMock(
-            BackendConfigurationManager::class,
-            ['getTypoScriptSetup', 'setCurrentPageId']
-        );
 
         $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
 
