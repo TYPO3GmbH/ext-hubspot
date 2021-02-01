@@ -17,6 +17,8 @@ use T3G\Hubspot\Repository\HubspotContactRepository;
 use T3G\Hubspot\Service\ContactSynchronizationService;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
@@ -156,6 +158,13 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             BackendConfigurationManager::class,
             $mockConfigurationManager
         );
+
+        $mockObjectManager = $this->createMock(ObjectManager::class);
+        $mockObjectManager
+            ->method('get')
+            ->willReturn($this->returnValue($mockConfigurationManager));
+
+        GeneralUtility::setSingletonInstance(ObjectManager::class, $mockObjectManager);
     }
 
     /**
