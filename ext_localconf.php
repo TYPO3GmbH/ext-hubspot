@@ -42,6 +42,7 @@ call_user_func(function (string $extensionName) {
         $icons = [
             'ctype-hubspot-form' => 'EXT:' . $extensionName . '/Resources/Public/Icons/ContentElements/hubspot_form.svg',
             'ctype-hubspot-cta' => 'EXT:' . $extensionName . '/Resources/Public/Icons/ContentElements/hubspot_cta.svg',
+            'hubspot-custom-object' => 'EXT:' . $extensionName . '/Resources/Public/Icons/hubspot_custom_object.svg',
         ];
         foreach ($icons as $iconIdentifier => $source) {
             $iconRegistry->registerIcon(

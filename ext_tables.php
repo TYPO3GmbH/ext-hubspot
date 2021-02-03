@@ -25,7 +25,7 @@ call_user_func(
                 'tx_Hubspot',
                 'top',
                 [
-                    'Backend' => 'index, forms, hubspotForm, ctas'
+                    'Backend' => 'index, forms, hubspotForm, ctas, customObjects, addCustomObjectDefinition'
                 ],
                 [
                     'access' => 'admin',

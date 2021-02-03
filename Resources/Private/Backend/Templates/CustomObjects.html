@@ -1,0 +1,59 @@
+<html
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Main"/>
+<f:section name="content">
+    <h2>
+        <f:translate key="hubspot_integration.customObjects.headline"/>
+    </h2>
+
+    <f:form action="addCustomObjectDefinition" class="form-group">
+        <div class="row">
+            <div class="col-md-10">
+                <label class="sr-only">{f:translate(key:'hubspot_integration.customObjects.formTitle')}"</label>
+                <f:form.textfield size="30" name="definitionFilePath" value="{definitionFilePath}" placeholder="EXT:my_site/Resources/Private/HubSpot/Definitions/car.json" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <f:form.submit class="btn btn-primary" value="{f:translate(key:'hubspot_integration.customObjects.addDefinitionButton')}" />
+            </div>
+        </div>
+    </f:form>
+
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th>
+                <f:translate key="hubspot_integration.customObjects.name"/>
+            </th>
+            <th>
+                <f:translate key="hubspot_integration.customObjects.definitionFile"/>
+            </th>
+            <th>
+                <f:translate key="hubspot_integration.customObjects.lastUpdate"/>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <f:for each="{customObjects}" as="formElement">
+            <tr>
+                <td>
+
+                </td>
+                <td>
+
+                </td>
+                <td>
+
+                </td>
+                <td>
+
+                </td>
+            </tr>
+        </f:for>
+    </table>
+</f:section>
+
+</html>

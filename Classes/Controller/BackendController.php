@@ -18,8 +18,10 @@ use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\MenuRegistry;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -31,6 +33,11 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 class BackendController extends ActionController
 {
+    /**
+     * Key for custom objects in the TYPO3 system registry.
+     */
+    protected const REGISTRY_CUSTOMOBJECTS = 'tx_hubspot_customObjects';
+
     /**
      * @var ExceptionParser
      */
@@ -95,8 +102,21 @@ class BackendController extends ActionController
     {
         $this->view->assignMultiple(
             [
-                'formsView' => $this->uriBuilder->reset()->uriFor('forms', [], 'Backend'),
-                'ctasView'  => $this->uriBuilder->reset()->uriFor('ctas', [], 'Backend'),
+                'formsView' => $this->uriBuilder->reset()->uriFor(
+                    'forms',
+                    [],
+                    'Backend'
+                ),
+                'ctasView' => $this->uriBuilder->reset()->uriFor(
+                    'ctas',
+                    [],
+                    'Backend'
+                ),
+                'customObjectsView' => $this->uriBuilder->reset()->uriFor(
+                    'customObjects',
+                    [],
+                    'Backend'
+                ),
             ]
         );
     }
@@ -131,6 +151,25 @@ class BackendController extends ActionController
             'ctasInUse' => $contentElements,
             'returnUrl' => urlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
         ]);
+    }
+
+    /**
+     *
+     */
+    public function customObjectsAction()
+    {
+        /** @var Registry $registry */
+        $registry = GeneralUtility::makeInstance(Registry::class);
+
+        $customObjects = $registry->get(self::REGISTRY_CUSTOMOBJECTS) ?? [];
+
+        if (count($customObjects) === 0) {
+            $this->addFlashMessage(
+                'No custom object definitions have been added. You can add a definition file by using the form below. Add multiple files by writing a directory path.',
+                'No custom object definitions',
+                AbstractMessage::WARNING
+            );
+        }
     }
 
     /**
