@@ -8,7 +8,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Tests\Error;
+namespace T3G\Hubspot\Tests\Unit\Error;
 
 /*
  * This file is part of TYPO3 GmbHs software toolkit.
