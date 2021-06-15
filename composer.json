@@ -50,6 +50,7 @@
             "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/public/typo3conf/ext/hubspot"
         ]
     },
+    "prefer-stable": true,
     "config": {
         "sort-packages": true,
         "discard-changes": true,
