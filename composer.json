@@ -47,7 +47,7 @@
             "php-cs-fixer --diff -v fix"
         ],
         "post-autoload-dump": [
-            "mkdir -p .build/web/typo3conf/ext/", "[ -L .build/web/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/web/typo3conf/ext/hubspot"
+            "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/public/typo3conf/ext/hubspot"
         ]
     },
     "config": {
