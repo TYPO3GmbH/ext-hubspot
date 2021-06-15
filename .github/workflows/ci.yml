@@ -8,8 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typo3: [^8.7, ^9.5, ^10.4]
+        typo3: ['^8.7', '^9.5', '^10.4', '^11']
         php: ['7.2', '7.3', '7.4']
+        exclude:
+          - typo3: '^11'
+            php: '7.2'
+          - typo3: '^11'
+            php: '7.3'
 
     steps:
 
