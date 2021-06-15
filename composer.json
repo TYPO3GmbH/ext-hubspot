@@ -2,7 +2,7 @@
     "name": "t3g/hubspot",
     "type": "typo3-cms-extension",
     "description": "hubpot extension",
-    "license": ["GPL-2.0-or-later"],
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "TYPO3 GmbH",
@@ -20,7 +20,6 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
-        "roave/security-advisories": "dev-master",
         "typo3/testing-framework": "^2 || ^4.9 || ^5.0 || ^6.2",
         "overtrue/phplint": "^1.1"
     },
