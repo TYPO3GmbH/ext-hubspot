@@ -15,17 +15,17 @@ call_user_func(
     function () {
         if (TYPO3_MODE === 'BE') {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-                'T3G.hubspot',
+                'Hubspot',
                 'hubspotForm',
                 'Hubspot Form'
             );
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-                'T3G.Hubspot',
+                'Hubspot',
                 'tools',
                 'tx_Hubspot',
                 'top',
                 [
-                    'Backend' => 'index, forms, hubspotForm, ctas'
+                    \T3G\Hubspot\Controller\BackendController::class => 'index, forms, hubspotForm, ctas'
                 ],
                 [
                     'access' => 'admin',

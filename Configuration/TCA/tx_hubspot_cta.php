@@ -30,9 +30,6 @@ return [
         'searchFields' => 'name',
         'iconfile' => 'EXT:hubspot/Resources/Public/Icons/tx_hubspot_cta.svg',
     ],
-    'interface' => [
-        'showRecordFieldList' => 'sys_language_uid, l10n_parent, l10n_diffsource, name, hubspot_cta_code',
-    ],
     'palettes' => [
         'language' => [
             'showitem' => 'sys_language_uid, l10n_parent',
@@ -71,7 +68,6 @@ return [
         ],
         'l10n_parent' => [
             'displayCond' => 'FIELD:sys_language_uid:>:0',
-            'exclude' => true,
             'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.l18n_parent',
             'config' => [
                 'type' => 'select',

@@ -34,7 +34,7 @@ class ExceptionParser
             $response = $exception->getResponse();
             // rewind stream
             $response->getBody()->seek(0);
-            $contents = \GuzzleHttp\json_decode($response->getBody()->getContents(), true);
+            $contents = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
             $message = $contents['message'];
         } else {
             $message = $exception->getMessage();
