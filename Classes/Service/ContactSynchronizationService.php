@@ -598,7 +598,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
 
             $frontendUserProperties[$frontendUserProperty] = $contentObjectRenderer->stdWrap(
-                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty]] ?? '',
+                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty] ?? ''] ?? '',
                 $toFrontendUser[$frontendUserProperty . '.'] ?? []
             );
         }
