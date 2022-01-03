@@ -445,7 +445,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         // Remove ignored fields on update
         $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
             ',',
-            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'],
+            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'] ?? '',
             true
         );
         foreach ($ignoreOnFrontendUserUpdate as $propertyName) {
@@ -458,7 +458,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $ignoreOnHubspotUpdate = GeneralUtility::trimExplode(
             ',',
-            $this->configuration['settings.']['synchronize.']['ignoreOnHubspotUpdate'],
+            $this->configuration['settings.']['synchronize.']['ignoreOnHubspotUpdate'] ?? '',
             true
         );
         foreach ($ignoreOnHubspotUpdate as $propertyName) {
