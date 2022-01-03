@@ -2,7 +2,7 @@
     "name": "t3g/hubspot",
     "type": "typo3-cms-extension",
     "description": "hubpot extension",
-    "license": ["GPL-2.0-or-later"],
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "TYPO3 GmbH",
@@ -11,16 +11,16 @@
         }
     ],
     "require": {
-        "typo3/cms-backend": "^8.7 || ^9.5 || ^10.4",
-        "typo3/cms-core": "^8.7 || ^9.5 || ^10.4",
-        "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4",
-        "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4",
-        "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4",
-        "hubspot/hubspot-php": "^1.0"
+        "typo3/cms-backend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-core": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "hubspot/hubspot-php": "^3.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
-        "typo3/testing-framework": "^2 || ^5.0 || ^6.2",
+        "typo3/testing-framework": "^2 || ^4.9 || ^5.0 || ^6.2",
         "overtrue/phplint": "^1.1"
     },
     "autoload": {
@@ -47,9 +47,10 @@
             "php-cs-fixer --diff -v fix"
         ],
         "post-autoload-dump": [
-            "mkdir -p .build/web/typo3conf/ext/", "[ -L .build/web/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/web/typo3conf/ext/hubspot"
+            "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/public/typo3conf/ext/hubspot"
         ]
     },
+    "prefer-stable": true,
     "config": {
         "sort-packages": true,
         "discard-changes": true,
