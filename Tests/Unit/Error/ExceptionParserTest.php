@@ -39,7 +39,6 @@ class ExceptionParserTest extends TestCase
         $request = $this->prophesize(RequestInterface::class);
         $response = $this->prophesize(ResponseInterface::class);
         $stream = $this->prophesize(Stream::class);
-        $stream->seek(0)->willReturn();
         $stream->getContents()->willReturn(json_encode(['message' => 'foo bar']));
         $response->getBody()->willReturn($stream->reveal());
         $response->getStatusCode()->willReturn(400);
