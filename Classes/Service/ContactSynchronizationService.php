@@ -604,7 +604,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         }
 
         $frontendUserProperties['hubspot_created_timestamp'] =
-            $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt']; // Millisecond timestamp
+            $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt'] ?? 0; // Millisecond timestamp
         $frontendUserProperties['hubspot_id'] = $hubspotContact['vid'];
 
         $frontendUserProperties = ArrayUtility::removeNullValuesRecursive($frontendUserProperties);
