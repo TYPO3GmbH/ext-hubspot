@@ -15,6 +15,7 @@ use T3G\Hubspot\Error\ExceptionParser;
 use T3G\Hubspot\Repository\ContentElementRepository;
 use T3G\Hubspot\Service\UsedFormsService;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
+use TYPO3\CMS\Backend\Template\Components\Menu\MenuItem;
 use TYPO3\CMS\Backend\Template\Components\MenuRegistry;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\View\BackendTemplateView;
@@ -161,7 +162,7 @@ class BackendController extends ActionController
         /** @var Registry $registry */
         $registry = GeneralUtility::makeInstance(Registry::class);
 
-        $customObjects = $registry->get(self::REGISTRY_CUSTOMOBJECTS) ?? [];
+        $customObjects = $registry->get('hubspot', self::REGISTRY_CUSTOMOBJECTS) ?? [];
 
         if (count($customObjects) === 0) {
             $this->addFlashMessage(
@@ -170,31 +171,6 @@ class BackendController extends ActionController
                 AbstractMessage::WARNING
             );
         }
-    }
-
-    /**
-     * Renders Iframe with hubspot form in backend module
-     *
-     * @param string $hubspotGuid
-     */
-    public function hubspotFormAction(string $hubspotGuid)
-    {
-        // overwrite menu including this action as active
-        $menu = $this->menuRegistry->makeMenu();
-        $menu->setIdentifier('hubspot_module_menu');
-        $menu = $this->createMenuItem($menu, 'index', 'Overview');
-        $menu = $this->createMenuItem($menu, 'forms', 'Forms');
-        $menuItem = $menu->makeMenuItem();
-        $menuItem
-            ->setTitle('Hubspot Form')
-            ->setHref('#')
-            ->setActive(true);
-        $menu->addMenuItem($menuItem);
-        $this->menuRegistry->addMenu($menu);
-
-        $this->view
-            ->assign('portalId', (int)$_ENV['APP_HUBSPOT_PORTALID'])
-            ->assign('hubspotGuid', $hubspotGuid);
     }
 
     /**
@@ -226,11 +202,12 @@ class BackendController extends ActionController
     private function createMenu()
     {
         $menu = $this->menuRegistry->makeMenu();
-        $menu->setIdentifier('hubspot_module_menu');
 
-        $menu = $this->createMenuItem($menu, 'index', 'Overview');
-        $menu = $this->createMenuItem($menu, 'forms', 'Forms');
-        $menu = $this->createMenuItem($menu, 'ctas', 'CTAs');
+        $menu->setIdentifier('hubspot_module_menu');
+        $menu->addMenuItem($this->createMenuItem('index', 'Overview'));
+        $menu->addMenuItem($this->createMenuItem('forms', 'Forms'));
+        $menu->addMenuItem($this->createMenuItem('ctas', 'CTAs'));
+        $menu->addMenuItem($this->createMenuItem('customObjects', 'Custom Objects'));
 
         $this->menuRegistry->addMenu($menu);
     }
@@ -243,16 +220,15 @@ class BackendController extends ActionController
      * @return Menu
      * @throws \InvalidArgumentException
      */
-    private function createMenuItem(Menu $menu, string $action, string $title): Menu
+    private function createMenuItem(string $action, string $title): MenuItem
     {
-        $menuItem = $menu->makeMenuItem();
         $isActive = $this->request->getControllerActionName() === $action;
         $uri = $this->uriBuilder->reset()->uriFor($action, [], 'Backend');
-        $menuItem
+
+        $menuItem = GeneralUtility::makeInstance(MenuItem::class)
             ->setTitle($title)
             ->setHref($uri)
             ->setActive($isActive);
-        $menu->addMenuItem($menuItem);
-        return $menu;
+        return $menuItem;
     }
 }
