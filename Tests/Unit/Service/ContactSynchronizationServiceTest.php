@@ -12,10 +12,13 @@ namespace T3G\Hubspot\Tests\Unit\Service;
 
 use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Runner\Version;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
 use T3G\Hubspot\Service\ContactSynchronizationService;
+use T3G\Hubspot\Utility\CompatibilityUtility;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
@@ -128,24 +131,18 @@ class ContactSynchronizationServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $signalSlotDispatcherMock = $this->createMock(Dispatcher::class);
-
         $this->subject = new ContactSynchronizationService(
             null,
-            null,
-            $signalSlotDispatcherMock
+            null
         );
 
         $this->subjectMockBuilder = $this->getMockBuilder(ContactSynchronizationService::class)
             ->setConstructorArgs([
                 null,
-                null,
-                $signalSlotDispatcherMock
+                null
             ]);
 
         $mockConfigurationManager = $this->createMock(BackendConfigurationManager::class);
-
-        $mockTypoScriptService = $this->getMockBuilder(TypoScriptService::class)->getMock();
 
         GeneralUtility::setSingletonInstance(
             BackendConfigurationManager::class,
@@ -158,6 +155,15 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             ->will($this->returnValue($mockConfigurationManager));
 
         GeneralUtility::setSingletonInstance(ObjectManager::class, $mockObjectManager);
+
+        if (self::typo3VersionIsGreaterThanOrEqualTo('10')) {
+            $mockEventDispatcher = $this->createMock(EventDispatcher::class);
+            $mockEventDispatcher
+                ->method('dispatch')
+                ->willReturnArgument(0);
+
+            GeneralUtility::setSingletonInstance(EventDispatcher::class, $mockEventDispatcher);
+        }
     }
 
     /**
