@@ -124,9 +124,10 @@ class FrontendUserRepository extends AbstractDatabaseRepository
      *
      * @param array $row Frontend user row
      * @param bool $setSyncPassIdentifier If true, the sync pass identifier is set.
+     * @return int The frontend user UID.
      * @throws DataHandlerErrorException
      */
-    public function create(array $row, bool $setSyncPassIdentifier = true)
+    public function create(array $row, bool $setSyncPassIdentifier = true): int
     {
         unset($row['uid']);
 
@@ -140,9 +141,11 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             $row['pid'] = $this->getDefaultPageId();
         }
 
+        $uniqueNewHash = uniqid('NEW');
+
         $data = [
             static::TABLE_NAME => [
-                uniqid('NEW') => $row
+                $uniqueNewHash => $row
             ]
         ];
 
@@ -156,6 +159,8 @@ class FrontendUserRepository extends AbstractDatabaseRepository
                 1602246099
             );
         }
+
+        return (int)$dataHandler->substNEWwithIDs_table[$uniqueNewHash];
     }
 
     /**
