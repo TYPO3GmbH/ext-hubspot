@@ -40,7 +40,6 @@ use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -76,11 +75,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
     protected $activeConfigurationPageId = 0;
 
     /**
-     * @var Dispatcher
-     */
-    protected $signalSlotDispatcher = null;
-
-    /**
      * @var array[] UIDs of frontend users processed
      */
     protected $processedRecords = [
@@ -97,16 +91,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     public function __construct(
         HubspotContactRepository $hubspotContactRepository = null,
-        FrontendUserRepository $frontendUserRepository = null,
-        Dispatcher $signalSlotDispatcher = null
+        FrontendUserRepository $frontendUserRepository = null
     ) {
         $this->hubspotContactRepository =
             $hubspotContactRepository ?? GeneralUtility::makeInstance(HubspotContactRepository::class);
         $this->frontendUserRepository =
             $frontendUserRepository ?? GeneralUtility::makeInstance(FrontendUserRepository::class);
-        $this->signalSlotDispatcher =
-            $signalSlotDispatcher ?? GeneralUtility::makeInstance(ObjectManager::class)
-                ->get(Dispatcher::class);
     }
 
     /**
