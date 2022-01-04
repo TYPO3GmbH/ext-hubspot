@@ -156,7 +156,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
 
         GeneralUtility::setSingletonInstance(ObjectManager::class, $mockObjectManager);
 
-        if (self::typo3VersionIsGreaterThanOrEqualTo('10')) {
+        if (CompatibilityUtility::typo3VersionIsGreaterThanOrEqualTo('10')) {
             $mockEventDispatcher = $this->createMock(EventDispatcher::class);
             $mockEventDispatcher
                 ->method('dispatch')
