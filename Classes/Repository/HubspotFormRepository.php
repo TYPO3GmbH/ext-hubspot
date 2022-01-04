@@ -10,28 +10,11 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Repository;
 
-use SevenShores\Hubspot\Factory;
-
 /**
- * Repository for fetching data from hubspot via API
+ * Repository for fetching form data from hubspot via API
  */
-class HubspotFormRepository
+class HubspotFormRepository extends AbstractHubspotRepository
 {
-    /**
-     * Hubspot API client.
-     *
-     * @var Factory
-     */
-    protected $factory;
-
-    /**
-     * HubspotFormRepository constructor.
-     */
-    public function __construct()
-    {
-        $this->factory = Factory::create(getenv('APP_HUBSPOT_SECRET'));
-    }
-
     /**
      * Get form elements from hubspot for selection in content element dropdown
      *

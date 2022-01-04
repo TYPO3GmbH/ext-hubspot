@@ -21,16 +21,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup PHP ${{ matrix.php }}
+      - name: Set up PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: mbstring, intl, json
+          ini-values: error_reporting=E_ALL & ~E_NOTICE
           tools: composer:v2
 
       - name: Validate composer.json and composer.lock
         run: composer validate
 
-      - name: Install
+      - name: Install dependencies with typo3/cms-core:${{ matrix.typo3 }}
         run: |
           composer require typo3/cms-core:${{ matrix.typo3 }} --no-progress
           git checkout composer.json

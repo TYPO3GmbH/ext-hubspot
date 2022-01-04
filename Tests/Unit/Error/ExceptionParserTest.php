@@ -23,6 +23,7 @@ namespace T3G\Hubspot\Tests\Unit\Error;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SevenShores\Hubspot\Exceptions\BadRequest;
@@ -39,7 +40,7 @@ class ExceptionParserTest extends TestCase
         $request = $this->prophesize(RequestInterface::class);
         $response = $this->prophesize(ResponseInterface::class);
         $stream = $this->prophesize(Stream::class);
-        $stream->seek(0)->willReturn();
+        $stream->seek(0)->shouldBeCalled();
         $stream->getContents()->willReturn(json_encode(['message' => 'foo bar']));
         $response->getBody()->willReturn($stream->reveal());
         $response->getStatusCode()->willReturn(400);

@@ -39,3 +39,51 @@ tt_content.hubspot_cta {
 }
 
 page.includeJS.hubspot = EXT:hubspot/Resources/Public/JavaScript/Frontend/HubspotForms.js
+
+module.tx_hubspot {
+    persistence {
+        synchronize.storagePid =
+    }
+
+    settings {
+        synchronize {
+            limitToPids =< module.tx_hubspot.persistence.synchronize.storagePid
+            limit = 10
+
+            createNewInHubspot = 1
+            createNewInTypo3 = 0
+
+            toHubspot {
+                email.field = email
+                firstname.field = first_name
+                lastname.field = last_name
+                company.field = company
+                phone.field = telephone
+                address.field = address
+                city.field = city
+                state.field = state
+                website.field = www
+            }
+
+            ignoreOnHubspotCreate =
+            ignoreOnHubspotUpdate =
+
+            toFrontendUser {
+                username.field = email
+                email.field = email
+                first_name.field = firstname
+                last_name.field = lastname
+                name.dataWrap = {field:firstname} {field:lastname}
+                company.field = company
+                telephone.field = phone
+                address.field = address
+                city.field = city
+                state.field = state
+                www.field = website
+            }
+
+            ignoreOnFrontendUserCreate =
+            ignoreOnFrontendUserUpdate = username
+        }
+    }
+}
