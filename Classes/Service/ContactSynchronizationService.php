@@ -12,15 +12,34 @@ namespace T3G\Hubspot\Service;
 
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
+use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
 use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
 use T3G\Hubspot\Repository\FrontendUserRepository;
 use T3G\Hubspot\Repository\HubspotContactRepository;
+use T3G\Hubspot\Service\Event\AfterAddingFrontendUserToHubspotEvent;
+use T3G\Hubspot\Service\Event\AfterAddingHubspotContactToFrontendUsersEvent;
+use T3G\Hubspot\Service\Event\AfterContactSynchronizationEvent;
+use T3G\Hubspot\Service\Event\AfterMappingFrontendUserToHubspotContactPropertiesEvent;
+use T3G\Hubspot\Service\Event\AfterMappingHubspotContactToFrontendUserEvent;
+use T3G\Hubspot\Service\Event\AfterUpdatingFrontendUserAndHubspotContactEvent;
+use T3G\Hubspot\Service\Event\BeforeAddingFrontendUserToHubspotEvent;
+use T3G\Hubspot\Service\Event\BeforeAddingHubspotContactToFrontendUsersEvent;
+use T3G\Hubspot\Service\Event\BeforeComparingFrontendUserAndHubspotContactEvent;
+use T3G\Hubspot\Service\Event\BeforeContactSynchronizationEvent;
+use T3G\Hubspot\Service\Event\BeforeFrontendUserSynchronizationEvent;
+use T3G\Hubspot\Service\Event\BeforeMappingFrontendUserToHubspotContactEvent;
+use T3G\Hubspot\Service\Event\BeforeMappingHubspotContactToFrontendUserEvent;
+use T3G\Hubspot\Service\Event\BeforeUpdatingFrontendUserAndHubspotContactEvent;
+use T3G\Hubspot\Service\Event\ResolveHubspotContactEvent;
+use T3G\Hubspot\Service\Exception\SkipRecordSynchronizationException;
+use T3G\Hubspot\Service\Exception\StopRecordSynchronizationException;
+use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
@@ -56,11 +75,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
     protected $activeConfigurationPageId = 0;
 
     /**
-     * @var Dispatcher
-     */
-    protected $signalSlotDispatcher = null;
-
-    /**
      * @var array[] UIDs of frontend users processed
      */
     protected $processedRecords = [
@@ -77,16 +91,12 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     public function __construct(
         HubspotContactRepository $hubspotContactRepository = null,
-        FrontendUserRepository $frontendUserRepository = null,
-        Dispatcher $signalSlotDispatcher = null
+        FrontendUserRepository $frontendUserRepository = null
     ) {
         $this->hubspotContactRepository =
             $hubspotContactRepository ?? GeneralUtility::makeInstance(HubspotContactRepository::class);
         $this->frontendUserRepository =
             $frontendUserRepository ?? GeneralUtility::makeInstance(FrontendUserRepository::class);
-        $this->signalSlotDispatcher =
-            $signalSlotDispatcher ?? GeneralUtility::makeInstance(ObjectManager::class)
-                ->get(Dispatcher::class);
     }
 
     /**
@@ -100,9 +110,19 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronize.']['defaultPid']
         );
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before'
+        $beforeSynchronizationEvent = new BeforeContactSynchronizationEvent(
+            $this,
+            $this->configuration
         );
+
+        try {
+            CompatibilityUtility::dispatchEvent($beforeSynchronizationEvent);
+        } catch (StopRecordSynchronizationException $e) {
+            return;
+        }
+
+        $this->configuration = $beforeSynchronizationEvent->getConfiguration();
+        unset($beforeSynchronizationEvent);
 
         if ($this->configuration['settings.']['synchronize.']['createNewInTypo3']) {
             $newHubspotContacts = $this->hubspotContactRepository->findNewBefore(
@@ -111,7 +131,13 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
             if (count($newHubspotContacts) > 0) {
                 foreach ($newHubspotContacts as $newHubspotContact) {
-                    $this->addHubspotContactToFrontendUsers($newHubspotContact);
+                    try {
+                        $this->addHubspotContactToFrontendUsers($newHubspotContact);
+                    } catch (SkipRecordSynchronizationException $e) {
+                        continue;
+                    } catch (StopRecordSynchronizationException $e) {
+                        return;
+                    }
                 }
 
                 return; // Do more on next run
@@ -124,7 +150,13 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->frontendUserRepository->fixSyncPassIdentifierScope();
 
             foreach ($frontendUsers as $frontendUser) {
-                $this->synchronizeFrontendUser($frontendUser);
+                try {
+                    $this->synchronizeFrontendUser($frontendUser);
+                } catch (SkipRecordSynchronizationException $e) {
+                    continue;
+                } catch (StopRecordSynchronizationException $e) {
+                    return;
+                }
             }
 
             return; // Do more on next run
@@ -133,13 +165,29 @@ class ContactSynchronizationService implements LoggerAwareInterface
         $frontendUsers = $this->frontendUserRepository->findReadyForSyncPass();
 
         foreach ($frontendUsers as $frontendUser) {
-            $this->synchronizeFrontendUser($frontendUser);
+            try {
+                $this->synchronizeFrontendUser($frontendUser);
+            } catch (SkipRecordSynchronizationException $e) {
+                continue;
+            } catch (StopRecordSynchronizationException $e) {
+                return;
+            }
         }
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-after',
-            ['processedRecords' => $this->processedRecords]
+        $afterSynchronizationEvent = new AfterContactSynchronizationEvent(
+            $this,
+            $this->configuration,
+            $this->processedRecords
         );
+
+        try {
+            CompatibilityUtility::dispatchEvent($afterSynchronizationEvent);
+        } catch (StopRecordSynchronizationException $e) {
+            return;
+        }
+
+        $this->configuration = $afterSynchronizationEvent->getConfiguration();
+        $this->processedRecords = $afterSynchronizationEvent->getProcessedRecords();
     }
 
     /**
@@ -147,16 +195,22 @@ class ContactSynchronizationService implements LoggerAwareInterface
      *
      * @param array $frontendUser
      * @throws UnexpectedMissingContactException
-     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
-     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     * @throws BadRequest
+     * @throws DataHandlerErrorException
+     * @internal
      */
     public function synchronizeFrontendUser(array $frontendUser)
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['frontendUser' => $frontendUser]
+        $beforeFrontendUserSynchronizationEvent = new BeforeFrontendUserSynchronizationEvent(
+            $this,
+            $this->configuration,
+            $frontendUser
         );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
+        CompatibilityUtility::dispatchEvent($beforeFrontendUserSynchronizationEvent);
+
+        $this->configuration = $beforeFrontendUserSynchronizationEvent->getConfiguration();
+        $frontendUser = $beforeFrontendUserSynchronizationEvent->getFrontendUser();
 
         if (!GeneralUtility::validEmail($frontendUser['email'])) {
             $this->logger->warning('Frontend user has invalid email and can\'t be synced.', $frontendUser);
@@ -243,15 +297,21 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * Use a hubspot contact to create a new frontend user
      *
      * @param array $hubspotContact
-     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     * @throws DataHandlerErrorException
      */
     protected function addHubspotContactToFrontendUsers(array $hubspotContact)
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['hubspotContact' => $hubspotContact]
+        $beforeAddingEvent = new BeforeAddingHubspotContactToFrontendUsersEvent(
+            $this,
+            $this->configuration,
+            $hubspotContact
         );
-        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
+
+        CompatibilityUtility::dispatchEvent($beforeAddingEvent);
+
+        $this->configuration = $beforeAddingEvent->getConfiguration();
+        $hubspotContact = $beforeAddingEvent->getHubspotContact();
+        unset($beforeAddingEvent);
 
         $mappedFrontendUserProperties = $this->mapHubspotContactToFrontendUserProperties($hubspotContact);
 
@@ -268,13 +328,16 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $this->processedRecords['addedToFrontendUsers'][] = $hubspotContact['vid'];
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-after',
-            [
-                'hubspotContact' => $hubspotContact,
-                'frontendUserIdentifier' => $frontendUserIdentifier
-            ]
+        $afterAddingEvent = new AfterAddingHubspotContactToFrontendUsersEvent(
+            $this,
+            $this->configuration,
+            $hubspotContact,
+            $frontendUserIdentifier
         );
+
+        CompatibilityUtility::dispatchEvent($afterAddingEvent);
+
+        $this->configuration = $afterAddingEvent->getConfiguration();
     }
 
     /**
@@ -282,16 +345,22 @@ class ContactSynchronizationService implements LoggerAwareInterface
      *
      * @param array $frontendUser
      * @throws UnexpectedMissingContactException
-     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
-     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     * @throws BadRequest
+     * @throws DataHandlerErrorException
      */
     public function addFrontendUserToHubspot(array $frontendUser)
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['frontendUser' => $frontendUser]
+        $beforeAddEvent = new BeforeAddingFrontendUserToHubspotEvent(
+            $this,
+            $this->configuration,
+            $frontendUser
         );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
+        CompatibilityUtility::dispatchEvent($beforeAddEvent);
+
+        $this->configuration = $beforeAddEvent->getConfiguration();
+        $frontendUser = $beforeAddEvent->getFrontendUser();
+        unset($beforeAddEvent);
 
         try {
             $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
@@ -321,11 +390,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
                 $this->synchronizeFrontendUser($frontendUser);
 
-                $signalArguments = $this->dispatchSignal(
-                    __FUNCTION__ . '-afterSynchronize',
-                    ['frontendUser' => $frontendUser]
-                );
-
                 return;
             }
 
@@ -340,13 +404,17 @@ class ContactSynchronizationService implements LoggerAwareInterface
             ['hubspot_id' => $hubspotContactIdentifier]
         );
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-after',
-            ['frontendUser' => $frontendUser]
-        );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+        $frontendUser['hubspot_id'] = $hubspotContactIdentifier;
 
         $this->processedRecords['addedToHubspot'][] = $frontendUser['uid'];
+
+        $afterAddEvent = new AfterAddingFrontendUserToHubspotEvent(
+            $this,
+            $this->configuration,
+            $frontendUser
+        );
+
+        $this->configuration = $afterAddEvent->getConfiguration();
     }
 
     /**
@@ -354,17 +422,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
      *
      * @param array $frontendUser
      * @throws UnexpectedMissingContactException
-     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
-     * @throws \T3G\Hubspot\Repository\Exception\DataHandlerErrorException
+     * @throws BadRequest
+     * @throws DataHandlerErrorException
      */
     public function compareAndUpdateFrontendUserAndHubspotContact(array $frontendUser)
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['frontendUser' => $frontendUser]
-        );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
-
         if (
             $frontendUser['hubspot_id'] === 0
             && $this->configuration['settings.']['synchronize.']['createNewInHubspot']
@@ -372,25 +434,42 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->addFrontendUserToHubspot($frontendUser);
             return;
         }
+
         if ($frontendUser['hubspot_id'] === 0) {
             return;
         }
 
-        $hubspotContact = $this->hubspotContactRepository->findByIdentifier($frontendUser['hubspot_id']);
-
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-findHubspotContact',
-            [
-                'frontendUser' => $frontendUser,
-                'hubspotContact' => $hubspotContact
-            ]
+        $hubspotContactResolver = new ResolveHubspotContactEvent(
+            $this,
+            $this->configuration,
+            $frontendUser
         );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
-        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
+
+        CompatibilityUtility::dispatchEvent($hubspotContactResolver);
+
+        $this->configuration = $hubspotContactResolver->getConfiguration();
+        $frontendUser = $hubspotContactResolver->getFrontendUser();
+        $hubspotContact = $hubspotContactResolver->getHubspotContact()
+            ?? $this->hubspotContactRepository->findByIdentifier($frontendUser['hubspot_id']);
+        unset($hubspotContactResolver);
 
         if ($hubspotContact === null) {
             return; // We expect the user has been deleted from Hubspot
         }
+
+        $beforeComparingEvent = new BeforeComparingFrontendUserAndHubspotContactEvent(
+            $this,
+            $this->configuration,
+            $frontendUser,
+            $hubspotContact
+        );
+
+        CompatibilityUtility::dispatchEvent($beforeComparingEvent);
+
+        $this->configuration = $beforeComparingEvent->getConfiguration();
+        $frontendUser = $beforeComparingEvent->getFrontendUser();
+        $hubspotContact = $beforeComparingEvent->getHubspotContact();
+        unset($beforeComparingEvent);
 
         $hubspotContactProperties = $hubspotContact['properties'];
 
@@ -445,7 +524,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
         // Remove ignored fields on update
         $ignoreOnFrontendUserUpdate = GeneralUtility::trimExplode(
             ',',
-            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'],
+            $this->configuration['settings.']['synchronize.']['ignoreOnFrontendUserUpdate'] ?? '',
             true
         );
         foreach ($ignoreOnFrontendUserUpdate as $propertyName) {
@@ -458,25 +537,30 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $ignoreOnHubspotUpdate = GeneralUtility::trimExplode(
             ',',
-            $this->configuration['settings.']['synchronize.']['ignoreOnHubspotUpdate'],
+            $this->configuration['settings.']['synchronize.']['ignoreOnHubspotUpdate'] ?? '',
             true
         );
         foreach ($ignoreOnHubspotUpdate as $propertyName) {
             unset($mappedHubspotProperties[$propertyName]);
         }
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-beforePersist',
-            [
-                'frontendUser' => $frontendUser,
-                'hubspotContact' => $hubspotContact,
-                'mappedFrontendUserProperties' => $mappedFrontendUserProperties,
-                'mappedHubspotProperties' => $mappedHubspotProperties,
-            ]
+        $beforeUpdatingEvent = new BeforeUpdatingFrontendUserAndHubspotContactEvent(
+            $this,
+            $this->configuration,
+            $frontendUser,
+            $hubspotContact,
+            $mappedFrontendUserProperties,
+            $mappedHubspotProperties
         );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
-        $mappedFrontendUserProperties = $signalArguments['mappedFrontendUserProperties'] ?? $mappedFrontendUserProperties;
-        $mappedHubspotProperties = $signalArguments['mappedHubspotProperties'] ?? $mappedHubspotProperties;
+
+        CompatibilityUtility::dispatchEvent($beforeUpdatingEvent);
+
+        $this->configuration = $beforeUpdatingEvent->getConfiguration();
+        $frontendUser = $beforeUpdatingEvent->getFrontendUser();
+        $hubspotContact = $beforeUpdatingEvent->getHubspotContact();
+        $mappedFrontendUserProperties = $beforeUpdatingEvent->getMappedFrontendUserProperties();
+        $mappedHubspotProperties = $beforeUpdatingEvent->getMappedHubspotContactProperties();
+        unset($beforeUpdatingEvent);
 
         if (count($mappedFrontendUserProperties) > 0) {
             $this->frontendUserRepository->update($frontendUser['uid'], $mappedFrontendUserProperties);
@@ -491,15 +575,16 @@ class ContactSynchronizationService implements LoggerAwareInterface
             $this->processedRecords['modifiedInFrontendUsers'][] = $frontendUser['uid'];
         }
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-afterPersist',
-            [
-                'frontendUser' => $frontendUser,
-                'hubspotContact' => $hubspotContact,
-                'mappedFrontendUserProperties' => $mappedFrontendUserProperties,
-                'mappedHubspotProperties' => $mappedHubspotProperties,
-            ]
+        $afterUpdatingEvent = new AfterUpdatingFrontendUserAndHubspotContactEvent(
+            $this,
+            $this->configuration,
+            $frontendUser,
+            $hubspotContact,
+            $mappedFrontendUserProperties,
+            $mappedHubspotProperties
         );
+
+        $this->configuration = $afterUpdatingEvent->getConfiguration();
     }
 
     /**
@@ -512,11 +597,17 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     public function mapFrontendUserToHubspotContactProperties(array $frontendUser): array
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['frontendUser' => $frontendUser]
+        $beforeMappingEvent = new BeforeMappingFrontendUserToHubspotContactEvent(
+            $this,
+            $this->configuration,
+            $frontendUser
         );
-        $frontendUser = $signalArguments['frontendUser'] ?? $frontendUser;
+
+        CompatibilityUtility::dispatchEvent($beforeMappingEvent);
+
+        $this->configuration = $beforeMappingEvent->getConfiguration();
+        $frontendUser = $beforeMappingEvent->getFrontendUser();
+        unset($beforeMappingEvent);
 
         $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? [];
 
@@ -539,16 +630,18 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-after',
-            [
-                'frontendUser' => $frontendUser,
-                'hubspotProperties' => $hubspotProperties
-            ]
+        $afterMappingEvent = new AfterMappingFrontendUserToHubspotContactPropertiesEvent(
+            $this,
+            $this->configuration,
+            $frontendUser,
+            $hubspotProperties
         );
-        $hubspotProperties = $signalArguments['hubspotProperties'] ?? $hubspotProperties;
 
-        return $hubspotProperties;
+        CompatibilityUtility::dispatchEvent($afterMappingEvent);
+
+        $this->configuration = $afterMappingEvent->getConfiguration();
+
+        return $afterMappingEvent->getHubspotProperties();
     }
 
     /**
@@ -561,11 +654,17 @@ class ContactSynchronizationService implements LoggerAwareInterface
      */
     public function mapHubspotContactToFrontendUserProperties(array $hubspotContact): array
     {
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-before',
-            ['hubspotContact' => $hubspotContact]
+        $beforeMappingEvent = new BeforeMappingHubspotContactToFrontendUserEvent(
+            $this,
+            $this->configuration,
+            $hubspotContact
         );
-        $hubspotContact = $signalArguments['hubspotContact'] ?? $hubspotContact;
+
+        CompatibilityUtility::dispatchEvent($beforeMappingEvent);
+
+        $this->configuration = $beforeMappingEvent->getConfiguration();
+        $hubspotContact = $beforeMappingEvent->getHubspotContact();
+        unset($beforeMappingEvent);
 
         $hubspotContactProperties = [];
 
@@ -598,57 +697,29 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
 
             $frontendUserProperties[$frontendUserProperty] = $contentObjectRenderer->stdWrap(
-                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty]] ?? '',
+                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty] ?? ''] ?? '',
                 $toFrontendUser[$frontendUserProperty . '.'] ?? []
             );
         }
 
         $frontendUserProperties['hubspot_created_timestamp'] =
-            $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt']; // Millisecond timestamp
+            $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt'] ?? 0; // Millisecond timestamp
         $frontendUserProperties['hubspot_id'] = $hubspotContact['vid'];
 
         $frontendUserProperties = ArrayUtility::removeNullValuesRecursive($frontendUserProperties);
 
-        $signalArguments = $this->dispatchSignal(
-            __FUNCTION__ . '-after',
-            [
-                'frontendUserProperties' => $frontendUserProperties,
-                'hubspotContact' => $hubspotContact
-            ]
-        );
-        $frontendUserProperties = $signalArguments['hubspotProperties'] ?? $frontendUserProperties;
-
-        return $frontendUserProperties;
-    }
-
-    /**
-     * @param string $name
-     * @param array $signalArguments
-     * @return array
-     */
-    protected function dispatchSignal(string $name, array $signalArguments = []): array
-    {
-        $originalSignalArguments = $signalArguments;
-
-        $signalArguments['configuration'] = $this->configuration;
-        $signalArguments['caller'] = $this;
-
-        $signalArguments = (array)$this->signalSlotDispatcher->dispatch(
-            __CLASS__,
-            $name,
-            $signalArguments
+        $afterMappingEvent = new AfterMappingHubspotContactToFrontendUserEvent(
+            $this,
+            $this->configuration,
+            $hubspotContact,
+            $frontendUserProperties
         );
 
-        $this->configuration = $signalArguments['configuration'] ?? $this->configuration;
+        CompatibilityUtility::dispatchEvent($afterMappingEvent);
 
-        unset($signalArguments['configuration']);
-        unset($signalArguments['caller']);
+        $this->configuration = $afterMappingEvent->getConfiguration();
 
-        foreach ($originalSignalArguments as $key => $originalValue) {
-            $signalArguments[$key] = $signalArguments[$key] ?? $originalSignalArguments[$key];
-        }
-
-        return $signalArguments;
+        return $afterMappingEvent->getFrontendUserProperties();
     }
 
     /**

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Tests\Error;
+namespace T3G\Hubspot\Tests\Unit\Error;
 
 /*
  * This file is part of TYPO3 GmbHs software toolkit.
@@ -23,6 +23,7 @@ namespace T3G\Hubspot\Tests\Error;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SevenShores\Hubspot\Exceptions\BadRequest;
@@ -39,7 +40,7 @@ class ExceptionParserTest extends TestCase
         $request = $this->prophesize(RequestInterface::class);
         $response = $this->prophesize(ResponseInterface::class);
         $stream = $this->prophesize(Stream::class);
-        $stream->seek(0)->willReturn();
+        $stream->seek(0)->shouldBeCalled();
         $stream->getContents()->willReturn(json_encode(['message' => 'foo bar']));
         $response->getBody()->willReturn($stream->reveal());
         $response->getStatusCode()->willReturn(400);

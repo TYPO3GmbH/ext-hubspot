@@ -26,7 +26,7 @@ If the email address of the Hubspot contact exists in the `email` field of the
 assigned as the Hubspot contact's equivalent Frontend User. This prevents email
 address duplication.
 
-If no matching Frontend User record is created, a new Frontend User record is
+If no matching Frontend User record is found, a new Frontend User record is
 created.
 
 The Hubspot contact's ID is stored in the `hubspot_id` field of the `fe_users`
