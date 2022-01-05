@@ -54,25 +54,15 @@
 			<trans-unit id="message.hubspot_blocked.2">
 				<source>Do you use an adblocker? If so, please try turning it off and reload this page.</source>
 			</trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.headline">
-                <source>Custom Object Definition</source>
+            <trans-unit id="hubspot_integration.customObjects.table.label">
+                <source>Label</source>
             </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.name">
+            <trans-unit id="hubspot_integration.customObjects.table.name">
                 <source>Name</source>
             </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.definitionFile">
-                <source>Definition file</source>
+            <trans-unit id="hubspot_integration.customObjects.button.inspect">
+                <source>Inspect</source>
             </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.lastUpdate">
-                <source>Last update</source>
-            </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.formTitle">
-                <source>Add custom object definition file</source>
-            </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.addDefinitionButton">
-                <source>Add file</source>
-            </trans-unit>
-
         </body>
 	</file>
 </xliff>

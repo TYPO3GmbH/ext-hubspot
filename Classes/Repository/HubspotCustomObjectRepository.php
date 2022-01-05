@@ -21,7 +21,7 @@ class HubspotCustomObjectRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 
-    protected string $objectType;
+    protected $objectType;
 
     /**
      * HubspotCustomObjectRepository constructor.

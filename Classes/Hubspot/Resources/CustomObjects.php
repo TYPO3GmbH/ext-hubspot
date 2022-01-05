@@ -33,7 +33,7 @@ class CustomObjects extends Resource
     /**
      * CustomObjects constructor.
      */
-    public function __construct(string $objectType, Client $client)
+    public function __construct(Client $client, string $objectType)
     {
         parent::__construct($client);
 
@@ -41,41 +41,37 @@ class CustomObjects extends Resource
     }
 
     /**
-     * List custom objects
+     * List custom objects.
      *
      * @param array $properties
      * @return Response
      */
     public function list(array $properties): Response
     {
-        $endpoint = $this->getTypeEndpoint();
-
         return $this->client->request(
             'get',
-            $endpoint,
+            $this->getEndpoint(),
             ['json' => ['properties' => $properties]]
         );
     }
 
     /**
-     * Create a custom object
+     * Create a custom object.
      *
      * @param array $properties
      * @return Response
      */
     public function create(array $properties): Response
     {
-        $endpoint = $this->getTypeEndpoint();
-
         return $this->client->request(
             'post',
-            $endpoint,
+            $this->getEndpoint(),
             ['json' => ['properties' => $properties]]
         );
     }
 
     /**
-     * Get a custom object by its ID
+     * Get a custom object by its ID.
      *
      * @param int $id
      * @param array $parameters
@@ -83,18 +79,20 @@ class CustomObjects extends Resource
      */
     public function getById(int $id, array $properties = []): Response
     {
-        $endpoint = $this->getTypeEndpoint((string)$id);
-
         return $this->client->request(
             'get',
-            $endpoint,
+            $this->getEndpoint((string)$id),
             ['json' => ['properties' => $properties]]
         );
     }
 
     // TODO: Implement remaining entrypoints from https://developers.hubspot.com/docs/api/crm/crm-custom-objects
 
-    protected function getEndpoint(string $postfix = '')
+    /**
+     * @param string $postfix
+     * @return string
+     */
+    protected function getEndpoint(string $postfix = ''): string
     {
         return self::ENDPOINT_PREFIX . $this->objectType . ($postfix !== '' ? '/' . $postfix : '');
     }

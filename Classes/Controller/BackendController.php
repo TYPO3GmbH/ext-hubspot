@@ -13,6 +13,8 @@ namespace T3G\Hubspot\Controller;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Error\ExceptionParser;
 use T3G\Hubspot\Repository\ContentElementRepository;
+use T3G\Hubspot\Repository\HubspotCustomObjectRepository;
+use T3G\Hubspot\Repository\HubspotCustomObjectSchemaRepository;
 use T3G\Hubspot\Service\UsedFormsService;
 use TYPO3\CMS\Backend\Template\Components\Menu\Menu;
 use TYPO3\CMS\Backend\Template\Components\Menu\MenuItem;
@@ -34,11 +36,6 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
  */
 class BackendController extends ActionController
 {
-    /**
-     * Key for custom objects in the TYPO3 system registry.
-     */
-    protected const REGISTRY_CUSTOMOBJECTS = 'tx_hubspot_customObjects';
-
     /**
      * @var ExceptionParser
      */
@@ -155,22 +152,35 @@ class BackendController extends ActionController
     }
 
     /**
-     *
+     * List custom object schemas.
      */
     public function customObjectsAction()
     {
-        /** @var Registry $registry */
-        $registry = GeneralUtility::makeInstance(Registry::class);
+        $schemaRepository = GeneralUtility::makeInstance(HubspotCustomObjectSchemaRepository::class);
 
-        $customObjects = $registry->get('hubspot', self::REGISTRY_CUSTOMOBJECTS) ?? [];
+        $schemaLabels = $schemaRepository->findAllLabels();
 
-        if (count($customObjects) === 0) {
+        if (count($schemaLabels) === 0) {
             $this->addFlashMessage(
-                'No custom object definitions have been added. You can add a definition file by using the form below. Add multiple files by writing a directory path.',
-                'No custom object definitions',
+                'No custom object schemas have been added. You can add a definition file by using the form below. Add multiple files by supplying a directory path.',
+                'No custom object schemas',
                 AbstractMessage::WARNING
             );
         }
+
+        $this->view->assign('schemaLabels', $schemaLabels);
+    }
+
+    /**
+     * Inspect code for a schema.
+     *
+     * @param string $name
+     */
+    public function inspectSchemaAction(string $name)
+    {
+        $schemaRepository = GeneralUtility::makeInstance(HubspotCustomObjectSchemaRepository::class);
+
+        $this->view->assign('schema', $schemaRepository->findByName($name));
     }
 
     /**

@@ -10,46 +10,28 @@
         <f:translate key="hubspot_integration.customObjects.headline"/>
     </h2>
 
-    <f:form action="addCustomObjectDefinition" class="form-group">
-        <div class="row">
-            <div class="col-md-10">
-                <label class="sr-only">{f:translate(key:'hubspot_integration.customObjects.formTitle')}"</label>
-                <f:form.textfield size="30" name="definitionFilePath" value="{definitionFilePath}" placeholder="EXT:my_site/Resources/Private/HubSpot/Definitions/car.json" class="form-control" />
-            </div>
-            <div class="col-md-2">
-                <f:form.submit class="btn btn-primary" value="{f:translate(key:'hubspot_integration.customObjects.addDefinitionButton')}" />
-            </div>
-        </div>
-    </f:form>
-
     <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th>
-                <f:translate key="hubspot_integration.customObjects.name"/>
+                <f:translate key="hubspot_integration.customObjects.table.label"/>
             </th>
             <th>
-                <f:translate key="hubspot_integration.customObjects.definitionFile"/>
-            </th>
-            <th>
-                <f:translate key="hubspot_integration.customObjects.lastUpdate"/>
+                <f:translate key="hubspot_integration.customObjects.table.name"/>
             </th>
             <th></th>
         </tr>
         </thead>
-        <f:for each="{customObjects}" as="formElement">
+        <f:for each="{schemaLabels}" key="name" as="label">
             <tr>
                 <td>
-
+                    {label}
                 </td>
                 <td>
-
+                    {name}
                 </td>
                 <td>
-
-                </td>
-                <td>
-
+                    <f:link.action action="inspectSchema" arguments="{name: name}" class="btn btn-default"><core:icon identifier="actions-eye" size="small"/> <f:translate key="hubspot_integration.customObjects.button.inspect" /></f:link.action>
                 </td>
             </tr>
         </f:for>
