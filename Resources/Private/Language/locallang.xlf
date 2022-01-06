@@ -6,6 +6,18 @@
 			<authorEmail>info@typo3.com</authorEmail>
 		</header>
 		<body>
+			<trans-unit id="hubspot_integration.mainMenu.index">
+				<source>Overview</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.forms">
+				<source>Forms</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.ctas">
+				<source>CTAs</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.customObjects">
+				<source>Custom Objects</source>
+			</trans-unit>
 			<trans-unit id="hubspot_integration.form.pid">
 				<source>On Page</source>
 			</trans-unit>
@@ -54,6 +66,9 @@
 			<trans-unit id="message.hubspot_blocked.2">
 				<source>Do you use an adblocker? If so, please try turning it off and reload this page.</source>
 			</trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.headline">
+                <source>Custom Object Schemas</source>
+            </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.table.label">
                 <source>Label</source>
             </trans-unit>
@@ -62,6 +77,15 @@
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.button.inspect">
                 <source>Inspect</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.refreshSchemas">
+                <source>Fetch Updates</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.refreshSchemas.title">
+                <source>Schemas Fetched</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.refreshSchemas.body">
+                <source>Schemas were successfully fetched from Hubspot.</source>
             </trans-unit>
         </body>
 	</file>

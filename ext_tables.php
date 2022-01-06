@@ -19,13 +19,17 @@ call_user_func(
                 'hubspotForm',
                 'Hubspot Form'
             );
+
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
                 'T3G.Hubspot',
                 'tools',
-                'tx_Hubspot',
+                'hubspot',
                 'top',
                 [
-                    'Backend' => 'index, forms, hubspotForm, ctas, customObjects, inspectSchema'
+                    \T3G\Hubspot\Controller\Backend\OverviewController::class => 'index',
+                    \T3G\Hubspot\Controller\Backend\FormController::class => 'index',
+                    \T3G\Hubspot\Controller\Backend\CtaController::class => 'index',
+                    \T3G\Hubspot\Controller\Backend\SchemaController::class => 'index, inspect, refresh'
                 ],
                 [
                     'access' => 'admin',
