@@ -8,7 +8,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository\Traits;
+namespace T3G\Hubspot\Domain\Repository\Traits;
 
 /**
  * Adds functionality related to setting a limit to fetched results

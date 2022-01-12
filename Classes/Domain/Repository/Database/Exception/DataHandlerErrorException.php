@@ -8,13 +8,13 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository\Exception;
+namespace T3G\Hubspot\Domain\Repository\Database\Exception;
 
 use SevenShores\Hubspot\Exceptions\HubspotException;
 
 /**
- * Thrown if a hubspot contact can't be found even if we know (because Hubspot says so) that it should be there
+ * Thrown if the backend user doesn't have the necessary permissions to modify records
  */
-class UnexpectedMissingContactException extends HubspotException
+class DataHandlerErrorException extends HubspotException
 {
 }

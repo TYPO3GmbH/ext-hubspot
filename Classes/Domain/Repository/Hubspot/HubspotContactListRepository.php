@@ -8,12 +8,12 @@ declare(strict_types = 1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Repository\Exception\HubspotInvalidContactListTypeException;
-use T3G\Hubspot\Repository\Exception\HubspotNoSuchContactListException;
-use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotInvalidContactListTypeException;
+use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotNoSuchContactListException;
+use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 
 /**
  * Repository for manipulating contact lists via the Hubspot API

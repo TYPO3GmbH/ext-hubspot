@@ -9,7 +9,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Database;
 
 
 use TYPO3\CMS\Core\Database\ConnectionPool;

@@ -8,11 +8,11 @@ declare(strict_types = 1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
-use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotExistingContactConflictException;
+use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

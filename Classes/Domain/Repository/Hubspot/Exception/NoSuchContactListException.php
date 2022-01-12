@@ -8,11 +8,13 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository\Exception;
+namespace T3G\Hubspot\Domain\Repository\Hubspot\Exception;
+
+use SevenShores\Hubspot\Exceptions\BadRequest;
 
 /**
- * Exception thrown if a Hubspot contact list is of the wrong type (e.g. dynamic when it should be static)
+ * Exception thrown if a Hubspot contact list doesn't exist
  */
-class HubspotInvalidContactListTypeException extends \Exception
+class NoSuchContactListException extends BadRequest
 {
 }

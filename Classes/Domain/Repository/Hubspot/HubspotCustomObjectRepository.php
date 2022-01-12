@@ -9,10 +9,10 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use T3G\Hubspot\Hubspot\Factory;
-use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 
 /**
  * Repository for Hubspot custom objects

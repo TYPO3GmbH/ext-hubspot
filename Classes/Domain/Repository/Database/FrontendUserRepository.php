@@ -8,11 +8,11 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Database;
 
-use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
-use T3G\Hubspot\Repository\Exception\InvalidSyncPassIdentifierScopeException;
-use T3G\Hubspot\Repository\Traits\LimitResultTrait;
+use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
+use T3G\Hubspot\Domain\Repository\Database\Exception\InvalidSyncPassIdentifierScopeException;
+use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

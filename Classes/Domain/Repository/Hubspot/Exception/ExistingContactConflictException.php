@@ -8,13 +8,13 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Repository\Exception;
+namespace T3G\Hubspot\Domain\Repository\Hubspot\Exception;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
 
 /**
- * Exception thrown if a Hubspot contact list doesn't exist
+ * Exception thrown if there is an existing contact with the email address included in the request.
  */
-class HubspotNoSuchContactListException extends BadRequest
+class ExistingContactConflictException extends BadRequest
 {
 }

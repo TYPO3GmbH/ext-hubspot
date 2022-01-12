@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-namespace T3G\Hubspot\Repository;
+namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use T3G\Hubspot\Hubspot\Factory;
 use TYPO3\CMS\Core\Registry;
@@ -18,6 +18,15 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
      * Key for custom objects in the TYPO3 system registry.
      */
     protected const REGISTRY_CUSTOM_OBJECT_SCHEMA = 'customObjectSchema';
+
+    protected const ALLOWED_KEYS_UPDATE = [
+        'labels' => [
+            'singular' => '',
+            'plural' => ''
+        ],
+        'requiredProperties' => [],
+        'searchableProperties' => [],
+    ];
 
     /**
      * @var Registry
@@ -125,6 +134,19 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
         }
 
         return $schema;
+    }
+
+    /**
+     * Update an existing schema.
+     *
+     * @param string $name
+     * @param array $schema
+     */
+    public function update(string $name, array $schema)
+    {
+        $objectTypeId = $this->findByName($name)['objectTypeId'] ?? null;
+
+
     }
 
     /**

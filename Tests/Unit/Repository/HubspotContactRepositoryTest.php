@@ -10,7 +10,7 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Tests\Unit\Repository;
 
-use T3G\Hubspot\Repository\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\Hubspot\Hubspot\Hubspot\Hubspot\Hubspot\Database\HubspotContactRepository;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class HubspotContactRepositoryTest extends UnitTestCase
