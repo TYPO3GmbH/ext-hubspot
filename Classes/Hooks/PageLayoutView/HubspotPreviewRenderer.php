@@ -10,7 +10,7 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Hooks\PageLayoutView;
 
-use T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\FormRepository;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -72,7 +72,7 @@ class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
     protected function renderHubspotFormPreview(string &$itemContent, array &$row)
     {
         if (!empty($row['hubspot_guid'])) {
-            $hubspotFormRepository = GeneralUtility::makeInstance(HubspotFormRepository::class);
+            $hubspotFormRepository = GeneralUtility::makeInstance(FormRepository::class);
             $form = $hubspotFormRepository->getFormForPreview($row['hubspot_guid']);
             $itemContent .= '<p><strong>Hubspot Form:</strong> <br />' . $form['name'] . '</p>';
             $fields = $this->getFormFieldLabels($form);

@@ -11,7 +11,7 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Service;
 
 use T3G\Hubspot\Domain\Repository\Database\ContentElementRepository;
-use T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\FormRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -28,7 +28,7 @@ class UsedFormsService
     protected $contentElementRepository;
 
     /**
-     * @var \T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository
+     * @var \T3G\Hubspot\Domain\Repository\Hubspot\FormRepository
      */
     protected $hubspotFormRepository;
 
@@ -38,7 +38,7 @@ class UsedFormsService
     public function __construct()
     {
         $this->contentElementRepository = GeneralUtility::makeInstance(ContentElementRepository::class);
-        $this->hubspotFormRepository = GeneralUtility::makeInstance(HubspotFormRepository::class);
+        $this->hubspotFormRepository = GeneralUtility::makeInstance(FormRepository::class);
         $this->allForms = $this->hubspotFormRepository->getAllFormsWithGuidAsKey();
     }
 

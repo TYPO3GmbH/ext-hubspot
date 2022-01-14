@@ -17,14 +17,14 @@ use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 /**
  * Repository for Hubspot custom objects
  */
-class HubspotCustomObjectRepository extends AbstractHubspotRepository
+class CustomObjectRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 
     protected $objectType;
 
     /**
-     * HubspotCustomObjectRepository constructor.
+     * CustomObjectRepository constructor.
      */
     public function __construct(string $objectType, Factory $factory = null)
     {

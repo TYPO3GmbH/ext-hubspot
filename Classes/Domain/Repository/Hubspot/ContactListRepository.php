@@ -18,7 +18,7 @@ use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 /**
  * Repository for manipulating contact lists via the Hubspot API
  */
-class HubspotContactListRepository extends AbstractHubspotRepository
+class ContactListRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 

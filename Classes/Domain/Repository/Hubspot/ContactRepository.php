@@ -18,7 +18,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Repository for manipulating contact data via the Hubspot API
  */
-class HubspotContactRepository extends AbstractHubspotRepository
+class ContactRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 

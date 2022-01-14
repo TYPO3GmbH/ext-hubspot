@@ -13,7 +13,7 @@ namespace T3G\Hubspot\Tests\Unit\Service;
 use PHPUnit\Framework\MockObject\MockBuilder;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
-use T3G\Hubspot\Domain\Repository\Hubspot\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Service\ContactSynchronizationService;
 use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
@@ -263,7 +263,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             ]
         ];
 
-        $hubspotContactRepositoryMock = $this->createMock(HubspotContactRepository::class);
+        $hubspotContactRepositoryMock = $this->createMock(ContactRepository::class);
 
         $hubspotContactRepositoryMock
             ->method('findByIdentifier')

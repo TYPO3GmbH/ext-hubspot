@@ -18,7 +18,7 @@ use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\UnexpectedMissingContactException;
 use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
-use T3G\Hubspot\Domain\Repository\Hubspot\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Service\Event\AfterAddingFrontendUserToHubspotEvent;
 use T3G\Hubspot\Service\Event\AfterAddingHubspotContactToFrontendUsersEvent;
 use T3G\Hubspot\Service\Event\AfterContactSynchronizationEvent;
@@ -50,7 +50,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
     use LoggerAwareTrait;
 
     /**
-     * @var HubspotContactRepository
+     * @var ContactRepository
      */
     protected $hubspotContactRepository = null;
 
@@ -75,11 +75,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * ContactSynchronizationService constructor.
      */
     public function __construct(
-        HubspotContactRepository $hubspotContactRepository = null,
+        ContactRepository $hubspotContactRepository = null,
         FrontendUserRepository $frontendUserRepository = null
     ) {
         $this->hubspotContactRepository =
-            $hubspotContactRepository ?? GeneralUtility::makeInstance(HubspotContactRepository::class);
+            $hubspotContactRepository ?? GeneralUtility::makeInstance(ContactRepository::class);
         $this->frontendUserRepository =
             $frontendUserRepository ?? GeneralUtility::makeInstance(FrontendUserRepository::class);
     }

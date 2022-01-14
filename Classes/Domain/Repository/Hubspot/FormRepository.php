@@ -13,7 +13,7 @@ namespace T3G\Hubspot\Domain\Repository\Hubspot;
 /**
  * Repository for fetching form data from hubspot via API
  */
-class HubspotFormRepository extends AbstractHubspotRepository
+class FormRepository extends AbstractHubspotRepository
 {
     /**
      * Get form elements from hubspot for selection in content element dropdown

@@ -10,13 +10,13 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Tests\Unit\Repository;
 
-use T3G\Hubspot\Domain\Repository\Hubspot\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class HubspotContactRepositoryTest extends UnitTestCase
 {
     /**
-     * @var HubspotContactRepository
+     * @var ContactRepository
      */
     public $subject = null;
 
@@ -24,7 +24,7 @@ class HubspotContactRepositoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->subject = new HubspotContactRepository();
+        $this->subject = new ContactRepository();
     }
 
     /**

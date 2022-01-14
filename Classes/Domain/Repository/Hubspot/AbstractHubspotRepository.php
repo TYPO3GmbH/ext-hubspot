@@ -25,7 +25,7 @@ abstract class AbstractHubspotRepository
     protected $factory;
 
     /**
-     * HubspotFormRepository constructor.
+     * FormRepository constructor.
      */
     public function __construct(Factory $factory = null)
     {
