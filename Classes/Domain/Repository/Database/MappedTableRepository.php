@@ -16,9 +16,9 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class CustomDatabaseRepository extends AbstractDatabaseRepository
+class MappedTableRepository extends AbstractDatabaseRepository
 {
-    protected const RELATION_TABLE = 'tx_hubspot_object_foreigntable_mm';
+    protected const RELATION_TABLE = 'tx_hubspot_mapping';
 
     /**
      * @var string Hubspot object type string
@@ -45,7 +45,7 @@ class CustomDatabaseRepository extends AbstractDatabaseRepository
             );
         }
 
-        if (!in_array($tableName, array_keys($GLOBALS['TCA']))) {
+        if (!isset($GLOBALS['TCA'][$tableName])) {
             throw new \InvalidArgumentException(
                 'Table "' . $tableName . '" does not exist.',
                 1610288542
@@ -69,7 +69,7 @@ class CustomDatabaseRepository extends AbstractDatabaseRepository
     }
 
     /**
-     * Get a query builder instance with table alias 't' and tx_hubspot_object_foreigntable_mm alias 'r' with
+     * Get a query builder instance with table alias 't' and tx_hubspot_mapping alias 'r' with
      * restrictions set for object type and table name.
      *
      * @return QueryBuilder
