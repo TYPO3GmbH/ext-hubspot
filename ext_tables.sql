@@ -46,15 +46,13 @@ CREATE TABLE tx_hubspot_cta (
 );
 
 #
-# Table structure for table 'tx_hubspot_object_foreigntable_mm'
+# Table structure for table 'tx_hubspot_mapping'
 #
-# Tracks a table row's synchronization status for a hubspot object
-#
-CREATE TABLE tx_hubspot_object_foreigntable_mm
+CREATE TABLE tx_hubspot_mapping
 (
 	object_type varchar(255) DEFAULT ''  NOT NULL,
 	hubspot_id int(11) unsigned DEFAULT '0' NOT NULL,
-	uid_foreign int(11)      DEFAULT '0' NOT NULL,
+	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	table_foreign varchar(255) DEFAULT ''  NOT NULL,
 
 	hubspot_created_timestamp bigint(14) unsigned DEFAULT '0' NOT NULL,
