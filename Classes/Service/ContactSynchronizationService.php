@@ -14,11 +14,11 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
-use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
-use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
-use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
-use T3G\Hubspot\Repository\FrontendUserRepository;
-use T3G\Hubspot\Repository\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\UnexpectedMissingContactException;
+use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\HubspotContactRepository;
 use T3G\Hubspot\Service\Event\AfterAddingFrontendUserToHubspotEvent;
 use T3G\Hubspot\Service\Event\AfterAddingHubspotContactToFrontendUsersEvent;
 use T3G\Hubspot\Service\Event\AfterContactSynchronizationEvent;
@@ -375,7 +375,7 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
 
             $hubspotContactIdentifier = $this->hubspotContactRepository->create($mappedHubspotProperties);
-        } catch (HubspotExistingContactConflictException $existingContactException) {
+        } catch (ExistingContactConflictException $existingContactException) {
             $hubspotContact = $this->hubspotContactRepository->findByEmail($frontendUser['email']);
 
             if ($hubspotContact !== null) {

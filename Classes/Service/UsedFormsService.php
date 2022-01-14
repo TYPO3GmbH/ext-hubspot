@@ -10,8 +10,8 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Service;
 
-use T3G\Hubspot\Repository\ContentElementRepository;
-use T3G\Hubspot\Repository\HubspotFormRepository;
+use T3G\Hubspot\Domain\Repository\Database\ContentElementRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -23,12 +23,12 @@ class UsedFormsService
     protected $allForms;
 
     /**
-     * @var \T3G\Hubspot\Repository\ContentElementRepository
+     * @var \T3G\Hubspot\Domain\Repository\Database\ContentElementRepository
      */
     protected $contentElementRepository;
 
     /**
-     * @var \T3G\Hubspot\Repository\HubspotFormRepository
+     * @var \T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository
      */
     protected $hubspotFormRepository;
 

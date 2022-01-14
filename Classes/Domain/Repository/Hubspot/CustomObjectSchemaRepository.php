@@ -5,28 +5,23 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
+use T3G\Hubspot\Domain\Model\Hubspot\Dto\ImmutableSchema;
+use T3G\Hubspot\Domain\Model\Hubspot\Dto\MutableSchema;
+use T3G\Hubspot\Domain\Repository\Hubspot\AbstractHubspotRepository;
 use T3G\Hubspot\Hubspot\Factory;
+use T3G\Hubspot\Utility\SchemaUtility;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Repository for Hubspot custom object definitions.
  */
-class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
+class CustomObjectSchemaRepository extends AbstractHubspotRepository
 {
     /**
      * Key for custom objects in the TYPO3 system registry.
      */
     protected const REGISTRY_CUSTOM_OBJECT_SCHEMA = 'customObjectSchema';
-
-    protected const ALLOWED_KEYS_UPDATE = [
-        'labels' => [
-            'singular' => '',
-            'plural' => ''
-        ],
-        'requiredProperties' => [],
-        'searchableProperties' => [],
-    ];
 
     /**
      * @var Registry
@@ -94,7 +89,7 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
      * @param bool $cached If true, use the local list of schemas in registry. If false, query Hubspot.
      * @return array of schema labels [name => singular label]
      */
-    public function findAllLabels($cached = true): array
+    public function findAllLabels(bool $cached = true): array
     {
         $schemaLabels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA);
 
@@ -113,7 +108,7 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
      * @param bool $cached If true, use the local list of schemas in registry. If false, query Hubspot.
      * @return array of schema names
      */
-    public function findAllNames($cached = true): array
+    public function findAllNames(bool $cached = true): array
     {
         return array_keys($this->findAllLabels($cached));
     }
@@ -125,7 +120,7 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
      * @param bool $cached If true, use the local list of schemas in registry. If false, query Hubspot.
      * @return array|null The custom object schema or null if no schema with $name exists.
      */
-    public function findByName(string $name, $cached = true): ?array
+    public function findByName(string $name, bool $cached = true): ?array
     {
         $schema = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $name);
 
@@ -137,6 +132,25 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
     }
 
     /**
+     * Create a schema.
+     *
+     * @param string $name
+     * @param array $schema
+     * @return string The schema name
+     */
+    public function create(array $schema): string
+    {
+        $immutableSchema = new ImmutableSchema();
+        $immutableSchema->populate($schema);
+
+        $response = $this->factory->customObjectSchemas()->create($immutableSchema->toArray());
+
+        $this->findAll(false);
+
+        return $response['name'];
+    }
+
+    /**
      * Update an existing schema.
      *
      * @param string $name
@@ -144,9 +158,13 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
      */
     public function update(string $name, array $schema)
     {
-        $objectTypeId = $this->findByName($name)['objectTypeId'] ?? null;
+        $mutableSchema = new MutableSchema();
+        $mutableSchema->populate($schema);
 
-
+        $this->factory->customObjectSchemas()->update(
+            SchemaUtility::makeFullyQualifiedName($name),
+            $mutableSchema->toArray()
+        );
     }
 
     /**
@@ -158,5 +176,4 @@ class HubspotCustomObjectSchemaRepository extends AbstractHubspotRepository
     {
         return $this->factory->customObjectSchemas()->all()->toArray()['results'] ?? [];
     }
-
 }

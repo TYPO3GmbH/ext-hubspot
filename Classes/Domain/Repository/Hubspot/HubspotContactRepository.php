@@ -11,7 +11,7 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotExistingContactConflictException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -155,7 +155,7 @@ class HubspotContactRepository extends AbstractHubspotRepository
             );
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 409) {
-                throw new HubspotExistingContactConflictException(
+                throw new ExistingContactConflictException(
                     $exception->getMessage(),
                     1602243653
                 );

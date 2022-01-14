@@ -11,8 +11,8 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotInvalidContactListTypeException;
-use T3G\Hubspot\Domain\Repository\Database\Exception\HubspotNoSuchContactListException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\InvalidContactListTypeException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\NoSuchContactListException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 
 /**
@@ -34,7 +34,7 @@ class HubspotContactListRepository extends AbstractHubspotRepository
      * @param bool $cached
      * @return array
      * @throws BadRequest
-     * @throws HubspotNoSuchContactListException
+     * @throws NoSuchContactListException
      */
     public function findByIdentifier(int $listIdentifier, bool $cached = true): array
     {
@@ -46,7 +46,7 @@ class HubspotContactListRepository extends AbstractHubspotRepository
             $list = $this->factory->contactLists()->getById($listIdentifier);
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 404) {
-                throw new HubspotNoSuchContactListException(
+                throw new NoSuchContactListException(
                     'A contact list with the identifier ' . (int)$listIdentifier . ' doesn\'t exist.',
                     1603460485
                 );
@@ -76,7 +76,7 @@ class HubspotContactListRepository extends AbstractHubspotRepository
      *
      * @param int $listIdentifier
      * @param array $contactIdentifiers
-     * @throws HubspotInvalidContactListTypeException if the list is not static
+     * @throws InvalidContactListTypeException if the list is not static
      */
     public function addContacts(int $listIdentifier, array $contactIdentifiers)
     {
@@ -85,7 +85,7 @@ class HubspotContactListRepository extends AbstractHubspotRepository
         }
 
         if ($this->findByIdentifier($listIdentifier)['listType'] !== 'STATIC') {
-            throw new HubspotInvalidContactListTypeException(
+            throw new InvalidContactListTypeException(
                 'Contact list with identifier ' . $listIdentifier . ' is not a static list.',
                 1603461059
             );

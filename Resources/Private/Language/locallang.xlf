@@ -78,14 +78,71 @@
             <trans-unit id="hubspot_integration.customObjects.button.inspect">
                 <source>Inspect</source>
             </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.download">
+                <source>Download</source>
+            </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.button.refreshSchemas">
                 <source>Fetch Updates</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.newSchema">
+                <source>New</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.refreshSchemas.title">
                 <source>Schemas Fetched</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.refreshSchemas.body">
                 <source>Schemas were successfully fetched from Hubspot.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.headline">
+                <source>Create Custom Object Schema From File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.table.name">
+                <source>File Name</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.button.create">
+                <source>Create From File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.noFiles.title">
+                <source>No Definition Files Defined</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.noFiles.message">
+                <source>No definition files have been defined in your TYPO3 instance. You can define them in an extension's ext_tables.php file (e.g. in a theme extension).</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.noFileTitle">
+                <source>File Not Found</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.noFileMessage">
+                <source>The file "%s" could not be found.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.jsonDecodeTitle">
+                <source>Invalid JSON File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.jsonDecodeMessage">
+                <source>The file could not be parsed as valid JSON.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.warning.overwriteTitle">
+                <source>Update Existing Schema?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.warning.overwriteMessage">
+                <source>A schema called "%s" already exists in Hubspot. Would you like to update it based on the contents of the file?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.button.update">
+                <source>Update Existing</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.successTitle">
+                <source>Schema Created</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.successMessage">
+                <source>The schema "%s" was successfully created.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.updateSuccessTitle">
+                <source>Schema Updated</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.updateSuccessMessage">
+                <source>The schema "%s" was successfully updated.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.cancel">
+                <source>Cancel</source>
             </trans-unit>
         </body>
 	</file>

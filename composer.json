@@ -16,7 +16,8 @@
         "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4 || ^11.5",
         "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
         "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "hubspot/hubspot-php": "^1.0 || ^3.0"
+        "hubspot/hubspot-php": "^1.0 || ^3.0",
+        "ext-json": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",

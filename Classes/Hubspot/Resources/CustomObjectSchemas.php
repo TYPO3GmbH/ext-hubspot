@@ -34,6 +34,45 @@ class CustomObjectSchemas extends Resource
         );
     }
 
+    /**
+     * Create a custom object schema definition.
+     *
+     * @param array $data
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \SevenShores\Hubspot\Exceptions\HubspotException
+     */
+    public function create(array $data, array $params = [])
+    {
+        return $this->client->request(
+            'post',
+            $this->getEndpoint(),
+            ['json' => $data],
+            build_query_string($params)
+        );
+    }
+
+    /**
+     * Update a custom object schema definition.
+     *
+     * @param string $objectType
+     * @param array $data
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \SevenShores\Hubspot\Exceptions\HubspotException
+     */
+    public function update(string $objectType, array $data, array $params = [])
+    {
+        return $this->client->request(
+            'patch',
+            $this->getEndpoint($objectType),
+            ['json' => $data],
+            build_query_string($params)
+        );
+    }
+
     protected function getEndpoint(string $postfix = ''): string
     {
         return self::ENDPOINT_PREFIX . ($postfix !== '' ? '/' . $postfix : '');

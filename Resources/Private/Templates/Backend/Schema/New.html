@@ -1,0 +1,54 @@
+<html
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Main"/>
+<f:section name="content">
+    <h2>
+        <f:translate key="hubspot_integration.customObjects.new.headline"/>
+    </h2>
+
+    <f:if condition="{files -> f:count()} > 0">
+        <f:then>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>
+                        <f:translate key="hubspot_integration.customObjects.new.table.name"/>
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <f:for each="{files}" key="index" as="file">
+                    <tr>
+                        <td>
+                            {file}
+                        </td>
+                        <td>
+                            <f:form action="create" arguments="{file: index}" method="post">
+                                <f:form.button
+                                    type="submit"
+                                    class="btn btn-default"
+                                >
+                                    <core:icon identifier="actions-add" size="small"/> <f:translate key="hubspot_integration.customObjects.new.button.create" />
+                                </f:form.button>
+                            </f:form>
+                        </td>
+                    </tr>
+                </f:for>
+            </table>
+        </f:then>
+        <f:else>
+            <f:be.infobox title="{f:translate(key: 'hubspot_integration.customObjects.new.noFiles.title')}" state="1">
+                <p>{f:translate(key: 'hubspot_integration.customObjects.new.noFiles.message')}</p>
+                <pre>\T3G\Hubspot\Utility\CustomObjectUtility::addSchemaDefinitionFile(
+    'EXT:my_theme/Configuration/Hubspot/CustomObjectSchemas/MySchema.json'
+);</pre>
+            </f:be.infobox>
+        </f:else>
+    </f:if>
+</f:section>
+
+</html>

@@ -23,12 +23,12 @@ class CustomDatabaseRepository extends AbstractDatabaseRepository
     /**
      * @var string Hubspot object type string
      */
-    protected string $objectType;
+    protected $objectType;
 
     /**
      * @var string Table name for the TYPO3 side
      */
-    protected string $tableName;
+    protected $tableName;
 
     /**
      * CustomDatabaseRepository constructor.

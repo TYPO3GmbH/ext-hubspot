@@ -10,7 +10,7 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Hooks\PageLayoutView;
 
-use T3G\Hubspot\Domain\Repository\Hubspot\Hubspot\Hubspot\Hubspot\Hubspot\Hubspot\Database\HubspotFormRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository;
 use TYPO3\CMS\Backend\View\PageLayoutView;
 use TYPO3\CMS\Backend\View\PageLayoutViewDrawItemHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -68,7 +68,6 @@ class HubspotPreviewRenderer implements PageLayoutViewDrawItemHookInterface
      *
      * @param string &$itemContent
      * @param array &$row
-     * @return array
      */
     protected function renderHubspotFormPreview(string &$itemContent, array &$row)
     {

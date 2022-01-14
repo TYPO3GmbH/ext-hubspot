@@ -8,7 +8,7 @@ declare(strict_types=1);
  * LICENSE file that was distributed with this source code.
  */
 
-namespace T3G\Hubspot\Domain\Repository\Exception;
+namespace T3G\Hubspot\Domain\Repository\Hubspot\Exception;
 
 use SevenShores\Hubspot\Exceptions\HubspotException;
 

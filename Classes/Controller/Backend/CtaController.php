@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Controller\Backend;
 
-use T3G\Hubspot\Repository\ContentElementRepository;
+use T3G\Hubspot\Domain\Repository\Database\ContentElementRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**

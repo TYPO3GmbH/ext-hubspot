@@ -42,7 +42,7 @@ call_user_func(function (string $extensionName, string $table) {
                         '',
                     ],
                 ],
-                'itemsProcFunc' => \T3G\Hubspot\Repository\HubspotFormRepository::class . '->getFormsForItemsProcFunc',
+                'itemsProcFunc' => \T3G\Hubspot\Domain\Repository\Hubspot\HubspotFormRepository::class . '->getFormsForItemsProcFunc',
                 'default' => '',
             ],
         ],

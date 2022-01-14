@@ -29,7 +29,7 @@ call_user_func(
                     \T3G\Hubspot\Controller\Backend\OverviewController::class => 'index',
                     \T3G\Hubspot\Controller\Backend\FormController::class => 'index',
                     \T3G\Hubspot\Controller\Backend\CtaController::class => 'index',
-                    \T3G\Hubspot\Controller\Backend\SchemaController::class => 'index, inspect, refresh'
+                    \T3G\Hubspot\Controller\Backend\SchemaController::class => 'index, inspect, refresh, new, create, download'
                 ],
                 [
                     'access' => 'admin',
