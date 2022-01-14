@@ -60,21 +60,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
     protected $frontendUserRepository = null;
 
     /**
-     * @var array Default values for TypoScript configuration
-     */
-    protected $defaultConfiguration = [];
-
-    /**
-     * @var array Configuration array
-     */
-    protected $configuration = [];
-
-    /**
-     * @var int To track active configuration PID
-     */
-    protected $activeConfigurationPageId = 0;
-
-    /**
      * @var array[] UIDs of frontend users processed
      */
     protected $processedRecords = [
@@ -236,44 +221,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
     public function getProcessedRecords(): array
     {
         return $this->processedRecords;
-    }
-
-    /**
-     * Set default TypoScript values
-     *
-     * @param array $defaultConfiguration
-     */
-    public function setDefaultConfiguration(array $defaultConfiguration)
-    {
-        $this->defaultConfiguration = $defaultConfiguration;
-    }
-
-    /**
-     * Fetches TypoScript configuration from page and sets $this->configuration to what's in module.tx_hubspot
-     *
-     * Also configures repository defaults
-     *
-     * @param int $pageId
-     */
-    public function configureForPageId(int $pageId)
-    {
-        if ($this->activeConfigurationPageId === $pageId) {
-            return;
-        }
-
-        /** @var BackendConfigurationManager $configurationManager */
-        $configurationManager = GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(BackendConfigurationManager::class);
-
-        $configurationManager->setCurrentPageId($pageId);
-
-        $configuration = $configurationManager->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
-
-        $this->configuration = array_merge_recursive($this->defaultConfiguration, $configuration);
-
-        $this->activeConfigurationPageId = $pageId;
-
-        $this->configureRepositoryDefaults();
     }
 
     /**

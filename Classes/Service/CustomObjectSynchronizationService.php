@@ -14,11 +14,13 @@ namespace T3G\Hubspot\Service;
 /**
  * Synchronization service for Hubspot custom objects
  */
-class CustomObjectSynchronizationService
+class CustomObjectSynchronizationService extends AbstractSynchronizationService
 {
     public function synchronize(int $defaultPid = null)
     {
-        // TODO: Read TypoScript configuration from tx_hubspot.settings.synchronizeCustomObjects
+        $this->configureForPageId(
+            $defaultPid ?? (int)$this->defaultConfiguration['persistence.']['synchronizeCustomObjects.']['defaultPid']
+        );
 
         // TODO: Iterate through objects that have not yet been synched, then objects with changes
 
