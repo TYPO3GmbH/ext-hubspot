@@ -14,18 +14,28 @@ if (!defined('TYPO3_MODE')) {
 call_user_func(
     function () {
         if (TYPO3_MODE === 'BE') {
+
+            $backendController = \T3G\Hubspot\Controller\BackendController::class;
+            $extensionName = 'hubspot';
+            if (\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class)
+                    ->getMajorVersion() < 10) {
+                $backendController = 'Backend';
+                $extensionName = 'T3G.hubspot';
+            }
+
+
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-                'T3G.hubspot',
+                $extensionName,
                 'hubspotForm',
                 'Hubspot Form'
             );
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-                'T3G.Hubspot',
+                $extensionName,
                 'tools',
                 'tx_Hubspot',
                 'top',
                 [
-                    'Backend' => 'index, forms, hubspotForm, ctas'
+                    $backendController => 'index, forms, hubspotForm, ctas'
                 ],
                 [
                     'access' => 'admin',
