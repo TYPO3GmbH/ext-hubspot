@@ -11,6 +11,6 @@ use T3G\Hubspot\Service\ContactSynchronizationService;
  *
  * @see ContactSynchronizationService
  */
-abstract class AbstractContactSynchronizationException extends \Exception
+abstract class AbstractSynchronizationException extends \Exception
 {
 }

@@ -51,6 +51,7 @@ CREATE TABLE tx_hubspot_cta (
 CREATE TABLE tx_hubspot_mapping
 (
 	object_type varchar(255) DEFAULT ''  NOT NULL,
+    typoscript_key varchar(255) DEFAULT ''  NOT NULL,
 	hubspot_id int(11) unsigned DEFAULT '0' NOT NULL,
 	uid_foreign int(11) DEFAULT '0' NOT NULL,
 	table_foreign varchar(255) DEFAULT ''  NOT NULL,
@@ -60,5 +61,6 @@ CREATE TABLE tx_hubspot_mapping
 	hubspot_sync_pass int(11) unsigned DEFAULT '0' NOT NULL,
 
 	KEY type_hubspot_identifier (object_type, hubspot_id),
-	KEY type_uid_foreign_table (object_type, uid_foreign, table_foreign(40))
+	KEY type_uid_key_foreign_table (object_type, typoscript_key, uid_foreign, table_foreign(40)),
+    KEY type_key_foreign_table (object_type, typoscript_key, table_foreign(40))
 );

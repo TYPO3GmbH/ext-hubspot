@@ -21,6 +21,9 @@ class CustomObjectRepository extends AbstractHubspotRepository
 {
     use LimitResultTrait;
 
+    /**
+     * @var string
+     */
     protected $objectType;
 
     /**
@@ -31,6 +34,30 @@ class CustomObjectRepository extends AbstractHubspotRepository
         parent::__construct($factory);
 
         $this->objectType = $objectType;
+    }
+
+    /**
+     * Create a custom object and return the object's ID.
+     *
+     * @param array $properties
+     * @return int
+     */
+    public function create(array $properties): int
+    {
+        $result = $this->factory->customObjects($this->objectType)->create($properties);
+
+        return (int)$result['id'];
+    }
+
+    /**
+     * Get a custom object.
+     *
+     * @param int $id
+     * @return array
+     */
+    public function get(int $id): array
+    {
+        return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
     }
 
     // TODO: Implement similarly to HubspotContactRepository, but with the differences necessary to deal with custom

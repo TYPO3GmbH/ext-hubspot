@@ -12,21 +12,31 @@ declare(strict_types=1);
 namespace T3G\Hubspot\Domain\Repository\Database;
 
 
+use Doctrine\DBAL\FetchMode;
+use T3G\Hubspot\Domain\Repository\Database\Exception\InvalidSyncPassIdentifierScopeException;
+use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MappedTableRepository extends AbstractDatabaseRepository
 {
+    use LimitResultTrait;
+
     protected const RELATION_TABLE = 'tx_hubspot_mapping';
 
     /**
-     * @var string Hubspot object type string
+     * @var string Hubspot object type string.
      */
     protected $objectType;
 
     /**
-     * @var string Table name for the TYPO3 side
+     * @var string The configuration's TypoScript key.
+     */
+    protected $typoScriptKey;
+
+    /**
+     * @var string Table name for the TYPO3 side.
      */
     protected $tableName;
 
@@ -34,9 +44,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
      * CustomDatabaseRepository constructor.
      *
      * @param string $objectType Hubspot object type string
+     * @param string $typoScriptKey The configuration's TypoScript key
      * @param string $tableName Table name for the TYPO3 side
      */
-    public function __construct(string $objectType, string $tableName)
+    public function __construct(string $objectType, string $typoScriptKey, string $tableName)
     {
         if ($objectType === '') {
             throw new \InvalidArgumentException(
@@ -53,7 +64,96 @@ class MappedTableRepository extends AbstractDatabaseRepository
         }
 
         $this->objectType = $objectType;
+        $this->typoScriptKey = $typoScriptKey;
         $this->tableName = $tableName;
+    }
+
+    /**
+     * Finds records that have not yet been synchronized.
+     *
+     * @return array
+     */
+    public function findNotYetSynchronized(): array
+    {
+        $queryBuilder = $this->getSelectQueryBuilder();
+
+        return $queryBuilder
+            ->andWhere($queryBuilder->expr()->eq('m.uid_foreign', null))
+            ->execute()
+            ->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+
+    public function findReadyForSyncPass(): array
+    {
+        $queryBuilder = $this->getSelectQueryBuilder();
+
+        return $queryBuilder
+            ->andWhere($queryBuilder->expr()->neq('m.uid_foreign', null))
+            ->execute()
+            ->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+
+    /**
+     * Add a TYPO3-to-Hubspot record relation mapping.
+     *
+     * @param int $objectId The unique ID of the Hubspot custom object record.
+     * @param int $uid The corresponding local TYPO3 record UID.
+     */
+    public function add(int $objectId, int $uid)
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        $queryBuilder
+            ->update(self::RELATION_TABLE)
+            ->values([
+                'object_type' => $this->objectType,
+                'typoscript_key' => $this->typoScriptKey,
+                'hubspot_id' => $objectId,
+                'uid_foreign' => $uid,
+                'table_foreign' => $this->tableName,
+                'hubspot_created_timestamp' => time() * 1000,
+                'hubspot_sync_timestamp' => time(),
+                'hubspot_sync_pass' => 1,
+            ])
+            ->execute();
+    }
+
+    /**
+     * Calculates the syncPassIdentifier to use when updating a record. This value identifies whether a record
+     * has been updated in the current sync pass.
+     *
+     * @param bool $ignoreScopeError Internal. Return value, don't throw InvalidSyncPassIdentifierScopeException
+     * @return int The syncPassIdentifier
+     */
+    public function getSyncPassIdentifier(bool $ignoreScopeError = false): int
+    {
+        $queryBuilder = $this->getSelectQueryBuilder();
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
+        list($maxPass, $minPass) = $queryBuilder
+            ->addSelectLiteral(
+                $queryBuilder->expr()->max('m.hubspot_sync_pass'),
+                $queryBuilder->expr()->min('m.hubspot_sync_pass')
+            )
+            ->andWhere($queryBuilder->expr()->neq('m.hubspot_id', null))
+            ->execute()
+            ->fetch(\PDO::FETCH_NUM);
+
+        if ($maxPass === $minPass) {
+            return $maxPass + 1;
+        }
+
+        if ($minPass === $maxPass - 1 || $ignoreScopeError) {
+            return $maxPass;
+        }
+
+        throw new InvalidSyncPassIdentifierScopeException(
+            'Sync pass identifier out of scope. Max was ' . $maxPass . ' and min ' . $minPass . '.',
+            1602173860
+        );
     }
 
     /**
@@ -69,7 +169,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
     }
 
     /**
-     * Get a query builder instance with table alias 't' and tx_hubspot_mapping alias 'r' with
+     * Get a query builder instance with table alias 't' and tx_hubspot_mapping alias 'm' with
      * restrictions set for object type and table name.
      *
      * @return QueryBuilder
@@ -81,22 +181,26 @@ class MappedTableRepository extends AbstractDatabaseRepository
         return $queryBuilder
             ->select('*')
             ->from($this->tableName, 't')
-            ->join(
+            ->leftJoin(
                 't',
                 self::RELATION_TABLE,
-                'r',
+                'm',
                 $queryBuilder->expr()->eq(
                     't.uid',
-                    $queryBuilder->quoteIdentifier('r.uid_foreign')
+                    $queryBuilder->quoteIdentifier('m.uid_foreign')
                 )
             )
             ->andWhere(
                 $queryBuilder->expr()->eq(
-                    'r.object_type',
+                    'm.object_type',
                     $this->objectType
                 ),
                 $queryBuilder->expr()->eq(
-                    'r.table_foreign',
+                    'm.typoscript_key',
+                    $this->typoScriptKey
+                ),
+                $queryBuilder->expr()->eq(
+                    'm.table_foreign',
                     $this->tableName
                 )
             );

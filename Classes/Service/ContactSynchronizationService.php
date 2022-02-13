@@ -13,7 +13,6 @@ namespace T3G\Hubspot\Service;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\UnexpectedMissingContactException;
@@ -39,16 +38,13 @@ use T3G\Hubspot\Service\Exception\StopRecordSynchronizationException;
 use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
  */
-class ContactSynchronizationService implements LoggerAwareInterface
+class ContactSynchronizationService extends AbstractSynchronizationService
 {
-    use LoggerAwareTrait;
-
     /**
      * @var ContactRepository
      */

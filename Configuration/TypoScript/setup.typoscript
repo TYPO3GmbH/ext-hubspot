@@ -113,11 +113,10 @@ module.tx_hubspot {
 
                 # Hubspot relations.
                 relations {
-                    # E.g. a sight_to_contact relation.
-                    contact {
-                        # The local UID. Used to look up the Hubspot ID
-                        localUid.field =
-                    }
+                    # E.g. a sight_to_contact relation and the field with the relation. The sync will use TYPO3's APIs
+                    # to fetch the UID relations. The resulting value can be further modified with stdWrap.
+                    contact = contact_uid
+                    contact.userFunc = ...
                 }
 
                 ignoreOnHubspotCreate =
