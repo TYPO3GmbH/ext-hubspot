@@ -88,47 +88,6 @@ module.tx_hubspot {
 
         synchronizeCustomObjects {
             # Any key, but the Hubspot object name is recommended. Still, there could be multiple syncs to the same object
-            sight {
-                # The object name in Hubspot
-                objectName = sight
-
-                # PIDs to search in
-                limitToPids =< module.tx_hubspot.persistence.synchronize.storagePid
-                # Table name for local representation of object
-                table =
-                # If needed, see https://docs.typo3.org/m/typo3/reference-typoscript/10.4/en-us/Functions/Select.html
-                select {
-
-                }
-
-                createNewInHubspot = 1
-                createNewInTypo3 = 0
-
-                toHubspot {
-
-                }
-
-                # Comma-separated list of fields that together make up a unique object
-                uniqueFields =
-
-                # Hubspot relations.
-                relations {
-                    # E.g. a sight_to_contact relation and the field with the relation. The sync will use TYPO3's APIs
-                    # to fetch the UID relations. The resulting value can be further modified with stdWrap.
-                    contact = contact_uid
-                    contact.userFunc = ...
-                }
-
-                ignoreOnHubspotCreate =
-                ignoreOnHubspotUpdate =
-
-                toLocal {
-
-                }
-
-                ignoreOnLocalCreate =
-                ignoreOnLocalUpdate =
-            }
         }
 
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Command;
 
+use GeorgRinger\News\Utility\TypoScript;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,8 +12,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Service\ContactSynchronizationService;
+use T3G\Hubspot\Service\CustomObjectSynchronizationService;
 use T3G\Hubspot\Utility\CompatibilityUtility;
+use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 class SynchronizeCommand extends Command
 {
@@ -64,13 +70,35 @@ class SynchronizeCommand extends Command
             );
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        parent::initialize($input, $output);
+
         $this->input = $input;
         $this->output = $output;
 
         CompatibilityUtility::initializeBackendAuthentication();
 
+        // Initialize TSFE
+        if (!isset($GLOBALS['TSFE'])) {
+            $site = GeneralUtility::makeInstance(SiteFinder::class)
+                ->getSiteByPageId((int)$this->input->getOption('default-pid'));
+
+            GeneralUtility::setIndpEnv('TYPO3_REQUEST_URL', (string)$site->getBase());
+
+            $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
+                TypoScriptFrontendController::class,
+                Environment::getContext(),
+                $site,
+                $site->getDefaultLanguage()
+            );
+
+            $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance(PageRepository::class);
+        }
+    }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         foreach ($input->getArgument('types') as $type) {
             $type = strtolower($type);
             $methodName = 'synchronize' . ucfirst($type);
@@ -130,5 +158,11 @@ class SynchronizeCommand extends Command
                 ]
             ]
         ];
+
+        $synchronizationService = GeneralUtility::makeInstance(CustomObjectSynchronizationService::class);
+
+        $synchronizationService->setDefaultConfiguration($configuration);
+
+        $synchronizationService->synchronize();
     }
 }

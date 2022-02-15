@@ -78,7 +78,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
         $queryBuilder = $this->getSelectQueryBuilder();
 
         return $queryBuilder
-            ->andWhere($queryBuilder->expr()->eq('m.uid_foreign', null))
+            ->andWhere($queryBuilder->expr()->isNull('m.uid_foreign'))
             ->execute()
             ->fetchAll(FetchMode::ASSOCIATIVE);
     }
@@ -88,7 +88,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
         $queryBuilder = $this->getSelectQueryBuilder();
 
         return $queryBuilder
-            ->andWhere($queryBuilder->expr()->neq('m.uid_foreign', null))
+            ->andWhere($queryBuilder->expr()->isNotNull('m.uid_foreign'))
             ->execute()
             ->fetchAll(FetchMode::ASSOCIATIVE);
     }
@@ -104,7 +104,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
         $queryBuilder = $this->getQueryBuilder();
 
         $queryBuilder
-            ->update(self::RELATION_TABLE)
+            ->insert(self::RELATION_TABLE)
             ->values([
                 'object_type' => $this->objectType,
                 'typoscript_key' => $this->typoScriptKey,
@@ -178,6 +178,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
     {
         $queryBuilder = $this->getQueryBuilder();
 
+        if ($this->getLimit() > 0) {
+            $queryBuilder->setMaxResults($this->getLimit());
+        }
+
         return $queryBuilder
             ->select('*')
             ->from($this->tableName, 't')
@@ -185,24 +189,40 @@ class MappedTableRepository extends AbstractDatabaseRepository
                 't',
                 self::RELATION_TABLE,
                 'm',
-                $queryBuilder->expr()->eq(
-                    't.uid',
-                    $queryBuilder->quoteIdentifier('m.uid_foreign')
-                )
-            )
-            ->andWhere(
-                $queryBuilder->expr()->eq(
-                    'm.object_type',
-                    $this->objectType
-                ),
-                $queryBuilder->expr()->eq(
-                    'm.typoscript_key',
-                    $this->typoScriptKey
-                ),
-                $queryBuilder->expr()->eq(
-                    'm.table_foreign',
-                    $this->tableName
+                (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq(
+                        't.uid',
+                        $queryBuilder->quoteIdentifier('m.uid_foreign')
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.object_type',
+                        $queryBuilder->createNamedParameter($this->objectType)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.typoscript_key',
+                        $queryBuilder->createNamedParameter($this->typoScriptKey)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.table_foreign',
+                        $queryBuilder->createNamedParameter($this->tableName)
+                    )
                 )
             );
+    }
+
+    /**
+     * @return int
+     */
+    public function getDefaultPageId(): int
+    {
+        return $this->defaultPageId;
+    }
+
+    /**
+     * @param int $defaultPageId
+     */
+    public function setDefaultPageId(int $defaultPageId)
+    {
+        $this->defaultPageId = $defaultPageId;
     }
 }

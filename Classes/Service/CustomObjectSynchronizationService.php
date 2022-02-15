@@ -14,6 +14,7 @@ namespace T3G\Hubspot\Service;
 use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
+use T3G\Hubspot\Utility\SchemaUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -47,12 +48,9 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      * @param CustomObjectRepository|null $customObjectRepository
      */
     public function __construct(
-        CustomObjectRepository $customObjectRepository = null,
         CustomObjectSchemaRepository $customObjectSchemaRepository = null
     )
     {
-        $this->customObjectRepository = $customObjectRepository
-            ?? GeneralUtility::makeInstance(CustomObjectRepository::class);
         $this->customObjectSchemaRepository = $customObjectSchemaRepository
             ?? GeneralUtility::makeInstance(CustomObjectSchemaRepository::class);
     }
@@ -69,7 +67,18 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         }
 
         foreach ($this->configuration['settings.']['synchronizeCustomObjects.'] as $typoScriptKey => $synchronizationConfiguration) {
+            if (!is_array($synchronizationConfiguration)) {
+                continue;
+            }
+
+            $typoScriptKey = substr($typoScriptKey, 0, -1); // Remove trailing dot
+
             $this->currentSynchronizationConfiguration = $synchronizationConfiguration;
+
+            $this->customObjectRepository = GeneralUtility::makeInstance(
+                CustomObjectRepository::class,
+                SchemaUtility::makeFullyQualifiedName($synchronizationConfiguration['objectName'])
+            );
 
             $this->mappedTableRepository = GeneralUtility::makeInstance(
                 MappedTableRepository::class,
@@ -77,6 +86,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 $typoScriptKey,
                 $this->getCurrentTableName()
             );
+
+            $this->configureRepositoryDefaults();
 
             if ($synchronizationConfiguration['createNewInTypo3']) {
                 // TODO: Fetch existing from Hubspot
@@ -142,7 +153,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         $ignoreFieldsPropertyName = $isUpdate ? 'ignoreOnHubspotUpdate' : 'ignoreOnHubspotCreate';
         $ignoreFields = GeneralUtility::trimExplode(
             ',',
-            $this->getCurrentSynchronizationConfiguration()[$ignoreFieldsPropertyName] ?? ''
+            $this->getCurrentSynchronizationConfiguration()[$ignoreFieldsPropertyName] ?? '',
+            true
         );
 
         $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
@@ -160,17 +172,17 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 continue;
             }
 
-            $hubspotProperties[$hubspotProperty] = $contentObjectRenderer->stdWrap(
-                $toHubspot[$hubspotProperty] ?? '',
-                $toHubspot[$hubspotProperty . '.'] ?? []
-            );
+            $hubspotProperties[$hubspotProperty] = $toHubspot[$hubspotProperty];
         }
 
         $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
 
         $mappedData = [];
         foreach ($hubspotProperties as $hubspotProperty => $localFieldName) {
-            $mappedData[$hubspotProperty] = $record[$localFieldName];
+            $mappedData[$hubspotProperty] = $contentObjectRenderer->stdWrap(
+                $record[$localFieldName],
+                $toHubspot[$hubspotProperty . '.'] ?? []
+            );
         }
 
         return $mappedData;
@@ -267,7 +279,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         return array_filter(
             $properties,
             function ($property) {
-                return strpos($property['name'], 'hs_') === 0;
+                return strpos($property['name'], 'hs_') !== 0;
             }
         );
     }
@@ -294,5 +306,25 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     protected function getCurrentObjectName(): string
     {
         return $this->currentSynchronizationConfiguration['objectName'];
+    }
+
+    /**
+     * Sets repository default values based on $this->configuration
+     */
+    protected function configureRepositoryDefaults()
+    {
+        if (!isset($this->mappedTableRepository)) {
+            return;
+        }
+
+        $this->mappedTableRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronizeCustomObjects.']['storagePid']);
+
+        if ($this->configuration['synchronize.']['limit']) {
+            $this->mappedTableRepository->setLimit((int)$this->configuration['synchronizeCustomObjects.']['limit']);
+        }
+
+        $this->mappedTableRepository->setSearchPids(
+            GeneralUtility::intExplode(',', $this->configuration['synchronizeCustomObjects.']['limitToPids'] ?? '', true)
+        );
     }
 }
