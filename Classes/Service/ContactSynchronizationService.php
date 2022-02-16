@@ -321,6 +321,14 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         } catch (ExistingContactConflictException $existingContactException) {
             $hubspotContact = $this->hubspotContactRepository->findByEmail($frontendUser['email']);
 
+            $this->logWarning(
+                'Frontend user ' . $frontendUser['uid'] . ' exists in Hubspot as ' . $hubspotContact['vid'],
+                [
+                    'frontendUser' => $frontendUser,
+                    'hubspotContact' => $hubspotContact
+                ]
+            );
+
             if ($hubspotContact !== null) {
                 $frontendUser['hubspot_id'] = $hubspotContact['vid'];
 
@@ -350,6 +358,14 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         $frontendUser['hubspot_id'] = $hubspotContactIdentifier;
 
         $this->processedRecords['addedToHubspot'][] = $frontendUser['uid'];
+
+        $this->logInfo(
+            'Added frontend user ' . $frontendUser['uid'] . ' to Hubspot as ' . $hubspotContactIdentifier,
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotContact' => $mappedHubspotProperties
+            ]
+        );
 
         $afterAddEvent = new AfterAddingFrontendUserToHubspotEvent(
             $this,
@@ -508,6 +524,13 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         if (count($mappedFrontendUserProperties) > 0) {
             $this->frontendUserRepository->update($frontendUser['uid'], $mappedFrontendUserProperties);
             $this->processedRecords['modifiedInHubspot'][] = $frontendUser['uid'];
+
+            $this->logInfo(
+                'Updated frontend user ' . $frontendUser['uid'] . ' to Hubspot contact ' . $frontendUser['hubspot_id'],
+                [
+                    'frontendUser' => $mappedFrontendUserProperties,
+                ]
+            );
         } else {
             $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
             $this->processedRecords['frontendUsersNotSynchronized'][] = $frontendUser['uid'];
@@ -516,6 +539,13 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         if (count($mappedHubspotProperties) > 0) {
             $this->hubspotContactRepository->update($frontendUser['hubspot_id'], $mappedHubspotProperties);
             $this->processedRecords['modifiedInFrontendUsers'][] = $frontendUser['uid'];
+
+            $this->logInfo(
+                'Updated hubspot contact ' . $frontendUser['hubspot_id'] . ' from frontend user ' . $frontendUser['uid'],
+                [
+                    'hubspotContact' => $mappedHubspotProperties
+                ]
+            );
         }
 
         $afterUpdatingEvent = new AfterUpdatingFrontendUserAndHubspotContactEvent(

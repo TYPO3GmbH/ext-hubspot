@@ -7,6 +7,7 @@ namespace T3G\Hubspot\Service;
 use Pixelant\Interest\ObjectManager;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -28,6 +29,11 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
      * @var int To track active configuration PID
      */
     protected $activeConfigurationPageId = 0;
+
+    /**
+     * @var OutputInterface|null
+     */
+    protected $output = null;
 
     /**
      * Set default TypoScript values
@@ -65,5 +71,72 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
         $this->activeConfigurationPageId = $pageId;
 
         $this->configureRepositoryDefaults();
+    }
+
+    /**
+     * Set an output for outputting information and errors.
+     *
+     * @param OutputInterface $output
+     */
+    public function setOutput(OutputInterface $output)
+    {
+        $this->output = $output;
+    }
+
+    /**
+     * Log info. Output if verbose or very verbose.
+     *
+     * @param string $message
+     * @param array $context
+     */
+    protected function logInfo(string $message, array $context = [])
+    {
+        $this->logger->info($message, $context);
+
+        if ($this->output !== null && $this->output->isVeryVerbose()) {
+            $this->output->writeln($message . ' ' . var_export($context, true));
+        }
+
+        if ($this->output !== null && $this->output->isVerbose()) {
+            $this->output->writeln($message);
+        }
+    }
+
+    /**
+     * Log info. Output if verbose or very verbose.
+     *
+     * @param string $message
+     * @param array $context
+     */
+    protected function logWarning(string $message, array $context = [])
+    {
+        $this->logger->warning($message, $context);
+
+        if ($this->output !== null && $this->output->isVeryVerbose()) {
+            $this->output->writeln($message . ' ' . var_export($context, true));
+        }
+
+        if ($this->output !== null && $this->output->isVerbose()) {
+            $this->output->writeln($message);
+        }
+    }
+
+    /**
+     * Log error. Output if verbose or very verbose.
+     *
+     * @param string $message
+     * @param array $context
+     */
+    protected function logError(string $message, array $context = [])
+    {
+        $this->logger->error($message, $context);
+
+        if ($this->output !== null && $this->output->isVeryVerbose()) {
+            $this->output->writeln($message . ' ' . var_export($context, true));
+        }
+
+        if ($this->output !== null) {
+            $this->output->writeln($message);
+        }
     }
 }
