@@ -193,12 +193,6 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         $this->configuration = $beforeFrontendUserSynchronizationEvent->getConfiguration();
         $frontendUser = $beforeFrontendUserSynchronizationEvent->getFrontendUser();
 
-        if (!GeneralUtility::validEmail($frontendUser['email'])) {
-            $this->logger->warning('Frontend user has invalid email and can\'t be synced.', $frontendUser);
-            $this->processedRecords['frontendUsersWithError'][] = $frontendUser['uid'];
-            return;
-        }
-
         $this->configureForPageId($frontendUser['pid']);
 
         if ($frontendUser['hubspot_id'] === 0) {
@@ -454,6 +448,25 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         }
 
         $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
+
+        if (!GeneralUtility::validEmail($mappedHubspotProperties['email'])) {
+            $message = 'Frontend user ' . $frontendUser['uid'] . ' has invalid email "'
+                . $mappedHubspotProperties['email'] . '" and can\'t be synced.';
+
+            $this->logWarning(
+                $message,
+                [
+                    'frontendUser' => $frontendUser,
+                    'mappedHubspotProperties' => $mappedHubspotProperties
+                ]
+            );
+            $this->processedRecords['frontendUsersWithError'][] = $frontendUser['uid'];
+
+            throw new SkipRecordSynchronizationException(
+                $message,
+                1645014857388
+            );
+        }
 
         foreach ($mappedHubspotProperties as $propertyName => $value) {
             // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
