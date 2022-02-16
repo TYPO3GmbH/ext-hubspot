@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Service;
 
+use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
 use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
 use T3G\Hubspot\Utility\SchemaUtility;
@@ -134,7 +136,105 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
         $objectId = $this->customObjectRepository->create($mappedData);
 
+        $this->logInfo(
+            'Added record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') to Hubspot as '
+            . $objectId . ' (' . $this->getCurrentObjectName() . ')',
+            [
+                'record' => $record,
+                'mappedData' => $mappedData,
+            ]
+        );
+
+        $this->resolveAssociationsForObject($objectId, $record);
+
         $this->mappedTableRepository->add($objectId, $record['uid']);
+    }
+
+    protected function resolveAssociationsForObject(int $fromObjectId, array $record)
+    {
+        $associationConfigurations = $this->getCurrentSynchronizationConfiguration()['associations.'] ?? [];
+
+        foreach ($associationConfigurations as $toObjectType => $fieldName) {
+            if (is_array($fieldName)) {
+                continue;
+            }
+
+            $existingAssociations = $this->customObjectRepository->findAssociations($fromObjectId, $toObjectType);
+
+            // TODO: If has existing associations
+
+            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObjectRenderer->start($record);
+
+            $toObjectTypo3Id = (int)$contentObjectRenderer->stdWrap(
+                $record[$fieldName],
+                $associationConfigurations[$toObjectType . '.'] ?? []
+            );
+
+            // The extension can handle contacts in addtion to custom objects.
+            if ($toObjectType === 'contact') {
+                $frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
+
+                $toObjectId = $frontendUserRepository->getHubspotIdById($toObjectTypo3Id);
+            // We assume this is a custom object even though other objects exist.
+            } else {
+                $table = $this->getSynchronizationConfigurationByObjectName($toObjectType)['table'] ?? null;
+
+                if ($table === null) {
+                    continue;
+                }
+
+                $toObjectId = MappedTableRepository::getHubspotId(
+                    $table,
+                    $toObjectTypo3Id,
+                    $toObjectType
+                );
+            }
+
+            $fromObjectType = $this->getCurrentObjectName();
+
+            if ($toObjectId === 0) {
+                $this->logInfo(
+                    'Could not find associated object local ID ' . $toObjectTypo3Id . ' for Hubspot object '
+                    . $fromObjectId . ' (' . $fromObjectType . ')'
+                );
+
+                continue;
+            }
+
+            $this->customObjectRepository->addAssociation(
+                $fromObjectId,
+                $toObjectType,
+                $toObjectId,
+                $fromObjectType . '_to_' . $toObjectType
+            );
+
+            $this->logInfo(
+                'Associated object ' . $fromObjectId . ' (' . $fromObjectType . ') with ' . $toObjectId
+                . ' (' . $toObjectType . ')'
+            );
+        }
+    }
+
+    /**
+     * Returns the configuration for a specific object name or null if no such configuration exists.
+     *
+     * @param string $objectName
+     * @return array|null
+     */
+    protected function getSynchronizationConfigurationByObjectName(string $objectName): ?array
+    {
+        foreach ($this->configuration['settings.']['synchronizeCustomObjects.'] as $configuration) {
+            if (!is_array($configuration)) {
+                continue;
+            }
+
+            if ($configuration['objectName'] === $objectName) {
+                return $configuration;
+            }
+        }
+
+        return null;
     }
 
     /**

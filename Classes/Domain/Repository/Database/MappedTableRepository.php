@@ -225,4 +225,27 @@ class MappedTableRepository extends AbstractDatabaseRepository
     {
         $this->defaultPageId = $defaultPageId;
     }
+
+    /**
+     * @param string $table
+     * @param int $uid
+     * @return int
+     */
+    public static function getHubspotId(string $table, int $uid, string $objectType): int
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable(self::RELATION_TABLE);
+
+        return (int)$queryBuilder
+            ->select('hubspot_id')
+            ->from(self::RELATION_TABLE)
+            ->andWhere(
+                $queryBuilder->expr()->eq('table_foreign', $queryBuilder->createNamedParameter($table)),
+                $queryBuilder->expr()->eq('uid_foreign', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)),
+                $queryBuilder->expr()->eq('object_type', $queryBuilder->createNamedParameter($objectType))
+            )
+            ->setMaxResults(1)
+            ->execute()
+            ->fetchColumn();
+    }
 }

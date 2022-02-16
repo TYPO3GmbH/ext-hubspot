@@ -10,6 +10,9 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
+use GuzzleHttp\Exception\ClientException;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
@@ -18,9 +21,10 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Repository for manipulating contact data via the Hubspot API
  */
-class ContactRepository extends AbstractHubspotRepository
+class ContactRepository extends AbstractHubspotRepository implements LoggerAwareInterface
 {
     use LimitResultTrait;
+    use LoggerAwareTrait;
 
     /**
      * Returns up to $this->limit contacts.
@@ -145,9 +149,10 @@ class ContactRepository extends AbstractHubspotRepository
      * Creates a new contact
      *
      * @param array $contactProperties Associative array of propertyName => value
+     * @param bool $recoveryAttempt Internal. True if re-executing while trying to recover from a validation error.
      * @return int Contact identifier. Negative identifier of existing contact if the contact email address exists.
      */
-    public function create(array $contactProperties): int
+    public function create(array $contactProperties, bool $recoveryAttempt = false): int
     {
         try {
             $response = $this->factory->contacts()->create(
@@ -159,6 +164,42 @@ class ContactRepository extends AbstractHubspotRepository
                     $exception->getMessage(),
                     1602243653
                 );
+            }
+
+            if ($exception->getPrevious() instanceof ClientException) {
+                if ($recoveryAttempt) {
+                    throw $exception;
+                }
+
+                $parsedResponse = json_decode(
+                    $exception->getPrevious()->getResponse()->getBody()->getContents(),
+                    true
+                );
+
+                $this->logger->warning(
+                    'Recovering from validation error by unsetting properties.',
+                    [
+                        'contactProperties' => $contactProperties,
+                        'validationResults' => $parsedResponse['validationResults'],
+                    ]
+                );
+
+                foreach ($parsedResponse['validationResults'] as $validationResult) {
+                    unset($contactProperties[$validationResult['name']]);
+                }
+
+                if (count($contactProperties) === 0) {
+                    $this->logger->error(
+                        'Unable to recover from validation error. No properties left!',
+                        [
+                            'validationResults' => $parsedResponse['validationResults'],
+                        ]
+                    );
+
+                    throw $exception;
+                }
+
+                return $this->create($contactProperties, true);
             }
 
             throw $exception;

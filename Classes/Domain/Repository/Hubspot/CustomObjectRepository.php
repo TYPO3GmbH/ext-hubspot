@@ -60,6 +60,34 @@ class CustomObjectRepository extends AbstractHubspotRepository
         return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
     }
 
+    /**
+     * Get associations from a custom object to objects of a specific type.
+     *
+     * @param int $objectId
+     * @param string $toObjectType
+     * @return array
+     */
+    public function findAssociations(int $objectId, string $toObjectType): array
+    {
+        return $this->factory->customObjects($this->objectType)->associations($objectId, $toObjectType)->toArray();
+    }
+
+    /**
+     * Associate an object with another object.
+     *
+     * @param int $objectId
+     * @param string $toObjectType
+     * @param int $toObjectId
+     * @param string $associationType
+     * @return array
+     */
+    public function addAssociation(int $objectId, string $toObjectType, int $toObjectId, string $associationType): array
+    {
+        return $this->factory->customObjects($this->objectType)
+            ->associate($objectId, $toObjectType, $toObjectId, $associationType)
+            ->toArray();
+    }
+
     // TODO: Implement similarly to HubspotContactRepository, but with the differences necessary to deal with custom
     // TODO: objects. Methods in this class will always have to use the hubspot object type string, so it has been
     // TODO: included in the constructor.

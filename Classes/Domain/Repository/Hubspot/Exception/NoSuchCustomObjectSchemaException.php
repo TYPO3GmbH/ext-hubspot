@@ -8,6 +8,6 @@ namespace T3G\Hubspot\Domain\Repository\Hubspot\Exception;
 /**
  * Thrown if a custom object schema can't be found.
  */
-class NoSuchCustomObjectSchemaException extends \Exception
+class NoSuchCustomObjectSchemaException extends AbstractHubspotApiInteractionException
 {
 }

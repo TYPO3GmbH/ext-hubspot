@@ -136,6 +136,7 @@ class SynchronizeCommand extends Command
         $synchronizationService = GeneralUtility::makeInstance(ContactSynchronizationService::class);
 
         $synchronizationService->setDefaultConfiguration($configuration);
+        $synchronizationService->setOutput($this->output);
 
         $synchronizationService->synchronize();
     }
@@ -162,6 +163,7 @@ class SynchronizeCommand extends Command
         $synchronizationService = GeneralUtility::makeInstance(CustomObjectSynchronizationService::class);
 
         $synchronizationService->setDefaultConfiguration($configuration);
+        $synchronizationService->setOutput($this->output);
 
         $synchronizationService->synchronize();
     }

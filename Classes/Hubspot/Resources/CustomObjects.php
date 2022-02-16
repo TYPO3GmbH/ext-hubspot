@@ -86,6 +86,38 @@ class CustomObjects extends Resource
         );
     }
 
+    /**
+     * Get a list of association from a custom object to an object type.
+     *
+     * @param int $id
+     * @param string $toObjectType
+     * @param array $properties
+     * @return Response
+     */
+    public function associations(int $id, string $toObjectType, array $properties = []): Response
+    {
+        return $this->client->request(
+            'get',
+            $this->getEndpoint($id . '/associations/' . $toObjectType),
+            ['json' => ['properties' => $properties]]
+        );
+    }
+
+    public function associate(
+        int $id,
+        string $toObjectType,
+        int $toObjectId,
+        string $associationType,
+        array $properties = []
+    )
+    {
+        return $this->client->request(
+            'put',
+            $this->getEndpoint($id . '/associations/' . $toObjectType . '/' . $toObjectId . '/' . $associationType),
+            ['json' => ['properties' => $properties]]
+        );
+    }
+
     // TODO: Implement remaining entrypoints from https://developers.hubspot.com/docs/api/crm/crm-custom-objects
 
     /**
