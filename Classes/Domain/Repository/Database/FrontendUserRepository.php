@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Domain\Repository\Database;
 
+use Doctrine\DBAL\FetchMode;
 use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Domain\Repository\Database\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
@@ -29,6 +30,45 @@ class FrontendUserRepository extends AbstractDatabaseRepository
      * @var int Default storage PID
      */
     protected $defaultPageId = 0;
+
+    /**
+     * Find a frontend user by its UID.
+     *
+     * @param int $id
+     * @return array|null
+     */
+    public function findById(int $id): ?array
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        if ($this->hasSearchPids()) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
+        }
+
+        $row = $queryBuilder
+            ->select('*')
+            ->from(self::TABLE_NAME)
+            ->where($queryBuilder->expr()->eq('uid', $id))
+            ->execute()
+            ->fetch(FetchMode::ASSOCIATIVE);
+
+        if ($row === false) {
+            return null;
+        }
+
+        return $row;
+    }
+
+    /**
+     * Get the Hubspot ID for a frontend user.
+     *
+     * @param int $id The local UID.
+     * @return int The Hubspot ID.
+     */
+    public function getHubspotIdById(int $id): int
+    {
+        return $this->findById($id)['hubspot_id'] ?? 0;
+    }
 
     /**
      * Finds frontend users that have not yet been synced
