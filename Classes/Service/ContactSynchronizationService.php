@@ -313,7 +313,7 @@ class ContactSynchronizationService extends AbstractSynchronizationService
 
             $hubspotContactIdentifier = $this->hubspotContactRepository->create($mappedHubspotProperties);
         } catch (ExistingContactConflictException $existingContactException) {
-            $hubspotContact = $this->hubspotContactRepository->findByEmail($frontendUser['email']);
+            $hubspotContact = $this->hubspotContactRepository->findByEmail($mappedHubspotProperties['email']);
 
             $this->logWarning(
                 'Frontend user ' . $frontendUser['uid'] . ' exists in Hubspot as ' . $hubspotContact['vid'],
