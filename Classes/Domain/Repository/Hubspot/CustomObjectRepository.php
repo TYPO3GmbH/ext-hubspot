@@ -61,6 +61,18 @@ class CustomObjectRepository extends AbstractHubspotRepository
     }
 
     /**
+     * Returns true if this custom object has records.
+     *
+     * Used to check if a schema can be deleted (it can't if there are objects).
+     *
+     * @return bool
+     */
+    public function hasObjects(): bool
+    {
+        return count($this->factory->customObjects($this->objectType)->list(['limit' => 1])->toArray()['results']) > 0;
+    }
+
+    /**
      * Get associations from a custom object to objects of a specific type.
      *
      * @param int $objectId

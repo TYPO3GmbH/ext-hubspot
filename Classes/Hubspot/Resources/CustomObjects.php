@@ -15,6 +15,7 @@ namespace T3G\Hubspot\Hubspot\Resources;
 use SevenShores\Hubspot\Http\Client;
 use SevenShores\Hubspot\Http\Response;
 use SevenShores\Hubspot\Resources\Resource;
+use T3G\Hubspot\Utility\SchemaUtility;
 
 /**
  * Handle Hubspot Custom Objects
@@ -126,6 +127,6 @@ class CustomObjects extends Resource
      */
     protected function getEndpoint(string $postfix = ''): string
     {
-        return self::ENDPOINT_PREFIX . $this->objectType . ($postfix !== '' ? '/' . $postfix : '');
+        return self::ENDPOINT_PREFIX . SchemaUtility::makeFullyQualifiedName($this->objectType) . ($postfix !== '' ? '/' . $postfix : '');
     }
 }

@@ -248,4 +248,20 @@ class MappedTableRepository extends AbstractDatabaseRepository
             ->execute()
             ->fetchColumn();
     }
+
+    /**
+     * Remove all mappings for custom object schema of type $objectType.
+     *
+     * @param string $objectType
+     */
+    public static function removeSchemaMappings(string $objectType)
+    {
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable(self::RELATION_TABLE);
+
+        $queryBuilder
+            ->delete(self::RELATION_TABLE)
+            ->where($queryBuilder->expr()->eq('object_type', $queryBuilder->createNamedParameter($objectType)))
+            ->execute();
+    }
 }

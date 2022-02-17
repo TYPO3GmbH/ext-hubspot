@@ -87,6 +87,9 @@
             <trans-unit id="hubspot_integration.customObjects.button.newSchema">
                 <source>New</source>
             </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.deleteSchema">
+                <source>Delete</source>
+            </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.refreshSchemas.title">
                 <source>Schemas Fetched</source>
             </trans-unit>
@@ -135,6 +138,12 @@
             <trans-unit id="hubspot_integration.customObjects.create.successMessage">
                 <source>The schema "%s" was successfully created.</source>
             </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.conflictTitle">
+                <source>Naming Conflict</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.conflictMessage">
+                <source>A schema with the same name already exists. Try to fetch updates from Hubspot or check if a schema with this name has previously been deleted and needs to be purged.</source>
+            </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.create.updateSuccessTitle">
                 <source>Schema Updated</source>
             </trans-unit>
@@ -143,6 +152,24 @@
             </trans-unit>
             <trans-unit id="hubspot_integration.cancel">
                 <source>Cancel</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.deleteSuccessTitle">
+                <source>Schema Deleted</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.deleteSuccessMessage">
+                <source>The schema "%s" was successfully deleted.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.objectsExistTitle">
+                <source>Delete Existing Objects First</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.objectsExistMessage">
+                <source>Custom objects exist for the schema "%s". They must be deleted before you can delete it.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.confirm.deleteSchemaTitle">
+                <source>Delete the Schema?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.confirm.deleteSchemaMessage">
+                <source>Do you really want to delete the custom object schema "%s"? This action cannot be undone and you will not be able to create a new custom object with the same name again until it has been purged.</source>
             </trans-unit>
         </body>
 	</file>

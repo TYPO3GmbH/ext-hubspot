@@ -168,6 +168,22 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
     }
 
     /**
+     * Delete a schema.
+     *
+     * @param string $name
+     */
+    public function delete(string $name)
+    {
+        $this->registry->remove('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $name);
+
+        $labels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA, []);
+        unset($labels[$name]);
+        $this->registry->set('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA, $labels);
+
+        $this->factory->customObjectSchemas()->delete(SchemaUtility::makeFullyQualifiedName($name));
+    }
+
+    /**
      * Fetch all schemas from Hubspot.
      *
      * @return array of hubspot custom object schemas.

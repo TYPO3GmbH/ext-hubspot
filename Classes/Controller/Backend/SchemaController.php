@@ -5,12 +5,17 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Controller\Backend;
 
+use SevenShores\Hubspot\Exceptions\BadRequest;
+use T3G\Hubspot\Controller\Backend\Exception\InvalidRequestException;
+use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\NoSuchCustomObjectSchemaException;
 use T3G\Hubspot\Domain\Repository\Hubspot\PropertyRepository;
 use T3G\Hubspot\Utility\CustomObjectUtility;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -100,6 +105,23 @@ class SchemaController extends AbstractController
             ButtonBar::BUTTON_POSITION_LEFT,
             2
         );
+
+        if ($this->request->getControllerActionName() === 'inspect') {
+            $buttonBar->addButton(
+                $buttonBar
+                    ->makeLinkButton()
+                    ->setHref($this->controllerContext->getUriBuilder()->uriFor(
+                        'delete'
+                    ))
+                    ->setTitle($this->getLanguageService()->getLL(
+                        'hubspot_integration.customObjects.button.deleteSchema'
+                    ))
+                    ->setShowLabelText(true)
+                    ->setIcon($iconFactory->getIcon('actions-delete', Icon::SIZE_SMALL)),
+                ButtonBar::BUTTON_POSITION_LEFT,
+                3
+            );
+        }
     }
 
     /**
@@ -211,7 +233,21 @@ class SchemaController extends AbstractController
             $this->redirect('index');
         }
 
-        $name = $this->schemaRepository->create($schema);
+        try {
+            $name = $this->schemaRepository->create($schema);
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 409) {
+                $this->addFlashMessage(
+                    $this->getLanguageService()->getLL('hubspot_integration.customObjects.create.conflictMessage'),
+                    $this->getLanguageService()->getLL('hubspot_integration.customObjects.create.conflictTitle'),
+                    FlashMessage::ERROR
+                );
+
+                $this->redirect('index');
+            }
+
+            throw $exception;
+        }
 
         $this->addFlashMessage(
             sprintf(
@@ -261,5 +297,48 @@ class SchemaController extends AbstractController
         $this->response->setContent($jsonEncodedSchema);
 
         return $this->response;
+    }
+
+    /**
+     * Delete a schema.
+     *
+     * @param string $name The schema name
+     * @param bool $confirm If false, count objects and show a confirmation dialog.
+     */
+    public function deleteAction(string $name, bool $confirm = false)
+    {
+        if (GeneralUtility::makeInstance(CustomObjectRepository::class, $name)->hasObjects()) {
+            $this->addFlashMessage(
+                sprintf(
+                    $this->getLanguageService()->getLL('hubspot_integration.customObjects.delete.objectsExistMessage'),
+                    $name
+                ),
+                $this->getLanguageService()->getLL('hubspot_integration.customObjects.delete.objectsExistTitle'),
+                AbstractMessage::ERROR
+            );
+
+            $this->redirect('index');
+        }
+
+        if ($confirm) {
+            $this->schemaRepository->delete($name);
+
+            MappedTableRepository::removeSchemaMappings($name);
+
+            $this->addFlashMessage(
+                sprintf(
+                    $this->getLanguageService()->getLL('hubspot_integration.customObjects.delete.deleteSuccessMessage'),
+                    $name
+                ),
+                $this->getLanguageService()->getLL('hubspot_integration.customObjects.delete.deleteSuccessTitle')
+            );
+
+            $this->redirect('index');
+        }
+
+        throw new InvalidRequestException(
+            'Delete operation was not confirmed.',
+            1645097457171
+        );
     }
 }

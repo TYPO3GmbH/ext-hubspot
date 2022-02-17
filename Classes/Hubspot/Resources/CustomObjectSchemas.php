@@ -73,6 +73,25 @@ class CustomObjectSchemas extends Resource
         );
     }
 
+    /**
+     * Delete a schema.
+     *
+     * @param string $objectType
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \SevenShores\Hubspot\Exceptions\HubspotException
+     */
+    public function delete(string $objectType, array $params = [])
+    {
+        return $this->client->request(
+            'delete',
+            $this->getEndpoint($objectType),
+            [],
+            build_query_string($params)
+        );
+    }
+
     protected function getEndpoint(string $postfix = ''): string
     {
         return self::ENDPOINT_PREFIX . ($postfix !== '' ? '/' . $postfix : '');

@@ -33,6 +33,16 @@
                 <td>
                     <f:link.action action="inspect" arguments="{name: name}" class="btn btn-default"><core:icon identifier="actions-eye" size="small"/> <f:translate key="hubspot_integration.customObjects.button.inspect" /></f:link.action>
                     <f:link.action action="download" arguments="{name: name}" class="btn btn-default"><core:icon identifier="actions-download" size="small"/> <f:translate key="hubspot_integration.customObjects.button.download" /></f:link.action>
+                    <a
+                        href="#"
+                        class="btn btn-danger t3js-modal-trigger"
+                        data-title="{f:translate(key: 'hubspot_integration.customObjects.confirm.deleteSchemaTitle')}"
+                        data-content="{f:translate(key: 'hubspot_integration.customObjects.confirm.deleteSchemaMessage', arguments: {0: name})}"
+                        data-severity="1"
+                        data-href="{f:uri.action(action: 'delete', arguments: '{name: name, confirm: 1}')}"
+                        data-button-close-text="{f:translate(key: 'hubspot_integration.cancel')}"
+                        data-button-ok-text="{f:translate(key: 'hubspot_integration.customObjects.button.deleteSchema')}"
+                    ><core:icon identifier="actions-delete" size="small"/> <f:translate key="hubspot_integration.customObjects.button.deleteSchema" /></a>
                 </td>
             </tr>
         </f:for>

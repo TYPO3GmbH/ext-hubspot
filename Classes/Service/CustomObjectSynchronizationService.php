@@ -130,6 +130,28 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         // TODO: For later: Synchronize the other way, back to TYPO3.
     }
 
+    /**
+     * Check if a representation of $record exists as an object in Hubspot using the unique
+     *
+     * @param array $record
+     * @return int The object ID or zero if none found.
+     */
+    protected function findObjectWithUniqueValueInHubspot(array $record): int
+    {
+
+    }
+
+    /**
+     * Connect an existing TYPO3 record with an existing Hubspot custom object.
+     *
+     * @param array $record
+     * @param int $hubspotId
+     */
+    protected function connectRecordToHubspot(int $recordId, int $hubspotId)
+    {
+
+    }
+
     protected function addRecordToHubspot(array $record)
     {
         $mappedData = $this->mapRecordToHubspot($record);
