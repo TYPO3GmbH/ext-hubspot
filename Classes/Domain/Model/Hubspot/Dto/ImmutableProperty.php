@@ -16,6 +16,11 @@ class ImmutableProperty extends MutableProperty
     protected $name = '';
 
     /**
+     * @var bool
+     */
+    protected $hasUniqueValue = false;
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -29,5 +34,21 @@ class ImmutableProperty extends MutableProperty
     public function setName(string $name)
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUniqueValue(): bool
+    {
+        return $this->hasUniqueValue;
+    }
+
+    /**
+     * @param bool $hasUniqueValue
+     */
+    public function setHasUniqueValue(bool $hasUniqueValue)
+    {
+        $this->hasUniqueValue = $hasUniqueValue;
     }
 }
