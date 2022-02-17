@@ -39,7 +39,7 @@ class ImmutableProperty extends MutableProperty
     /**
      * @return bool
      */
-    public function isUniqueValue(): bool
+    public function hasUniqueValue(): bool
     {
         return $this->hasUniqueValue;
     }

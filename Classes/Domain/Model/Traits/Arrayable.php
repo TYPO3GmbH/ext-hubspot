@@ -33,22 +33,31 @@ trait Arrayable
         };
 
         foreach (array_keys(get_object_vars($this)) as $variableName) {
-            $getter = 'get' . ucfirst($variableName);
+            $getter = null;
 
-            if (method_exists($this, $getter)) {
-                $value = $this->$getter();
-
-                if (is_array($value)) {
-                    array_walk_recursive(
-                        $value,
-                        $toArrayFunction
-                    );
-                } elseif (is_object($value)) {
-                    $toArrayFunction($value);
-                }
-
-                $values[$variableName] = $value;
+            if (
+                (strpos($variableName, 'is') === 0 || strpos($variableName, 'has') === 0)
+                && method_exists($this, $variableName)
+            ) {
+                $getter = $variableName;
+            } elseif(method_exists($this, 'get' . ucfirst($variableName))) {
+                $getter = 'get' . ucfirst($variableName);
+            } else {
+                continue;
             }
+
+            $value = $this->$getter();
+
+            if (is_array($value)) {
+                array_walk_recursive(
+                    $value,
+                    $toArrayFunction
+                );
+            } elseif (is_object($value)) {
+                $toArrayFunction($value);
+            }
+
+            $values[$variableName] = $value;
         }
 
         return $values;
