@@ -79,7 +79,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
             $this->customObjectRepository = GeneralUtility::makeInstance(
                 CustomObjectRepository::class,
-                SchemaUtility::makeFullyQualifiedName($synchronizationConfiguration['objectName'])
+                $synchronizationConfiguration['objectName']
             );
 
             $this->mappedTableRepository = GeneralUtility::makeInstance(
