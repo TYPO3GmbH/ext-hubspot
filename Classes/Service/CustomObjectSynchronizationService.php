@@ -92,25 +92,25 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
             $this->configureRepositoryDefaults();
 
-//            if ($synchronizationConfiguration['createNewInTypo3']) {
-//                // TODO: Fetch existing from Hubspot
-//            }
-//
-//            if ($synchronizationConfiguration['createNewInHubspot']) {
-//                $records = $this->mappedTableRepository->findNotYetSynchronized();
-//
-//                foreach ($records as $record) {
-//                    $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
-//
-//                    if ($idInHubspot > 0) {
-//                        $this->mappedTableRepository->add($idInHubspot, (int)$record['uid']);
-//
-//                        continue;
-//                    }
-//
-//                    $this->addRecordToHubspot($record);
-//                }
-//            }
+            if ($synchronizationConfiguration['createNewInTypo3']) {
+                // TODO: Fetch existing from Hubspot
+            }
+
+            if ($synchronizationConfiguration['createNewInHubspot']) {
+                $records = $this->mappedTableRepository->findNotYetSynchronized();
+
+                foreach ($records as $record) {
+                    $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
+
+                    if ($idInHubspot > 0) {
+                        $this->mappedTableRepository->add($idInHubspot, (int)$record['uid']);
+
+                        continue;
+                    }
+
+                    $this->addRecordToHubspot($record);
+                }
+            }
 
             $records = $this->mappedTableRepository->findReadyForSyncPass();
 
