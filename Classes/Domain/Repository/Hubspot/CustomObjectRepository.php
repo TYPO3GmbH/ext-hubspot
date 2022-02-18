@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
+use GuzzleHttp\Exception\ClientException;
+use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Hubspot\Factory;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 
@@ -53,11 +55,20 @@ class CustomObjectRepository extends AbstractHubspotRepository
      * Get a custom object.
      *
      * @param int $id
-     * @return array
+     * @return array|null
      */
-    public function findById(int $id): array
+    public function findById(int $id): ?array
     {
-        return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
+        try {
+            return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 404) {
+                return null;
+            }
+
+            throw $exception;
+        }
+
     }
 
     /**
@@ -65,12 +76,20 @@ class CustomObjectRepository extends AbstractHubspotRepository
      *
      * @param string $propertyName
      * @param string $propertyValue
-     * @return array
+     * @return array|null
      */
-    public function findByUniqueProperty(string $propertyName, string $propertyValue)
+    public function findByUniqueProperty(string $propertyName, string $propertyValue): ?array
     {
-        return $this->factory->customObjects($this->objectType)
-            ->getByUniqueProperty($propertyName, $propertyValue)->toArray();
+        try {
+            return $this->factory->customObjects($this->objectType)
+                ->getByUniqueProperty($propertyName, $propertyValue)->toArray();
+        } catch (BadRequest $exception) {
+            if ($exception->getCode() === 404) {
+                return null;
+            }
+
+            throw $exception;
+        }
     }
 
     /**

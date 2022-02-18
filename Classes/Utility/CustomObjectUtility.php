@@ -5,13 +5,55 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Utility;
 
+use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
 use TYPO3\CMS\Core\Resource\Exception\IllegalFileExtensionException;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Convenience methods related to Hubspot Custom Objects and their schemas.
  */
 class CustomObjectUtility
 {
+    /**
+     * @var array
+     * @see CustomObjectUtility::getNamesOfUniqueProperties()
+     */
+    protected static $namesOfUniquePropertiesCache = [];
+
+    /**
+     * Returns a list of names of unique properties in $objectName (`hasUniqueValue` is true).
+     *
+     * @param string $objectName
+     * @param bool $excludeHubspotInternal
+     * @return array|mixed
+     */
+    public static function getNamesOfUniqueProperties(string $objectName, bool $excludeHubspotInternal = true)
+    {
+        $cacheKey = $objectName . '_internal' . $excludeHubspotInternal;
+
+        if (!isset(self::$namesOfUniquePropertiesCache[$cacheKey])) {
+
+            $properties = GeneralUtility::makeInstance(CustomObjectSchemaRepository::class)
+                ->findByName($objectName)['properties'];
+
+            if ($excludeHubspotInternal) {
+                $properties = CustomObjectUtility::removeHubspotInternalProperties($properties);
+            }
+
+            $uniquePropertyNames = [];
+
+            foreach ($properties as $property) {
+                if ($property['hasUniqueValue']) {
+                    $uniquePropertyNames[] = $property['name'];
+                }
+            }
+
+            self::$namesOfUniquePropertiesCache[$cacheKey] = $uniquePropertyNames;
+        }
+
+        return self::$namesOfUniquePropertiesCache[$cacheKey];
+    }
+
     /**
      * Returns an array without any properties that are Hubspot-internal.
      *
@@ -23,7 +65,7 @@ class CustomObjectUtility
         return array_filter(
             $properties,
             function($item) {
-                return CustomObjectUtility::isHubspotInternalPropertyName($item['name']);
+                return !CustomObjectUtility::isHubspotInternalPropertyName($item['name']);
             }
         );
     }
@@ -39,7 +81,7 @@ class CustomObjectUtility
         return array_filter(
             $propertyNames,
             function($item) {
-                return CustomObjectUtility::isHubspotInternalPropertyName($item);
+                return !CustomObjectUtility::isHubspotInternalPropertyName($item);
             }
         );
     }

@@ -100,7 +100,13 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 $records = $this->mappedTableRepository->findNotYetSynchronized();
 
                 foreach ($records as $record) {
-                    // TODO: Check if the record exists already using some unique value.
+                    $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
+
+                    if ($idInHubspot > 0) {
+                        $this->mappedTableRepository->add($idInHubspot, (int)$record['uid']);
+
+                        continue;
+                    }
 
                     $this->addRecordToHubspot($record);
                 }
@@ -132,6 +138,19 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     }
 
     /**
+     * Connect a Hubspot object to a record and brag about it in the log.
+     *
+     * @param int $hubspotId
+     * @param int $recordId
+     */
+    protected function connectHubspotObjectToRecord(int $hubspotId, int $recordId)
+    {
+        $this->mappedTableRepository->add($hubspotId, $recordId);
+
+        $this->logInfo('Connected record ' . $recordId . ' to existing Hubspot object ' . $hubspotId);
+    }
+
+    /**
      * Check if a representation of $record exists as an object in Hubspot using the unique
      *
      * @param array $record
@@ -139,18 +158,22 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function findObjectWithUniqueValueInHubspot(array $record): int
     {
+        $uniquePropertyNames = CustomObjectUtility::getNamesOfUniqueProperties($this->getCurrentObjectName());
 
-    }
+        $mappedProperties = $this->mapRecordToHubspot($record);
 
-    /**
-     * Connect an existing TYPO3 record with an existing Hubspot custom object.
-     *
-     * @param array $record
-     * @param int $hubspotId
-     */
-    protected function connectRecordToHubspot(int $recordId, int $hubspotId)
-    {
+        foreach ($uniquePropertyNames as $uniquePropertyName) {
+            if (!isset($mappedProperties[$uniquePropertyName])) {
+                continue;
+            }
 
+            return (int)($this->customObjectRepository->findByUniqueProperty(
+                $uniquePropertyName,
+                $mappedProperties[$uniquePropertyName]
+            )['id'] ?? 0);
+        }
+
+        return 0;
     }
 
     protected function addRecordToHubspot(array $record)

@@ -99,7 +99,7 @@ class CustomObjects extends Resource
     {
         return $this->client->request(
             'get',
-            $this->getEndpoint($propertyValue).
+            $this->getEndpoint($propertyValue),
             [],
             'idProperty=' . urlencode($propertyName)
         );
