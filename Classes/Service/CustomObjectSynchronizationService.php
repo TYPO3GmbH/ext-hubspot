@@ -211,8 +211,6 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         foreach ($transformedValues as $toObjectType => $toObjectTypo3Id) {
             $existingAssociations = $this->customObjectRepository->findAssociations($fromObjectId, $toObjectType);
 
-            // TODO: If has existing associations
-
             // The extension can handle contacts in addtion to custom objects.
             if ($toObjectType === 'contact') {
                 $frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
@@ -244,11 +242,22 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 continue;
             }
 
+            $associationType = $fromObjectType . '_to_' . $toObjectType;
+
+            foreach ($existingAssociations as $existingAssociation) {
+                if (
+                    (int)$existingAssociation['id'] === $toObjectId
+                    && $existingAssociation['type'] === $associationType
+                ) {
+                    continue 2;
+                }
+            }
+
             $this->customObjectRepository->addAssociation(
                 $fromObjectId,
                 $toObjectType,
                 $toObjectId,
-                $fromObjectType . '_to_' . $toObjectType
+                $associationType
             );
 
             $this->logInfo(
@@ -404,6 +413,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 . ') to record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')'
             );
         }
+
+        $this->resolveAssociationsForObject($record['hubspot_id'], $record);
     }
 
     /**

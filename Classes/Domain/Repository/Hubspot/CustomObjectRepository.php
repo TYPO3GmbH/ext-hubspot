@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
-use GuzzleHttp\Exception\ClientException;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Hubspot\Factory;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
@@ -138,7 +137,8 @@ class CustomObjectRepository extends AbstractHubspotRepository
      */
     public function findAssociations(int $objectId, string $toObjectType): array
     {
-        return $this->factory->customObjects($this->objectType)->associations($objectId, $toObjectType)->toArray();
+        return $this->factory->customObjects($this->objectType)
+            ->associations($objectId, $toObjectType)->toArray()['results'] ?? [];
     }
 
     /**
