@@ -15,6 +15,7 @@ use GuzzleHttp\Exception\ClientException;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Hubspot\Factory;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
+use T3G\Hubspot\Utility\CustomObjectUtility;
 
 /**
  * Repository for Hubspot custom objects
@@ -52,6 +53,17 @@ class CustomObjectRepository extends AbstractHubspotRepository
     }
 
     /**
+     * Update a hubspot object.
+     *
+     * @param int $id
+     * @param array $properties
+     */
+    public function update(int $id, array $properties)
+    {
+        $this->factory->customObjects($this->objectType)->update($id, $properties);
+    }
+
+    /**
      * Get a custom object.
      *
      * @param int $id
@@ -60,7 +72,13 @@ class CustomObjectRepository extends AbstractHubspotRepository
     public function findById(int $id): ?array
     {
         try {
-            return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
+            return $this->factory->customObjects($this->objectType)->getById(
+                $id,
+                [
+                    'properties' => implode(',', CustomObjectUtility::getPropertyNames($this->objectType)),
+                    'propertiesWithHistory' => implode(',', CustomObjectUtility::getPropertyNames($this->objectType)),
+                ]
+            )->toArray();
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 404) {
                 return null;
@@ -82,7 +100,14 @@ class CustomObjectRepository extends AbstractHubspotRepository
     {
         try {
             return $this->factory->customObjects($this->objectType)
-                ->getByUniqueProperty($propertyName, $propertyValue)->toArray();
+                ->getByUniqueProperty(
+                    $propertyName,
+                    $propertyValue,
+                    [
+                        'properties' => implode(',', CustomObjectUtility::getPropertyNames($this->objectType)),
+                        'propertiesWithHistory' => implode(',', CustomObjectUtility::getPropertyNames($this->objectType)),
+                    ]
+                )->toArray();
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 404) {
                 return null;

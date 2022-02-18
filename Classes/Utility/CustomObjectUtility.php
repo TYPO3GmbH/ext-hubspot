@@ -21,6 +21,30 @@ class CustomObjectUtility
     protected static $namesOfUniquePropertiesCache = [];
 
     /**
+     * @var array
+     * @see CustomObjectUtility::getPropertyNames()
+     */
+    protected static $propertyNamesCache = [];
+
+    public static function getPropertyNames(string $objectName, bool $excludeHubspotInternal = true)
+    {
+        $cacheKey = $objectName . '_internal' . $excludeHubspotInternal;
+
+        if (!isset(self::$propertyNamesCache[$cacheKey])) {
+            $properties = GeneralUtility::makeInstance(CustomObjectSchemaRepository::class)
+                ->findByName($objectName)['properties'] ?? [];
+
+            if ($excludeHubspotInternal) {
+                $properties = CustomObjectUtility::removeHubspotInternalProperties($properties);
+            }
+
+            self::$propertyNamesCache[$cacheKey] = array_column($properties, 'name');
+        }
+
+        return self::$propertyNamesCache[$cacheKey];
+    }
+
+    /**
      * Returns a list of names of unique properties in $objectName (`hasUniqueValue` is true).
      *
      * @param string $objectName
@@ -34,7 +58,7 @@ class CustomObjectUtility
         if (!isset(self::$namesOfUniquePropertiesCache[$cacheKey])) {
 
             $properties = GeneralUtility::makeInstance(CustomObjectSchemaRepository::class)
-                ->findByName($objectName)['properties'];
+                ->findByName($objectName)['properties'] ?? [];
 
             if ($excludeHubspotInternal) {
                 $properties = CustomObjectUtility::removeHubspotInternalProperties($properties);

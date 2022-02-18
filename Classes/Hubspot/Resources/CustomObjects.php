@@ -15,6 +15,7 @@ namespace T3G\Hubspot\Hubspot\Resources;
 use SevenShores\Hubspot\Http\Client;
 use SevenShores\Hubspot\Http\Response;
 use SevenShores\Hubspot\Resources\Resource;
+use T3G\Hubspot\Utility\CustomObjectUtility;
 use T3G\Hubspot\Utility\SchemaUtility;
 
 /**
@@ -72,17 +73,35 @@ class CustomObjects extends Resource
     }
 
     /**
+     * Update a custom object.
+     *
+     * @param int $id
+     * @param array $properties
+     * @return Response
+     */
+    public function update(int $id, array $properties): Response
+    {
+        return $this->client->request(
+            'patch',
+            $this->getEndpoint((string)$id),
+            ['json' => ['properties' => $properties]]
+        );
+    }
+
+    /**
      * Get a custom object by its ID.
      *
      * @param int $id
-     * @param array $parameters
+     * @param array $parameters Parameters for the query string
      * @return Response
      */
-    public function getById(int $id): Response
+    public function getById(int $id, array $parameters = []): Response
     {
         return $this->client->request(
             'get',
-            $this->getEndpoint((string)$id)
+            $this->getEndpoint((string)$id),
+            [],
+            http_build_query($parameters)
         );
     }
 
@@ -91,17 +110,20 @@ class CustomObjects extends Resource
      *
      * @param string $propertyName
      * @param string $propertyValue
+     * @param array $parameters Parameters for the query string
      * @return \Psr\Http\Message\ResponseInterface|Response
      * @throws \SevenShores\Hubspot\Exceptions\BadRequest
      * @throws \SevenShores\Hubspot\Exceptions\HubspotException
      */
-    public function getByUniqueProperty(string $propertyName, string $propertyValue)
+    public function getByUniqueProperty(string $propertyName, string $propertyValue, array $parameters = [])
     {
+        $parameters['idProperty'] = $propertyName;
+
         return $this->client->request(
             'get',
             $this->getEndpoint($propertyValue),
             [],
-            'idProperty=' . urlencode($propertyName)
+            http_build_query($parameters)
         );
     }
 

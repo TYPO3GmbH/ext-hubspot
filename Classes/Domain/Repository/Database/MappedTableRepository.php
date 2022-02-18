@@ -13,10 +13,12 @@ namespace T3G\Hubspot\Domain\Repository\Database;
 
 
 use Doctrine\DBAL\FetchMode;
+use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
 use T3G\Hubspot\Domain\Repository\Database\Exception\InvalidSyncPassIdentifierScopeException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class MappedTableRepository extends AbstractDatabaseRepository
@@ -101,7 +103,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
      */
     public function add(int $objectId, int $uid)
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->getMappedTableQueryBuilder();
 
         $queryBuilder
             ->insert(self::RELATION_TABLE)
@@ -119,6 +121,65 @@ class MappedTableRepository extends AbstractDatabaseRepository
     }
 
     /**
+     * Update a record.
+     *
+     * @param int $uid UID of the record to update
+     * @param array $row The row properties to be updated. UID will be removed.
+     * @param bool $setSyncPassIdentifier
+     * @throws DataHandlerErrorException
+     */
+    public function update(int $uid, array $row, bool $setSyncPassIdentifier = true)
+    {
+        unset($row['uid']);
+
+        $data = [
+            $this->tableName => [
+                $uid => $row
+            ]
+        ];
+
+        $dataHandler = GeneralUtility::makeInstance(DataHandler::class);
+        $dataHandler->start($data, []);
+        $dataHandler->process_datamap();
+
+        if (count($dataHandler->errorLog) > 0) {
+            throw new DataHandlerErrorException(
+                'The DataHandler reported error: ' . implode(', ', $dataHandler->errorLog),
+                1645192871163
+            );
+        }
+
+        $queryBuilder = $this->getRelationTableQueryBuilder();
+
+        if ($setSyncPassIdentifier) {
+            $queryBuilder->set('hubspot_sync_pass', $this->getSyncPassIdentifier());
+        }
+
+        $queryBuilder
+            ->update(self::RELATION_TABLE)
+            ->set('hubspot_sync_timestamp', time())
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid_foreign',
+                    $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+                ),
+                $queryBuilder->expr()->eq(
+                    'object_type',
+                    $queryBuilder->createNamedParameter($this->objectType)
+                ),
+                $queryBuilder->expr()->eq(
+                    'typoscript_key',
+                    $queryBuilder->createNamedParameter($this->typoScriptKey)
+                ),
+                $queryBuilder->expr()->eq(
+                    'table_foreign',
+                    $queryBuilder->createNamedParameter($this->tableName)
+                )
+            )
+            ->execute();
+    }
+
+    /**
      * Calculates the syncPassIdentifier to use when updating a record. This value identifies whether a record
      * has been updated in the current sync pass.
      *
@@ -127,7 +188,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
      */
     public function getSyncPassIdentifier(bool $ignoreScopeError = false): int
     {
-        $queryBuilder = $this->getSelectQueryBuilder();
+        $queryBuilder = $this->getRelationTableQueryBuilder();
 
         if ($this->hasSearchPids()) {
             $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
@@ -135,10 +196,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
 
         list($maxPass, $minPass) = $queryBuilder
             ->addSelectLiteral(
-                $queryBuilder->expr()->max('m.hubspot_sync_pass'),
-                $queryBuilder->expr()->min('m.hubspot_sync_pass')
+                $queryBuilder->expr()->max('hubspot_sync_pass'),
+                $queryBuilder->expr()->min('hubspot_sync_pass')
             )
-            ->andWhere($queryBuilder->expr()->neq('m.hubspot_id', null))
+            ->from(self::RELATION_TABLE)
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
 
@@ -157,15 +218,61 @@ class MappedTableRepository extends AbstractDatabaseRepository
     }
 
     /**
-     * Get a QueryBuilder instance
+     * Silently sets the sync pass value (i.e. without updating tstamp)
+     *
+     * @param int $uid
+     * @return bool
+     */
+    public function setSyncPassSilently(int $uid): bool
+    {
+        $queryBuilder = $this->getRelationTableQueryBuilder();
+
+        return (bool)$queryBuilder
+            ->update(static::RELATION_TABLE)
+            ->set('hubspot_sync_pass', $this->getSyncPassIdentifier())
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'uid_foreign',
+                    $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
+                ),
+                $queryBuilder->expr()->eq(
+                    'object_type',
+                    $queryBuilder->createNamedParameter($this->objectType)
+                ),
+                $queryBuilder->expr()->eq(
+                    'typoscript_key',
+                    $queryBuilder->createNamedParameter($this->typoScriptKey)
+                ),
+                $queryBuilder->expr()->eq(
+                    'table_foreign',
+                    $queryBuilder->createNamedParameter($this->tableName)
+                )
+            )
+            ->execute();
+    }
+
+    /**
+     * Get a QueryBuilder instance for the mapped table.
      *
      * @return QueryBuilder
      */
-    protected function getQueryBuilder(): QueryBuilder
+    protected function getMappedTableQueryBuilder(): QueryBuilder
     {
         /** @var QueryBuilder $queryBuilder */
         return GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable($this->tableName);
+    }
+
+    /**
+     * Get a QueryBuilder instance for the mapped table.
+     *
+     * @return QueryBuilder
+     */
+    protected function getRelationTableQueryBuilder(): QueryBuilder
+    {
+        /** @var QueryBuilder $queryBuilder */
+        return GeneralUtility::makeInstance(ConnectionPool::class)
+            ->getQueryBuilderForTable(self::RELATION_TABLE);
     }
 
     /**
@@ -176,7 +283,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
      */
     protected function getSelectQueryBuilder(): QueryBuilder
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->getMappedTableQueryBuilder();
 
         if ($this->getLimit() > 0) {
             $queryBuilder->setMaxResults($this->getLimit());

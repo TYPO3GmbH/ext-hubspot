@@ -92,25 +92,25 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
             $this->configureRepositoryDefaults();
 
-            if ($synchronizationConfiguration['createNewInTypo3']) {
-                // TODO: Fetch existing from Hubspot
-            }
-
-            if ($synchronizationConfiguration['createNewInHubspot']) {
-                $records = $this->mappedTableRepository->findNotYetSynchronized();
-
-                foreach ($records as $record) {
-                    $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
-
-                    if ($idInHubspot > 0) {
-                        $this->mappedTableRepository->add($idInHubspot, (int)$record['uid']);
-
-                        continue;
-                    }
-
-                    $this->addRecordToHubspot($record);
-                }
-            }
+//            if ($synchronizationConfiguration['createNewInTypo3']) {
+//                // TODO: Fetch existing from Hubspot
+//            }
+//
+//            if ($synchronizationConfiguration['createNewInHubspot']) {
+//                $records = $this->mappedTableRepository->findNotYetSynchronized();
+//
+//                foreach ($records as $record) {
+//                    $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
+//
+//                    if ($idInHubspot > 0) {
+//                        $this->mappedTableRepository->add($idInHubspot, (int)$record['uid']);
+//
+//                        continue;
+//                    }
+//
+//                    $this->addRecordToHubspot($record);
+//                }
+//            }
 
             $records = $this->mappedTableRepository->findReadyForSyncPass();
 
@@ -327,13 +327,83 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function synchronizeRecord(array $record)
     {
-        $mappedRecordProperties = $this->mapRecordToHubspot($record, true);
-
         $hubspotData = $this->customObjectRepository->findById($record['hubspot_id']);
 
-        $mappedObjectProperties = $this->mapHubspotToRecord($hubspotData['properties'], true);
+        $mappedObjectProperties = $this->mapRecordToHubspot($record, true);
 
+        $modifiedHubspotProperties = [];
+        foreach ($hubspotData['propertiesWithHistory'] as $propertyName => $property) {
+            if (
+                $this->getLatestTimestampFromHubspotProperty($property) > $record['tstamp']
+                && $this->getLatestTimestampFromHubspotProperty($property) > $record['hubspot_sync_timestamp']
+            ) {
+                $modifiedHubspotProperties[] = $propertyName;
+            }
+        }
 
+        foreach ($mappedObjectProperties as $propertyName => $value) {
+            // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
+            // Remove hubspot properties if there is no changed content
+            if (
+                in_array($propertyName, $modifiedHubspotProperties)
+                || $value === $hubspotData['properties'][$propertyName]
+            ) {
+                unset($mappedObjectProperties[$propertyName]);
+            }
+
+            // Remove hubspot properties that are older in Hubspot so we don't write them to the local record
+            if (!in_array($propertyName, $modifiedHubspotProperties)) {
+                if (isset($mappedObjectProperties[$propertyName])) {
+                    $hubspotData['properties'][$propertyName] = $mappedObjectProperties[$propertyName];
+                }
+            }
+        }
+
+        $mappedRecordProperties = $this->mapHubspotToRecord($hubspotData['properties'], true);
+
+        // Remove unchanged properties
+        foreach ($mappedRecordProperties as $propertyName => $value) {
+            // Remove if value is unchanged
+            if ($value === $record[$propertyName]) {
+                unset($mappedRecordProperties[$propertyName]);
+            }
+        }
+
+        if (count($mappedRecordProperties) > 0) {
+            $this->mappedTableRepository->update($record['uid'], $mappedRecordProperties);
+
+            $this->logInfo(
+                'Updated record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') to Hubspot object '
+                . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName() . ')',
+                [
+                    'record' => $mappedRecordProperties,
+                ]
+            );
+        } else {
+            $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+
+            $this->logInfo(
+                'No update for record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') to Hubspot object '
+                . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName() . ')'
+            );
+        }
+
+        if (count($mappedObjectProperties) > 0) {
+            $this->customObjectRepository->update($record['hubspot_id'], $mappedObjectProperties);
+
+            $this->logInfo(
+                'Updated Hubspot object ' . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName()
+                . ') to record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')',
+                [
+                    'object' => $mappedObjectProperties,
+                ]
+            );
+        } else {
+            $this->logInfo(
+                'No update for Hubspot object ' . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName()
+                . ') to record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')'
+            );
+        }
     }
 
     /**
@@ -394,5 +464,19 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         $this->mappedTableRepository->setSearchPids(
             GeneralUtility::intExplode(',', $this->configuration['synchronizeCustomObjects.']['limitToPids'] ?? '', true)
         );
+    }
+
+    /**
+     * Parses a hubspot property, returning the last modification timestamp from the history sub property
+     *
+     * @param array $hubspotProperty
+     * @return int Millisecond timestamp
+     */
+    protected function getLatestTimestampFromHubspotProperty(array $hubspotProperty): int
+    {
+        return \DateTime::createFromFormat(
+            \DateTimeInterface::RFC3339_EXTENDED,
+            $hubspotProperty[0]['timestamp']
+        )->getTimestamp();
     }
 }
