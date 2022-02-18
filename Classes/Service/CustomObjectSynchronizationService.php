@@ -193,7 +193,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             if ($toObjectType === 'contact') {
                 $frontendUserRepository = GeneralUtility::makeInstance(FrontendUserRepository::class);
 
-                $toObjectId = $frontendUserRepository->getHubspotIdById($toObjectTypo3Id);
+                $toObjectId = $frontendUserRepository->getHubspotIdById((int)$toObjectTypo3Id);
             // We assume this is a custom object even though other objects exist.
             } else {
                 $table = $this->getSynchronizationConfigurationByObjectName($toObjectType)['table'] ?? null;
