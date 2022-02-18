@@ -16,6 +16,7 @@ use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
+use T3G\Hubspot\Utility\CustomObjectUtility;
 use T3G\Hubspot\Utility\SchemaUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -322,26 +323,10 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     protected function getPropertyNamesFromProperties(array $properties, bool $removeInternal = true): array
     {
         if ($removeInternal) {
-            $properties = $this->removeInternalPropertyNames($properties);
+            $properties = CustomObjectUtility::removeHubspotInternalProperties($properties);
         }
 
         return array_column($properties, 'name');
-    }
-
-    /**
-     * Given an array of Hubspot property definition, this method removes any internal Hubspot properties (hs_*).
-     *
-     * @param array $properties
-     * @return array
-     */
-    protected function removeInternalPropertyNames(array $properties): array
-    {
-        return array_filter(
-            $properties,
-            function ($property) {
-                return strpos($property['name'], 'hs_') !== 0;
-            }
-        );
     }
 
     /**

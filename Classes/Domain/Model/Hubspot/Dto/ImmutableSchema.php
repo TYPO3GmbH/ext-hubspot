@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Domain\Model\Hubspot\Dto;
 
+use T3G\Hubspot\Utility\CustomObjectUtility;
+
 /**
  * A representation of a Hubspot schema containing all properties, also those that can only be written on create.
  */
@@ -33,8 +35,7 @@ class ImmutableSchema extends MutableSchema
             /** @var ImmutableProperty $property */
             foreach ($data['properties'] as $property) {
                 if (is_array($property)) {
-                    // Properties starting with "hs_" are internal and can't be used.
-                    if (strpos($property['name'], 'hs_') === 0) {
+                    if (CustomObjectUtility::isHubspotInternalPropertyName($property['name'])) {
                         continue;
                     }
 

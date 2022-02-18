@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace T3G\Hubspot\Domain\Repository\Hubspot;
 
 use T3G\Hubspot\Domain\Model\Hubspot\Dto\MutableProperty;
+use T3G\Hubspot\Utility\CustomObjectUtility;
 use T3G\Hubspot\Utility\SchemaUtility;
 
 /**
@@ -23,7 +24,7 @@ class PropertyRepository extends AbstractHubspotRepository
     public function update(string $schemaName, string $propertyName, array $property)
     {
         // Ignore internal Hubspot properties.
-        if (strpos($propertyName, 'hs_') === 0) {
+        if (CustomObjectUtility::isHubspotInternalPropertyName($propertyName)) {
             return;
         }
 
