@@ -78,12 +78,30 @@ class CustomObjects extends Resource
      * @param array $parameters
      * @return Response
      */
-    public function getById(int $id, array $properties = []): Response
+    public function getById(int $id): Response
     {
         return $this->client->request(
             'get',
-            $this->getEndpoint((string)$id),
-            ['json' => ['properties' => $properties]]
+            $this->getEndpoint((string)$id)
+        );
+    }
+
+    /**
+     * Get a custom object by a unique property value.
+     *
+     * @param string $propertyName
+     * @param string $propertyValue
+     * @return \Psr\Http\Message\ResponseInterface|Response
+     * @throws \SevenShores\Hubspot\Exceptions\BadRequest
+     * @throws \SevenShores\Hubspot\Exceptions\HubspotException
+     */
+    public function getByUniqueProperty(string $propertyName, string $propertyValue)
+    {
+        return $this->client->request(
+            'get',
+            $this->getEndpoint($propertyValue).
+            [],
+            'idProperty=' . urlencode($propertyName)
         );
     }
 

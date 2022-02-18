@@ -55,9 +55,22 @@ class CustomObjectRepository extends AbstractHubspotRepository
      * @param int $id
      * @return array
      */
-    public function get(int $id): array
+    public function findById(int $id): array
     {
         return $this->factory->customObjects($this->objectType)->getById($id)->toArray();
+    }
+
+    /**
+     * Get a custom object by a unique property value.
+     *
+     * @param string $propertyName
+     * @param string $propertyValue
+     * @return array
+     */
+    public function findByUniqueProperty(string $propertyName, string $propertyValue)
+    {
+        return $this->factory->customObjects($this->objectType)
+            ->getByUniqueProperty($propertyName, $propertyValue)->toArray();
     }
 
     /**

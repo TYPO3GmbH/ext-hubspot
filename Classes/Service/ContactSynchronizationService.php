@@ -595,26 +595,10 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         $frontendUser = $beforeMappingEvent->getFrontendUser();
         unset($beforeMappingEvent);
 
-        $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? [];
-
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($frontendUser);
-
-        $hubspotProperties = [];
-        foreach (array_keys($toHubspot) as $hubspotProperty) {
-            $hubspotProperty = rtrim($hubspotProperty, '.');
-
-            if (array_key_exists($hubspotProperty, $hubspotProperties)) {
-                continue;
-            }
-
-            $hubspotProperties[$hubspotProperty] = $contentObjectRenderer->stdWrap(
-                $toHubspot[$hubspotProperty] ?? '',
-                $toHubspot[$hubspotProperty . '.'] ?? []
-            );
-        }
-
-        $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
+        $hubspotProperties = $this->mapAndtransformValues(
+            $frontendUser,
+            $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? []
+        );
 
         $afterMappingEvent = new AfterMappingFrontendUserToHubspotContactPropertiesEvent(
             $this,
@@ -669,24 +653,10 @@ class ContactSynchronizationService extends AbstractSynchronizationService
             }
         }
 
-        $toFrontendUser = $this->configuration['settings.']['synchronize.']['toFrontendUser.'] ?? [];
-
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($hubspotContactProperties);
-
-        $frontendUserProperties = [];
-        foreach (array_keys($toFrontendUser) as $frontendUserProperty) {
-            $frontendUserProperty = rtrim($frontendUserProperty, '.');
-
-            if (array_key_exists($frontendUserProperty, $frontendUserProperties)) {
-                continue;
-            }
-
-            $frontendUserProperties[$frontendUserProperty] = $contentObjectRenderer->stdWrap(
-                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty] ?? ''] ?? '',
-                $toFrontendUser[$frontendUserProperty . '.'] ?? []
-            );
-        }
+        $frontendUserProperties = $this->mapAndtransformValues(
+            $hubspotContactProperties,
+            $this->configuration['settings.']['synchronize.']['toFrontendUser.'] ?? []
+        );
 
         $frontendUserProperties['hubspot_created_timestamp'] =
             $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt'] ?? 0; // Millisecond timestamp

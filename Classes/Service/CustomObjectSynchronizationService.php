@@ -172,26 +172,22 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         $this->mappedTableRepository->add($objectId, $record['uid']);
     }
 
+    /**
+     * Resolve, add and update associations between a custom object and another object.
+     *
+     * @param int $fromObjectId
+     * @param array $record
+     */
     protected function resolveAssociationsForObject(int $fromObjectId, array $record)
     {
         $associationConfigurations = $this->getCurrentSynchronizationConfiguration()['associations.'] ?? [];
 
-        foreach ($associationConfigurations as $toObjectType => $fieldName) {
-            if (is_array($fieldName)) {
-                continue;
-            }
+        $transformedValues = $this->mapAndtransformValues($record, $associationConfigurations);
 
+        foreach ($transformedValues as $toObjectType => $toObjectTypo3Id) {
             $existingAssociations = $this->customObjectRepository->findAssociations($fromObjectId, $toObjectType);
 
             // TODO: If has existing associations
-
-            $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-            $contentObjectRenderer->start($record);
-
-            $toObjectTypo3Id = (int)$contentObjectRenderer->stdWrap(
-                $record[$fieldName],
-                $associationConfigurations[$toObjectType . '.'] ?? []
-            );
 
             // The extension can handle contacts in addtion to custom objects.
             if ($toObjectType === 'contact') {
@@ -266,12 +262,6 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function mapRecordToHubspot(array $record, bool $isUpdate = false)
     {
-        $currentSchema = $this->customObjectSchemaRepository->findByName($this->getCurrentObjectName());
-
-        $hubspotPropertyNames = $this->getPropertyNamesFromProperties($currentSchema['properties']);
-
-        $toHubspot = $this->getCurrentSynchronizationConfiguration()['toHubspot.'] ?? [];
-
         $ignoreFieldsPropertyName = $isUpdate ? 'ignoreOnHubspotUpdate' : 'ignoreOnHubspotCreate';
         $ignoreFields = GeneralUtility::trimExplode(
             ',',
@@ -279,35 +269,11 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             true
         );
 
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($record);
-
-        $hubspotProperties = [];
-        foreach (array_keys($toHubspot) as $hubspotProperty) {
-            $hubspotProperty = rtrim($hubspotProperty, '.');
-
-            if (
-                array_key_exists($hubspotProperty, $hubspotProperties)
-                || !in_array($hubspotProperty, $hubspotPropertyNames)
-                || in_array($hubspotProperty, $ignoreFields)
-            ) {
-                continue;
-            }
-
-            $hubspotProperties[$hubspotProperty] = $toHubspot[$hubspotProperty];
-        }
-
-        $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
-
-        $mappedData = [];
-        foreach ($hubspotProperties as $hubspotProperty => $localFieldName) {
-            $mappedData[$hubspotProperty] = $contentObjectRenderer->stdWrap(
-                $record[$localFieldName],
-                $toHubspot[$hubspotProperty . '.'] ?? []
-            );
-        }
-
-        return $mappedData;
+        return $this->mapAndtransformValues(
+            $record,
+            $this->getCurrentSynchronizationConfiguration()['toHubspot.'] ?? [],
+            $ignoreFields
+        );
     }
 
     /**
@@ -319,45 +285,17 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function mapHubspotToRecord(array $properties, bool $isUpdate = false)
     {
-        $toLocal = $this->getCurrentSynchronizationConfiguration()['toLocal.'] ?? [];
-
-        $localPropertyNames = array_keys($GLOBALS['TCA'][$this->getCurrentTableName()]['columns']);
-
         $ignoreFieldsPropertyName = $isUpdate ? 'ignoreOnLocalUpdate' : 'ignoreOnLocalCreate';
         $ignoreFields = GeneralUtility::trimExplode(
             ',',
             $this->getCurrentSynchronizationConfiguration()[$ignoreFieldsPropertyName] ?? ''
         );
 
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($properties);
-
-        $localProperties = [];
-        foreach (array_keys($toLocal) as $localPeroperty) {
-            $localPeroperty = rtrim($localPeroperty, '.');
-
-            if (
-                array_key_exists($localPeroperty, $localProperties)
-                || !in_array($localPeroperty, $localPropertyNames)
-                || in_array($localPeroperty, $ignoreFields)
-            ) {
-                continue;
-            }
-
-            $localProperties[$localPeroperty] = $contentObjectRenderer->stdWrap(
-                $toLocal[$localPeroperty] ?? '',
-                $toLocal[$localPeroperty . '.'] ?? []
-            );
-        }
-
-        $localProperties = ArrayUtility::removeNullValuesRecursive($localProperties);
-
-        $mappedData = [];
-        foreach ($localProperties as $localProperty => $hubspotPropertyName) {
-            $mappedData[$localProperty] = $properties[$hubspotPropertyName];
-        }
-
-        return $mappedData;
+        return $this->mapAndtransformValues(
+            $properties,
+            $this->getCurrentSynchronizationConfiguration()['toLocal.'] ?? [],
+            $ignoreFields
+        );
     }
 
     /**
@@ -367,7 +305,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     {
         $mappedRecordProperties = $this->mapRecordToHubspot($record, true);
 
-        $hubspotData = $this->customObjectRepository->get($record['hubspot_id']);
+        $hubspotData = $this->customObjectRepository->findById($record['hubspot_id']);
 
         $mappedObjectProperties = $this->mapHubspotToRecord($hubspotData['properties'], true);
 

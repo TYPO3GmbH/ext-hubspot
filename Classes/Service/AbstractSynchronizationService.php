@@ -10,6 +10,7 @@ use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 abstract class AbstractSynchronizationService implements LoggerAwareInterface
 {
@@ -71,6 +72,67 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
         $this->activeConfigurationPageId = $pageId;
 
         $this->configureRepositoryDefaults();
+    }
+
+    /**
+     * Maps values in $sourceValues to keys in $configurations by running it through a stdWrap.
+     *
+     * $sourceValues = [
+     *     'key1' => 'bar',
+     *     'key2' => 'foo',
+     *     'key3' => 'bat',
+     * ]
+     *
+     * $configurations = [
+     *     'conf1' => 'key1'
+     *     'conf2' => 'key2'
+     *     'conf2.' => [
+     *         'wrap' => '#|#',
+     *     ]
+     * ]
+     *
+     * $result = [
+     *     'conf1' => 'bar',
+     *     'conf2' => '#foo#',
+     * ]
+     *
+     * @param array $sourceValues A key-value array of values, e.g. from a record.
+     * @param array $configurations
+     * @param array $ignoreConfigurations Keys to ignore in $configurations
+     * @return array An associative array of values.
+     */
+    protected function mapAndtransformValues(
+        array $sourceValues,
+        array $configurations,
+        array $ignoreConfigurations = []
+    )
+    {
+        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        $contentObjectRenderer->start($sourceValues);
+
+        $configurationKeys = array_keys($configurations);
+        array_walk(
+            $configurationKeys,
+            function (&$item) {
+                $item = rtrim($item, '.');
+            }
+        );
+        $configurationKeys = array_unique($configurationKeys);
+
+        $resultingValues = [];
+
+        foreach ($configurationKeys as $configurationKey) {
+            if (in_array($configurationKey, $ignoreConfigurations)) {
+                continue;
+            }
+
+            $resultingValues[$configurationKey] = $contentObjectRenderer->stdWrap(
+                $sourceValues[$configurations[$configurationKey] ?? null] ?? '',
+                $configurations[$configurationKey . '.'] ?? []
+            );
+        }
+
+        return $resultingValues;
     }
 
     /**
