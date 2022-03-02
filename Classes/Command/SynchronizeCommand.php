@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace T3G\Hubspot\Command;
 
 use GeorgRinger\News\Utility\TypoScript;
+use SevenShores\Hubspot\Exceptions\BadRequest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -110,7 +111,22 @@ class SynchronizeCommand extends Command
                 );
             }
 
-            $this->$methodName();
+            try {
+                $this->$methodName();
+            // Add full response text to exception.
+            } catch (BadRequest $exception) {
+                $exception->getResponse()->getBody()->rewind();
+
+                throw new BadRequest(
+                    substr(
+                        $exception->getMessage(),
+                        0,
+                        strpos($exception->getMessage(), 'response:') + 11
+                    ) . $exception->getResponse()->getBody()->getContents(),
+                    $exception->getCode(),
+                    $exception
+                );
+            }
         }
     }
 
