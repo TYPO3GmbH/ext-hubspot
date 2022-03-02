@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Command;
 
-use GeorgRinger\News\Utility\TypoScript;
-use SevenShores\Hubspot\Exceptions\BadRequest;
 use Symfony\Component\Console\Command\Command;
+use SevenShores\Hubspot\Exceptions\BadRequest;
 use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
