@@ -112,8 +112,16 @@ class ContactSynchronizationService extends AbstractSynchronizationService
                     try {
                         $this->addHubspotContactToFrontendUsers($newHubspotContact);
                     } catch (SkipRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Skipped when adding contact ' . $newHubspotContact['vid'] . ': ' . $e->getMessage()
+                        );
+
                         continue;
                     } catch (StopRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Stopped when adding contact ' . $newHubspotContact['vid'] . ': ' . $e->getMessage()
+                        );
+
                         return;
                     }
                 }
@@ -131,8 +139,16 @@ class ContactSynchronizationService extends AbstractSynchronizationService
                 try {
                     $this->synchronizeFrontendUser($frontendUser);
                 } catch (SkipRecordSynchronizationException $e) {
+                    $this->logInfo(
+                        'Skipped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                    );
+
                     continue;
                 } catch (StopRecordSynchronizationException $e) {
+                    $this->logInfo(
+                        'Stopped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                    );
+
                     return;
                 }
             }
@@ -146,8 +162,16 @@ class ContactSynchronizationService extends AbstractSynchronizationService
             try {
                 $this->synchronizeFrontendUser($frontendUser);
             } catch (SkipRecordSynchronizationException $e) {
+                $this->logInfo(
+                    'Skipped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                );
+
                 continue;
             } catch (StopRecordSynchronizationException $e) {
+                $this->logInfo(
+                    'Stopped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                );
+
                 return;
             }
         }
@@ -161,6 +185,8 @@ class ContactSynchronizationService extends AbstractSynchronizationService
         try {
             CompatibilityUtility::dispatchEvent($afterSynchronizationEvent);
         } catch (StopRecordSynchronizationException $e) {
+            $this->logInfo('Stopped after synchronization: ' . $e->getMessage());
+
             return;
         }
 

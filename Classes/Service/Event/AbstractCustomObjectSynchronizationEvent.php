@@ -6,18 +6,19 @@ namespace T3G\Hubspot\Service\Event;
 
 use T3G\Hubspot\Service\AbstractSynchronizationService;
 use T3G\Hubspot\Service\ContactSynchronizationService;
+use T3G\Hubspot\Service\CustomObjectSynchronizationService;
 
 /**
- * Abstract contact synchronization event.
+ * Abstract custom object synchronization event.
  */
-abstract class AbstractContactSynchronizationEvent extends AbstractSynchronizationEvent
+abstract class AbstractCustomObjectSynchronizationEvent extends AbstractSynchronizationEvent
 {
     /**
-     * @param ContactSynchronizationService $synchronizationService
+     * @param CustomObjectSynchronizationService $synchronizationService
      * @param array $configuration
      */
     public function __construct(
-        ContactSynchronizationService $synchronizationService,
+        CustomObjectSynchronizationService $synchronizationService,
         array $configuration
     )
     {

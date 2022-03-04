@@ -13,14 +13,15 @@ namespace T3G\Hubspot\Service;
 
 use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
 use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
-use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
+use T3G\Hubspot\Service\Event\BeforeAddingMappedTableRecordToHubspotEvent;
+use T3G\Hubspot\Service\Event\BeforeCustomObjectSynchronizationEvent;
+use T3G\Hubspot\Service\Exception\SkipRecordSynchronizationException;
+use T3G\Hubspot\Service\Exception\StopRecordSynchronizationException;
+use T3G\Hubspot\Utility\CompatibilityUtility;
 use T3G\Hubspot\Utility\CustomObjectUtility;
-use T3G\Hubspot\Utility\SchemaUtility;
-use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Synchronization service for Hubspot custom objects
@@ -69,6 +70,22 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             return;
         }
 
+        $beforeSynchronizationEvent = new BeforeCustomObjectSynchronizationEvent(
+            $this,
+            $this->configuration
+        );
+
+        try {
+            CompatibilityUtility::dispatchEvent($beforeSynchronizationEvent);
+        } catch (StopRecordSynchronizationException $e) {
+            $this->logInfo('Stopped record synchronization: ' . $e->getMessage());
+
+            return;
+        }
+
+        $this->configuration = $beforeSynchronizationEvent->getConfiguration();
+        unset($beforeSynchronizationEvent);
+
         foreach ($this->configuration['settings.']['synchronizeCustomObjects.'] as $typoScriptKey => $synchronizationConfiguration) {
             if (!is_array($synchronizationConfiguration)) {
                 continue;
@@ -108,33 +125,50 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                         continue;
                     }
 
-                    $this->addRecordToHubspot($record);
+                    try {
+                        $this->addRecordToHubspot($record);
+                    } catch (SkipRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Skipped when adding record ' . $record['uid']
+                            . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
+                        );
+
+                        continue;
+                    } catch (StopRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Stopped when adding record ' . $record['uid']
+                            . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
+                        );
+
+                        return;
+                    }
                 }
             }
 
             $records = $this->mappedTableRepository->findReadyForSyncPass();
 
             foreach ($records as $record) {
-                $this->synchronizeRecord($record);
+                try {
+                    $this->synchronizeRecord($record);
+                } catch (SkipRecordSynchronizationException $e) {
+                    $this->logInfo(
+                        'Skipped sync of record ' . $record['uid']
+                        . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
+                    );
+
+                    continue;
+                } catch (StopRecordSynchronizationException $e) {
+                    $this->logInfo(
+                        'Stopped when syncing record ' . $record['uid']
+                        . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
+                    );
+
+                    return;
+                }
             }
         }
 
-        // TODO: Iterate through objects that have not yet been synced, then objects with changes
-
-        // TODO: Check if relation exists. How do we deal with relations that do not exist? Sync them in a later pass
-        // TODO: or wait with syncing? How do we deal with existing objects in Hubspot that have a relation that is
-        // TODO: different to what we have on the TYPO3 side? (Suggestion: we do not sync)
-
-        // TODO: Check if object exists in Hubspot using uniqueFields list (for example product type and serial number).
-        // TODO: This is the unique key for the Hubspot object when we don't yet have a Hubspot ID for it.
-
-        // TODO: Write object data to Hubspot
-
-        // TODO: Write relations to Hubspot
-
-        // TODO: Persist Hubspot unique id to database, creating a record in tx_hubspot_object_foreigntable_mm
-
-        // TODO: For later: Synchronize the other way, back to TYPO3.
+        return;
     }
 
     /**
@@ -178,6 +212,19 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
     protected function addRecordToHubspot(array $record)
     {
+        $beforeAddEvent = new BeforeAddingMappedTableRecordToHubspotEvent(
+            $this,
+            $this->configuration,
+            $this->mappedTableRepository,
+            $record
+        );
+
+        CompatibilityUtility::dispatchEvent($beforeAddEvent);
+
+        $this->configuration = $beforeAddEvent->getConfiguration();
+        $record = $beforeAddEvent->getMappedTableRecord();
+        unset($beforeAddEvent);
+
         $mappedData = $this->mapRecordToHubspot($record);
 
         $objectId = $this->customObjectRepository->create($mappedData);
@@ -355,12 +402,12 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             // Remove hubspot properties if there is no changed content
             if (
                 in_array($propertyName, $modifiedHubspotProperties)
-                || $value === $hubspotData['properties'][$propertyName]
+                || (string)$value === $hubspotData['properties'][$propertyName]
             ) {
                 unset($mappedObjectProperties[$propertyName]);
             }
 
-            // Remove hubspot properties that are older in Hubspot so we don't write them to the local record
+            // Remove hubspot properties that are older in Hubspot, so we don't write them to the local record
             if (!in_array($propertyName, $modifiedHubspotProperties)) {
                 if (isset($mappedObjectProperties[$propertyName])) {
                     $hubspotData['properties'][$propertyName] = $mappedObjectProperties[$propertyName];
@@ -489,5 +536,37 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             \DateTimeInterface::RFC3339_EXTENDED,
             $hubspotProperty[0]['timestamp']
         )->getTimestamp();
+    }
+
+    /**
+     * @return CustomObjectRepository
+     */
+    public function getCustomObjectRepository(): CustomObjectRepository
+    {
+        return $this->customObjectRepository;
+    }
+
+    /**
+     * @param CustomObjectRepository $customObjectRepository
+     */
+    public function setCustomObjectRepository(CustomObjectRepository $customObjectRepository)
+    {
+        $this->customObjectRepository = $customObjectRepository;
+    }
+
+    /**
+     * @return MappedTableRepository
+     */
+    public function getMappedTableRepository(): MappedTableRepository
+    {
+        return $this->mappedTableRepository;
+    }
+
+    /**
+     * @param MappedTableRepository $mappedTableRepository
+     */
+    public function setMappedTableRepository(MappedTableRepository $mappedTableRepository)
+    {
+        $this->mappedTableRepository = $mappedTableRepository;
     }
 }

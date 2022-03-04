@@ -371,4 +371,28 @@ class MappedTableRepository extends AbstractDatabaseRepository
             ->where($queryBuilder->expr()->eq('object_type', $queryBuilder->createNamedParameter($objectType)))
             ->execute();
     }
+
+    /**
+     * @return string
+     */
+    public function getObjectType(): string
+    {
+        return $this->objectType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypoScriptKey(): string
+    {
+        return $this->typoScriptKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        return $this->tableName;
+    }
 }

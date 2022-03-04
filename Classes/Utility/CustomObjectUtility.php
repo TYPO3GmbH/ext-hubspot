@@ -16,16 +16,44 @@ class CustomObjectUtility
 {
     /**
      * @var array
+     * @see CustomObjectUtility::getPropertySchemas()
+     */
+    protected static $propertySchemas = [];
+
+    /**
+     * @var string[]
      * @see CustomObjectUtility::getNamesOfUniqueProperties()
      */
     protected static $namesOfUniquePropertiesCache = [];
 
     /**
-     * @var array
+     * @var string[]
      * @see CustomObjectUtility::getPropertyNames()
      */
     protected static $propertyNamesCache = [];
 
+
+    public static function getPropertySchemas(string $objectName, bool $excludeHubspotInternal = true)
+    {
+        $cacheKey = $objectName . '_internal' . $excludeHubspotInternal;
+
+        if (!isset(self::$propertySchemas[$cacheKey])) {
+            $properties = GeneralUtility::makeInstance(CustomObjectSchemaRepository::class)
+                    ->findByName($objectName)['properties'] ?? [];
+
+
+        }
+
+        return self::$propertySchemas[$cacheKey];
+    }
+
+    /**
+     * Returns the names of properties in a custom object.
+     *
+     * @param string $objectName
+     * @param bool $excludeHubspotInternal
+     * @return string[]
+     */
     public static function getPropertyNames(string $objectName, bool $excludeHubspotInternal = true)
     {
         $cacheKey = $objectName . '_internal' . $excludeHubspotInternal;
