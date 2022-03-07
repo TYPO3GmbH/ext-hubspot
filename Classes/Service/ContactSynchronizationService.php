@@ -139,12 +139,16 @@ class ContactSynchronizationService extends AbstractSynchronizationService
                 try {
                     $this->synchronizeFrontendUser($frontendUser);
                 } catch (SkipRecordSynchronizationException $e) {
+                    $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
                     $this->logInfo(
                         'Skipped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
                     );
 
                     continue;
                 } catch (StopRecordSynchronizationException $e) {
+                    $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
                     $this->logInfo(
                         'Stopped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
                     );
@@ -162,12 +166,16 @@ class ContactSynchronizationService extends AbstractSynchronizationService
             try {
                 $this->synchronizeFrontendUser($frontendUser);
             } catch (SkipRecordSynchronizationException $e) {
+                $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
                 $this->logInfo(
                     'Skipped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
                 );
 
                 continue;
             } catch (StopRecordSynchronizationException $e) {
+                $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
                 $this->logInfo(
                     'Stopped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
                 );

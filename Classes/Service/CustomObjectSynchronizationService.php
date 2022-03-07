@@ -128,6 +128,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                     try {
                         $this->addRecordToHubspot($record);
                     } catch (SkipRecordSynchronizationException $e) {
+                        $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+
                         $this->logInfo(
                             'Skipped when adding record ' . $record['uid']
                             . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
@@ -135,6 +137,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
                         continue;
                     } catch (StopRecordSynchronizationException $e) {
+                        $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+
                         $this->logInfo(
                             'Stopped when adding record ' . $record['uid']
                             . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
@@ -151,6 +155,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                 try {
                     $this->synchronizeRecord($record);
                 } catch (SkipRecordSynchronizationException $e) {
+                    $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+
                     $this->logInfo(
                         'Skipped sync of record ' . $record['uid']
                         . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()
@@ -158,6 +164,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
                     continue;
                 } catch (StopRecordSynchronizationException $e) {
+                    $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+
                     $this->logInfo(
                         'Stopped when syncing record ' . $record['uid']
                         . ' (' . $this->getCurrentTableName() . '): ' . $e->getMessage()

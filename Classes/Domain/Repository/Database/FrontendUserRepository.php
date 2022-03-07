@@ -83,7 +83,8 @@ class FrontendUserRepository extends AbstractDatabaseRepository
             ->select('*')
             ->from(static::TABLE_NAME)
             ->where(
-                $queryBuilder->expr()->eq('hubspot_sync_timestamp', 0)
+                $queryBuilder->expr()->eq('hubspot_sync_timestamp', 0),
+                $queryBuilder->expr()->neq('hubspot_sync_pass', $this->getSyncPassIdentifier())
             );
 
         if ($this->hasSearchPids()) {

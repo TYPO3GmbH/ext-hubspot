@@ -85,12 +85,18 @@ class MappedTableRepository extends AbstractDatabaseRepository
             ->fetchAll(FetchMode::ASSOCIATIVE);
     }
 
+    /**
+     * Returns records that are ready for synchronization.
+     *
+     * @return array
+     */
     public function findReadyForSyncPass(): array
     {
         $queryBuilder = $this->getSelectQueryBuilder();
 
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNotNull('m.uid_foreign'))
+            ->andWhere($queryBuilder->expr()->neq('m.hubspot_sync_pass', $this->getSyncPassIdentifier()))
             ->execute()
             ->fetchAll(FetchMode::ASSOCIATIVE);
     }
