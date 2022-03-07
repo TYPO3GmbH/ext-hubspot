@@ -100,6 +100,65 @@ createNewInTypo3
    If true, the synchronization operation will create a new TYPO3 record
    whenever it comes across a Hubspot custom object that doesn't exist in TYPO3.
 
+.. _configuration-customobjects-ignoreOnHubspotCreate:
+
+ignoreOnHubspotCreate
+---------------------
+
+:aspect:`Property`
+   ignoreOnHubspotCreate
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Hubspot properties that should not be included when creating a new custom
+   object.
+
+.. _configuration-customobjects-ignoreOnHubspotUpdate:
+
+ignoreOnHubspotUpdate
+---------------------
+
+:aspect:`Property`
+   ignoreOnHubspotUpdate
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Hubspot properties that should not be included when updating a new custom
+   object.
+
+.. _configuration-customobjects-ignoreOnLocalCreate:
+
+ignoreOnLocalCreate
+---------------------
+
+:aspect:`Property`
+   ignoreOnLocalCreate
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Local field values that should not be included when creating a new TYPO3
+   record.
+
+.. _configuration-customobjects-ignoreOnLocalUpdate:
+
+ignoreOnLocalUpdate
+---------------------
+
+:aspect:`Property`
+   ignoreOnLocalUpdate
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Local field values that should not be included when updating a new TYPO3
+   record.
 
 .. _configuration-customobjects-limitToPids:
 
@@ -185,3 +244,36 @@ Example
      date.date = Y-m-d
    }
 
+.. _configuration-customobjects-toLocal:
+
+toLocal.[typo3fieldName]
+------------------------
+
+:aspect:`Property`
+   toLocal.[typo3fieldName]
+
+:aspect:`Data type`
+   String | stdWrap
+
+:aspect:`Description`
+   Maps a Hubspot property to a TYPO3 field. This is used when syncing from
+   Hubspot to TYPO3.
+
+Example
+~~~~~~~
+
+.. code-block:: typoscript
+
+   toLocal {
+     # The value of the "name" property in Hubspot is used for the "title" field
+     # in TYPO3.
+     title = name
+
+     # You can transform the value using stdWrap.
+     bodytext = description
+     bodytext.ifEmpty = NO CONTENT
+
+     # Date fields must be formatted correctly for TYPO3's Unix timestamps.
+     crdate = date
+     crdate.date = u
+   }
