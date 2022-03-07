@@ -96,6 +96,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
 
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNotNull('m.uid_foreign'))
+            ->andWhere($queryBuilder->expr()->neq('m.hubspot_id', 0))
             ->andWhere($queryBuilder->expr()->neq('m.hubspot_sync_pass', $this->getSyncPassIdentifier()))
             ->execute()
             ->fetchAll(FetchMode::ASSOCIATIVE);

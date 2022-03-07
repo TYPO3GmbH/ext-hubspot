@@ -128,7 +128,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
                     try {
                         $this->addRecordToHubspot($record);
                     } catch (SkipRecordSynchronizationException $e) {
-                        $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+                        $this->mappedTableRepository->add(0, (int)$record['uid']);
 
                         $this->logInfo(
                             'Skipped when adding record ' . $record['uid']
@@ -137,7 +137,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
                         continue;
                     } catch (StopRecordSynchronizationException $e) {
-                        $this->mappedTableRepository->setSyncPassSilently($record['uid']);
+                        $this->mappedTableRepository->add(0, (int)$record['uid']);
 
                         $this->logInfo(
                             'Stopped when adding record ' . $record['uid']
