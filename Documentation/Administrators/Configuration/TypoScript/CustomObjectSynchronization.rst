@@ -38,7 +38,7 @@ You can define any number of custom object synchronizations in
 `key` can be any key, but the Hubspot object name is recommended. Still, there
 could be multiple syncs to the same object, so it isn't a requirement.
 
-.. _configuration-customobjects-objectName:
+.. _configuration-customobjects-objectname:
 
 objectName
 ----------
@@ -58,5 +58,19 @@ objectName
    e.g. "p12345678_shipment". We are using the simple object name only for
    portability reasons, so you can use the same configuration for both
    development and production.
+
+.. _configuration-customobjects-limitToPids:
+
+limitToPids
+-----------
+
+:aspect:`Property`
+   limitToPids
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Limit record queries in TYPO3 to page IDs in this list.
 
 

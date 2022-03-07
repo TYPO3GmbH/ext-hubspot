@@ -79,6 +79,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
     {
         $queryBuilder = $this->getSelectQueryBuilder();
 
+        if (count($this->getSearchPids()) > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
+        }
+
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNull('m.uid_foreign'))
             ->execute()
@@ -93,6 +97,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
     public function findReadyForSyncPass(): array
     {
         $queryBuilder = $this->getSelectQueryBuilder();
+
+        if (count($this->getSearchPids()) > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
+        }
 
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNotNull('m.uid_foreign'))
@@ -139,6 +147,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
     {
         unset($row['uid']);
 
+        if (count($this->getSearchPids()) > 0 && !isset($row['pid'])) {
+            $row['pid'] = $this->getSearchPids()[0];
+        }
+
         $data = [
             $this->tableName => [
                 $uid => $row
@@ -160,6 +172,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
 
         if ($setSyncPassIdentifier) {
             $queryBuilder->set('hubspot_sync_pass', $this->getSyncPassIdentifier());
+        }
+
+        if (count($this->getSearchPids()) > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
         }
 
         $queryBuilder
@@ -294,6 +310,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
 
         if ($this->getLimit() > 0) {
             $queryBuilder->setMaxResults($this->getLimit());
+        }
+
+        if (count($this->getSearchPids()) > 0) {
+            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
         }
 
         return $queryBuilder
