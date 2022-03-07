@@ -38,6 +38,83 @@ You can define any number of custom object synchronizations in
 `key` can be any key, but the Hubspot object name is recommended. Still, there
 could be multiple syncs to the same object, so it isn't a requirement.
 
+.. _configuration-customobjects-associations:
+
+associations.[foreignObjectName]
+--------------------------------
+
+:aspect:`Property`
+   associations.[foreignObjectName]
+
+:aspect:`Data type`
+   String | stdWrap
+
+:aspect:`Description`
+   Specifies a relation between this custom object and another Hubspot object.
+   (In Hubspot relations are called *associations*.) `[foreignObjectName]` is
+   the name of the foreign object. In combination with the name of your custom
+   object it will generate an association name with the format
+   `[objectName]_to_[foreignObjectName]`, e.g. `shipment_to_contact`. The value
+   must be a record ID (UID) of the corresponding record in TYPO3. The
+   foreign object must be configured as a custom object or contact using this
+   extension, so it's possible to look up the Hubspot ID based on the record ID.
+
+Example
+~~~~~~~
+
+.. code-block:: typoscript
+
+   associations {
+     # The "feuser" field in the TYPO3 record contains an ID we can use to
+     # find a corresponding Hubspot ID and set up the association.
+     contact = feuser
+   }
+
+.. _configuration-customobjects-createNewInHubspot:
+
+createNewInHubspot
+------------------
+
+:aspect:`Property`
+   createNewInHubspot
+
+:aspect:`Data type`
+   Boolean
+
+:aspect:`Description`
+   If true, the synchronization operation will create a new hubspot custom
+   object whenever it comes across a record that doesn't exist in Hubspot.
+
+.. _configuration-customobjects-createNewInTypo3:
+
+createNewInTypo3
+----------------
+
+:aspect:`Property`
+   createNewInTypo3
+
+:aspect:`Data type`
+   Boolean
+
+:aspect:`Description`
+   If true, the synchronization operation will create a new TYPO3 record
+   whenever it comes across a Hubspot custom object that doesn't exist in TYPO3.
+
+
+.. _configuration-customobjects-limitToPids:
+
+limitToPids
+-----------
+
+:aspect:`Property`
+   limitToPids
+
+:aspect:`Data type`
+   Comma-separated list
+
+:aspect:`Description`
+   Limit record queries in TYPO3 to page IDs in this list.
+
 .. _configuration-customobjects-objectname:
 
 objectName
@@ -59,18 +136,52 @@ objectName
    portability reasons, so you can use the same configuration for both
    development and production.
 
-.. _configuration-customobjects-limitToPids:
+.. _configuration-customobjects-table:
 
-limitToPids
------------
+table
+-----
 
 :aspect:`Property`
-   limitToPids
+   table
 
 :aspect:`Data type`
-   Comma-separated list
+   String
 
 :aspect:`Description`
-   Limit record queries in TYPO3 to page IDs in this list.
+   The name of the database table to use for the TYPO3-side of the
+   synchronization.
 
+.. _configuration-customobjects-toHubspot:
+
+toHubspot.[hubspotPropertyName]
+-------------------------------
+
+:aspect:`Property`
+   toHubspot.[hubspotPropertyName]
+
+:aspect:`Data type`
+   String | stdWrap
+
+:aspect:`Description`
+   Maps a TYPO3 record field to a Hubspot property. This is used when syncing
+   from TYPO3 to Hubspot.
+
+Example
+~~~~~~~
+
+.. code-block:: typoscript
+
+   toHubspot {
+     # The value of the "title" field in TYPO3 is used for the "name" property
+     # in Hubspot.
+     name = title
+
+     # You can transform the value using stdWrap.
+     description = content
+     description.ifEmpty = NO DESCRIPTION
+
+     # Date fields must be formatted correctly for Hubspot.
+     date = crdate
+     date.date = Y-m-d
+   }
 
