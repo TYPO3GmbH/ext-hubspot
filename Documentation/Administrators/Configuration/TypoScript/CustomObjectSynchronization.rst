@@ -312,7 +312,7 @@ Examples
 
                  renderObj = TEXT
                  renderObj {
-                   value = {field:name} ({field:sku})
+                   value = {field:name} ({field:product_number})
                    insertData = 1
                  }
                }
