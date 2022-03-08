@@ -277,3 +277,72 @@ Example
      crdate = date
      crdate.date = u
    }
+
+Examples
+========
+
+.. code-block:: typoscript
+
+   module.tx_hubspot {
+     persistence {
+       synchronizeCustomObjects.storagePid = 234
+     }
+
+     settings {
+       synchronizeCustomObjects {
+         product_registration {
+           objectName = shipping
+
+           limitToPids < module.tx_hubspot.persistence.synchronizeCustomObjects.storagePid
+
+           table = tx_pxasightregister_domain_model_sight
+
+           createNewInHubspot = 1
+           createNewInTypo3 = 0
+
+           toHubspot {
+             name = model
+             name {
+               cObject = CONTENT
+               cObject {
+                 table = tx_myextension_product
+                 select {
+                   uidInList.field = model
+                 }
+
+                 renderObj = TEXT
+                 renderObj {
+                   value = {field:name} ({field:sku})
+                   insertData = 1
+                 }
+               }
+
+               ifEmpty = [UNKNOWN]
+             }
+
+             introduced = introduction_date
+             introduced.date = Y-m-d
+
+             sales_price = price
+
+             sku = product_number
+           }
+
+           associations {
+             contact = feuser
+           }
+
+           ignoreOnHubspotCreate =
+           ignoreOnHubspotUpdate = sku
+
+           toLocal {
+             price = sales_price
+             product_number = sku
+           }
+
+           ignoreOnLocalCreate =
+           ignoreOnLocalUpdate =
+         }
+       }
+     }
+   }
