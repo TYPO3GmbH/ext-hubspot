@@ -166,15 +166,21 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
                 );
             }
 
-            if ($exception->getPrevious() instanceof ClientException) {
+            if ($exception->getCode() === 400) {
                 if ($recoveryAttempt) {
                     throw $exception;
                 }
 
+                $exception->getResponse()->getBody()->rewind();
+
                 $parsedResponse = json_decode(
-                    $exception->getPrevious()->getResponse()->getBody()->getContents(),
+                    $exception->getResponse()->getBody()->getContents(),
                     true
                 );
+
+                if (count($parsedResponse['validationResults'] ?? []) === 0) {
+                    throw $exception;
+                }
 
                 $this->logger->warning(
                     'Recovering from validation error by unsetting properties.',
