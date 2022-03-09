@@ -249,9 +249,9 @@ class ContactSynchronizationService extends AbstractSynchronizationService
      */
     protected function configureRepositoryDefaults()
     {
-        $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid']);
+        $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid'] ?? 0);
 
-        if ($this->configuration['settings.']['synchronize.']['limit']) {
+        if ($this->configuration['settings.']['synchronize.']['limit'] ?? false) {
             $this->frontendUserRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
             $this->hubspotContactRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
         }

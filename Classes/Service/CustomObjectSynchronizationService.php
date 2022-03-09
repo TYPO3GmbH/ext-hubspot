@@ -534,19 +534,19 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     protected function configureRepositoryDefaults()
     {
         if (isset($this->customObjectRepository)) {
-            if ($this->currentSynchronizationConfiguration['limit']) {
+            if ($this->currentSynchronizationConfiguration['limit'] ?? false) {
                 $this->customObjectRepository->setLimit(
-                    (int)$this->currentSynchronizationConfiguration['limit']
+                    (int)$this->currentSynchronizationConfiguration['limit'] ?? 0
                 );
             }
         }
 
         if (isset($this->mappedTableRepository)) {
             $this->mappedTableRepository->setDefaultPageId(
-                (int)$this->configuration['persistence.']['synchronizeCustomObjects.']['storagePid']
+                (int)$this->configuration['persistence.']['synchronizeCustomObjects.']['storagePid'] ?? 0
             );
 
-            if ($this->currentSynchronizationConfiguration['limit']) {
+            if ($this->currentSynchronizationConfiguration['limit'] ?? false) {
                 $this->mappedTableRepository->setLimit(
                     (int)$this->currentSynchronizationConfiguration['limit']
                 );
