@@ -159,8 +159,6 @@ class CustomObjects extends Resource
         );
     }
 
-    // TODO: Implement remaining entrypoints from https://developers.hubspot.com/docs/api/crm/crm-custom-objects
-
     /**
      * @param string $postfix
      * @return string

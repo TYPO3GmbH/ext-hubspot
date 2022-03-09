@@ -115,9 +115,9 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
 
             $this->configureRepositoryDefaults();
 
-            if ($synchronizationConfiguration['createNewInTypo3']) {
-                // TODO: Fetch existing from Hubspot
-            }
+            //if ($synchronizationConfiguration['createNewInTypo3']) {
+            //    // Fetch existing from Hubspot. How to do this with the v3 API?
+            //}
 
             if ($synchronizationConfiguration['createNewInHubspot']) {
                 $records = $this->mappedTableRepository->findNotYetSynchronized();

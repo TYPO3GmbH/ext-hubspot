@@ -156,8 +156,4 @@ class CustomObjectRepository extends AbstractHubspotRepository
             ->associate($objectId, $toObjectType, $toObjectId, $associationType)
             ->toArray();
     }
-
-    // TODO: Implement similarly to HubspotContactRepository, but with the differences necessary to deal with custom
-    // TODO: objects. Methods in this class will always have to use the hubspot object type string, so it has been
-    // TODO: included in the constructor.
 }
