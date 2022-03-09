@@ -570,10 +570,16 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function getLatestTimestampFromHubspotProperty(array $hubspotProperty): int
     {
-        return \DateTime::createFromFormat(
+        $date = \DateTime::createFromFormat(
             \DateTimeInterface::RFC3339_EXTENDED,
             $hubspotProperty[0]['timestamp']
-        )->getTimestamp();
+        );
+
+        if ($date === false) {
+            return 0;
+        }
+
+        return $date->getTimestamp();
     }
 
     /**
