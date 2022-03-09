@@ -153,7 +153,9 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
      */
     protected function logInfo(string $message, array $context = [])
     {
-        $this->logger->info($message, $context);
+        if ($this->logger !== null) {
+            $this->logger->info($message, $context);
+        }
 
         if ($this->output !== null && $this->output->isVeryVerbose()) {
             $this->output->writeln($message . ' ' . var_export($context, true));
@@ -172,7 +174,9 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
      */
     protected function logWarning(string $message, array $context = [])
     {
-        $this->logger->warning($message, $context);
+        if ($this->logger !== null) {
+            $this->logger->warning($message, $context);
+        }
 
         if ($this->output !== null && $this->output->isVeryVerbose()) {
             $this->output->writeln($message . ' ' . var_export($context, true));
@@ -191,7 +195,9 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
      */
     protected function logError(string $message, array $context = [])
     {
-        $this->logger->error($message, $context);
+        if ($this->logger !== null) {
+            $this->logger->error($message, $context);
+        }
 
         if ($this->output !== null && $this->output->isVeryVerbose()) {
             $this->output->writeln($message . ' ' . var_export($context, true));
