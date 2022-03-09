@@ -15,6 +15,7 @@ use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
 use T3G\Hubspot\Domain\Repository\Database\MappedTableRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectRepository;
 use T3G\Hubspot\Domain\Repository\Hubspot\CustomObjectSchemaRepository;
+use T3G\Hubspot\Service\Event\AfterAddingMappedTableRecordToHubspotEvent;
 use T3G\Hubspot\Service\Event\BeforeAddingMappedTableRecordToHubspotEvent;
 use T3G\Hubspot\Service\Event\BeforeCustomObjectSynchronizationEvent;
 use T3G\Hubspot\Service\Exception\SkipRecordSynchronizationException;
@@ -254,6 +255,16 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         $this->resolveAssociationsForObject($objectId, $record);
 
         $this->mappedTableRepository->add($objectId, $record['uid']);
+
+        $afterAddEvent = new AfterAddingMappedTableRecordToHubspotEvent(
+            $this,
+            $this->configuration,
+            $this->mappedTableRepository,
+            $record,
+            $objectId
+        );
+
+        $this->configuration = $afterAddEvent->getConfiguration();
     }
 
     /**
