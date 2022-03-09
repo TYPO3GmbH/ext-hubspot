@@ -182,10 +182,6 @@ class MappedTableRepository extends AbstractDatabaseRepository
             $queryBuilder->set('hubspot_sync_pass', $this->getSyncPassIdentifier());
         }
 
-        if (count($this->getSearchPids()) > 0) {
-            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
-        }
-
         $queryBuilder
             ->update(self::RELATION_TABLE)
             ->set('hubspot_sync_timestamp', time())
@@ -220,10 +216,6 @@ class MappedTableRepository extends AbstractDatabaseRepository
     public function getSyncPassIdentifier(bool $ignoreScopeError = false): int
     {
         $queryBuilder = $this->getRelationTableQueryBuilder();
-
-        if ($this->hasSearchPids()) {
-            $queryBuilder->andWhere($queryBuilder->expr()->in('pid', $this->getSearchPids()));
-        }
 
         list($maxPass, $minPass) = $queryBuilder
             ->addSelectLiteral(
