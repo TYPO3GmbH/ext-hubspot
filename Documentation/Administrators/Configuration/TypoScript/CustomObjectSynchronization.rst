@@ -38,6 +38,16 @@ You can define any number of custom object synchronizations in
 `key` can be any key, but the Hubspot object name is recommended. Still, there
 could be multiple syncs to the same object, so it isn't a requirement.
 
+.. _configuration-customobjects-wildcard:
+
+The wildcard key
+----------------
+
+The key `module.tx_hubspot.settings.synchronizeCustomObjects.*` can contain
+default values that are merged and overridden by specific values from a key.
+This wildcard key is used by the CLI command, e.g. when setting the `limit`
+property.
+
 .. _configuration-customobjects-associations:
 
 associations.[foreignObjectName]

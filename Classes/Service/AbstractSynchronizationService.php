@@ -67,7 +67,7 @@ abstract class AbstractSynchronizationService implements LoggerAwareInterface
 
         $configuration = $configurationManager->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
 
-        $this->configuration = array_merge_recursive($this->defaultConfiguration, $configuration);
+        $this->configuration = array_replace_recursive($this->defaultConfiguration, $configuration);
 
         $this->activeConfigurationPageId = $pageId;
 

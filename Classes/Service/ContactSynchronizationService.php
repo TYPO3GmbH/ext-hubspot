@@ -251,13 +251,13 @@ class ContactSynchronizationService extends AbstractSynchronizationService
     {
         $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid']);
 
-        if ($this->configuration['synchronize.']['limit']) {
-            $this->frontendUserRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
-            $this->hubspotContactRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
+        if ($this->configuration['settings.']['synchronize.']['limit']) {
+            $this->frontendUserRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
+            $this->hubspotContactRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
         }
 
         $this->frontendUserRepository->setSearchPids(
-            GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
+            GeneralUtility::intExplode(',', $this->configuration['settings.']['synchronize.']['limitToPids'] ?? '', true)
         );
     }
 

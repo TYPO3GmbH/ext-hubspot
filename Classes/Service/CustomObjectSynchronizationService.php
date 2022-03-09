@@ -86,14 +86,19 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         $this->configuration = $beforeSynchronizationEvent->getConfiguration();
         unset($beforeSynchronizationEvent);
 
+        $synchronizationDefaults = $this->configuration['settings.']['synchronizeCustomObjects.']['*.'] ?? [];
+
         foreach ($this->configuration['settings.']['synchronizeCustomObjects.'] as $typoScriptKey => $synchronizationConfiguration) {
-            if (!is_array($synchronizationConfiguration)) {
+            if (!is_array($synchronizationConfiguration) || $typoScriptKey === '*.') {
                 continue;
             }
 
             $typoScriptKey = substr($typoScriptKey, 0, -1); // Remove trailing dot
 
-            $this->currentSynchronizationConfiguration = $synchronizationConfiguration;
+            $this->currentSynchronizationConfiguration = array_replace_recursive(
+                $synchronizationDefaults,
+                $synchronizationConfiguration
+            );
 
             $this->customObjectRepository = GeneralUtility::makeInstance(
                 CustomObjectRepository::class,
@@ -517,19 +522,33 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function configureRepositoryDefaults()
     {
-        if (!isset($this->mappedTableRepository)) {
-            return;
+        if (isset($this->customObjectRepository)) {
+            if ($this->currentSynchronizationConfiguration['limit']) {
+                $this->customObjectRepository->setLimit(
+                    (int)$this->currentSynchronizationConfiguration['limit']
+                );
+            }
         }
 
-        $this->mappedTableRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronizeCustomObjects.']['storagePid']);
+        if (isset($this->mappedTableRepository)) {
+            $this->mappedTableRepository->setDefaultPageId(
+                (int)$this->configuration['persistence.']['synchronizeCustomObjects.']['storagePid']
+            );
 
-        if ($this->configuration['synchronize.']['limit']) {
-            $this->mappedTableRepository->setLimit((int)$this->configuration['synchronizeCustomObjects.']['limit']);
+            if ($this->currentSynchronizationConfiguration['limit']) {
+                $this->mappedTableRepository->setLimit(
+                    (int)$this->currentSynchronizationConfiguration['limit']
+                );
+            }
+
+            $this->mappedTableRepository->setSearchPids(
+                GeneralUtility::intExplode(
+                    ',',
+                    $this->currentSynchronizationConfiguration['limitToPids'] ?? '',
+                    true
+                )
+            );
         }
-
-        $this->mappedTableRepository->setSearchPids(
-            GeneralUtility::intExplode(',', $this->configuration['synchronizeCustomObjects.']['limitToPids'] ?? '', true)
-        );
     }
 
     /**

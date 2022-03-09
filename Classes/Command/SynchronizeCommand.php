@@ -165,14 +165,16 @@ class SynchronizeCommand extends Command
             'persistence.' => [
                 'synchronizeCustomObjects.' => [
                     'defaultPid' => $this->input->getOption('default-pid')
-                ]
+                ],
             ],
             'settings.' => [
                 'synchronizeCustomObjects.' => [
-                    'limitToPids' => implode(',', $this->input->getOption('limit-to-pids')),
-                    'limit' => $this->input->getOption('limit')
-                ]
-            ]
+                    '*.' => [
+                        'limitToPids' => implode(',', $this->input->getOption('limit-to-pids')),
+                        'limit' => $this->input->getOption('limit')
+                    ],
+                ],
+            ],
         ];
 
         $synchronizationService = GeneralUtility::makeInstance(CustomObjectSynchronizationService::class);
