@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace T3G\Hubspot\Service;
 
-use Pixelant\Interest\ObjectManager;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Output\OutputInterface;
