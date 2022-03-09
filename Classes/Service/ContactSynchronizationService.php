@@ -480,7 +480,7 @@ class ContactSynchronizationService extends AbstractSynchronizationService
 
         $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
 
-        if (!GeneralUtility::validEmail($mappedHubspotProperties['email'])) {
+        if (isset($mappedHubspotProperties['email']) && !GeneralUtility::validEmail($mappedHubspotProperties['email'])) {
             $message = 'Frontend user ' . $frontendUser['uid'] . ' has invalid email "'
                 . $mappedHubspotProperties['email'] . '" and can\'t be synced.';
 

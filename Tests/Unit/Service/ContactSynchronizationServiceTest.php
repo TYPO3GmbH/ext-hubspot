@@ -304,20 +304,12 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             'settings.' => [
                 'synchronize.' => [
                     'toHubspot.' => [
-                        'firstname.' => [
-                            'field' => 'first_name'
-                        ],
-                        'zip.' => [
-                            'field' => 'zip'
-                        ],
+                        'firstname' => 'first_name',
+                        'zip' => 'zip',
                     ],
                     'toFrontendUser.' => [
-                        'first_name.' => [
-                            'field' => 'firstname'
-                        ],
-                        'zip.' => [
-                            'field' => 'zip'
-                        ],
+                        'firstname' => 'first_name',
+                        'zip' => 'zip',
                     ]
                 ],
             ],
