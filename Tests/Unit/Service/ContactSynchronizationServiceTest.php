@@ -286,7 +286,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             ->expects($this->once())
             ->method('update')
             ->withConsecutive(
-                // $frontendUserUpdateArguments2, isn't called because it's empty
+                // $frontendUserUpdateArguments1,
                 $frontendUserUpdateArguments2
             );
 
@@ -308,7 +308,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
                         'zip' => 'zip',
                     ],
                     'toFrontendUser.' => [
-                        'firstname' => 'first_name',
+                        'first_name' => 'firstname',
                         'zip' => 'zip',
                     ]
                 ],
