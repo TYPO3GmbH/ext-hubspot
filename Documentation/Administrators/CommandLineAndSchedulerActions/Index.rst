@@ -1,7 +1,10 @@
 Command Line and Scheduler Actions
 ==================================
 
-The CLI commands are executed through the `standard TYPO3 CLI<https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/CommandControllers/Index.html#running-the-command-from-the-command-line>`__.
+The CLI command is executed through the
+`standard TYPO3 CLI<t3tsref:running-the-command-from-the-command-line>`__.
+
+You can also execute the command through the Scheduler.
 
 .. _command-hubspot-contactsync:
 .. _command-hubspot-sync:
