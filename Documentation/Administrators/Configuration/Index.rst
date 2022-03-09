@@ -1,8 +1,18 @@
+.. include:: /Includes.txt
+
+.. _configuration:
+
 =============
 Configuration
 =============
 
-.. _configuration-typoscript:
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+   :glob:
+
+   TypoScript/Index
+
 
 
 
