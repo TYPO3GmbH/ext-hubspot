@@ -79,14 +79,6 @@ class MappedTableRepository extends AbstractDatabaseRepository
     {
         $queryBuilder = $this->getSelectQueryBuilder();
 
-        if (count($this->getSearchPids()) > 0) {
-            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
-        }
-
-        if ($this->getLimit() > 0) {
-            $queryBuilder->setMaxResults($this->getLimit());
-        }
-
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNull('m.uid_foreign'))
             ->execute()
@@ -101,14 +93,6 @@ class MappedTableRepository extends AbstractDatabaseRepository
     public function findReadyForSyncPass(): array
     {
         $queryBuilder = $this->getSelectQueryBuilder();
-
-        if (count($this->getSearchPids()) > 0) {
-            $queryBuilder->andWhere($queryBuilder->expr()->in('t.pid', $this->getSearchPids()));
-        }
-
-        if ($this->getLimit() > 0) {
-            $queryBuilder->setMaxResults($this->getLimit());
-        }
 
         return $queryBuilder
             ->andWhere($queryBuilder->expr()->isNotNull('m.uid_foreign'))
