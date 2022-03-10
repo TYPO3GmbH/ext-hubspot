@@ -586,6 +586,8 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
         );
 
         if ($date === false) {
+            $this->logInfo('Timestamp not parsable: ' . $hubspotProperty[0]['timestamp'], $hubspotProperty);
+
             return 0;
         }
 
