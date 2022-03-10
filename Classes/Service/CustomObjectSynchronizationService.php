@@ -122,6 +122,11 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             if ($synchronizationConfiguration['createNewInHubspot']) {
                 $records = $this->mappedTableRepository->findNotYetSynchronized();
 
+                $this->logInfo(
+                    'Found ' . count($records) . ' TYPO3 records not yet synced (' . $this->getCurrentTableName() . ')'
+                    . ' to custom object (' . $this->getCurrentObjectName() . ').'
+                );
+
                 foreach ($records as $record) {
                     $idInHubspot = $this->findObjectWithUniqueValueInHubspot($record);
 
@@ -156,6 +161,11 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             }
 
             $records = $this->mappedTableRepository->findReadyForSyncPass();
+
+            $this->logInfo(
+                'Found ' . count($records) . ' TYPO3 records ready for sync (' . $this->getCurrentTableName() . ')'
+                . ' to custom object (' . $this->getCurrentObjectName() . ').'
+            );
 
             foreach ($records as $record) {
                 try {
