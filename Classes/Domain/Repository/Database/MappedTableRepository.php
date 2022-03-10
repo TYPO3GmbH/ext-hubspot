@@ -206,6 +206,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
                 $queryBuilder->expr()->max('hubspot_sync_pass'),
                 $queryBuilder->expr()->min('hubspot_sync_pass')
             )
+            ->andWhere($queryBuilder->expr()->neq('hubspot_id', 0))
             ->from(self::RELATION_TABLE)
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
