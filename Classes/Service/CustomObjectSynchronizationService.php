@@ -576,7 +576,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      * Parses a hubspot property, returning the last modification timestamp from the history sub property
      *
      * @param array $hubspotProperty
-     * @return int Millisecond timestamp
+     * @return int Timestamp
      */
     protected function getLatestTimestampFromHubspotProperty(array $hubspotProperty): int
     {
