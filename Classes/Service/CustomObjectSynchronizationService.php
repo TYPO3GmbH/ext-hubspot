@@ -419,7 +419,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
     {
         $hubspotData = $this->customObjectRepository->findById($record['hubspot_id']);
 
-        $mappedObjectProperties = $this->mapRecordToHubspot($record, true);
+        $recordFieldsMappedToHubspotProperties = $this->mapRecordToHubspot($record, true);
 
         $modifiedHubspotProperties = [];
         foreach ($hubspotData['propertiesWithHistory'] as $propertyName => $property) {
@@ -431,67 +431,67 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             }
         }
 
-        foreach ($mappedObjectProperties as $propertyName => $value) {
+        foreach ($recordFieldsMappedToHubspotProperties as $propertyName => $value) {
             // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
             // Remove hubspot properties if there is no changed content
             if (
-                in_array($propertyName, $modifiedHubspotProperties)
+                !in_array($propertyName, $modifiedHubspotProperties)
                 || (string)$value === $hubspotData['properties'][$propertyName]
             ) {
-                unset($mappedObjectProperties[$propertyName]);
+                unset($recordFieldsMappedToHubspotProperties[$propertyName]);
             }
 
             // Remove hubspot properties that are older in Hubspot, so we don't write them to the local record
-            if (!in_array($propertyName, $modifiedHubspotProperties)) {
-                if (isset($mappedObjectProperties[$propertyName])) {
-                    $hubspotData['properties'][$propertyName] = $mappedObjectProperties[$propertyName];
+            if (in_array($propertyName, $modifiedHubspotProperties)) {
+                if (isset($recordFieldsMappedToHubspotProperties[$propertyName])) {
+                    $hubspotData['properties'][$propertyName] = $recordFieldsMappedToHubspotProperties[$propertyName];
                 }
             }
         }
 
-        $mappedRecordProperties = $this->mapHubspotToRecord($hubspotData['properties'], true);
+        $hubspotPropertiesMappedToRecordFields = $this->mapHubspotToRecord($hubspotData['properties'], true);
 
         // Remove unchanged properties
-        foreach ($mappedRecordProperties as $propertyName => $value) {
+        foreach ($hubspotPropertiesMappedToRecordFields as $propertyName => $value) {
             // Remove if value is unchanged
             if ($value === $record[$propertyName]) {
-                unset($mappedRecordProperties[$propertyName]);
+                unset($hubspotPropertiesMappedToRecordFields[$propertyName]);
             }
         }
 
-        if (count($mappedRecordProperties) > 0) {
-            $this->mappedTableRepository->update($record['uid'], $mappedRecordProperties);
+        if (count($hubspotPropertiesMappedToRecordFields) > 0) {
+            $this->mappedTableRepository->update($record['uid'], $hubspotPropertiesMappedToRecordFields);
 
             $this->logInfo(
-                'Updated record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') to Hubspot object '
+                'Updated record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') from Hubspot object '
                 . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName() . ')',
                 [
-                    'record' => $mappedRecordProperties,
+                    'record' => $hubspotPropertiesMappedToRecordFields,
                 ]
             );
         } else {
             $this->mappedTableRepository->setSyncPassSilently($record['uid']);
 
             $this->logInfo(
-                'No update for record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') to Hubspot object '
+                'No update for record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ') from Hubspot object '
                 . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName() . ')'
             );
         }
 
-        if (count($mappedObjectProperties) > 0) {
-            $this->customObjectRepository->update($record['hubspot_id'], $mappedObjectProperties);
+        if (count($recordFieldsMappedToHubspotProperties) > 0) {
+            $this->customObjectRepository->update($record['hubspot_id'], $recordFieldsMappedToHubspotProperties);
 
             $this->logInfo(
                 'Updated Hubspot object ' . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName()
-                . ') to record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')',
+                . ') from record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')',
                 [
-                    'object' => $mappedObjectProperties,
+                    'object' => $recordFieldsMappedToHubspotProperties,
                 ]
             );
         } else {
             $this->logInfo(
                 'No update for Hubspot object ' . $record['hubspot_id'] . ' (' . $this->getCurrentObjectName()
-                . ') to record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')'
+                . ') from record ' . $record['uid'] . ' (' . $this->getCurrentTableName() . ')'
             );
         }
 
