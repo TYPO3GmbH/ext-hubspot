@@ -435,14 +435,14 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
             // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
             // Remove hubspot properties if there is no changed content
             if (
-                !in_array($propertyName, $modifiedHubspotProperties)
+                in_array($propertyName, $modifiedHubspotProperties)
                 || (string)$value === $hubspotData['properties'][$propertyName]
             ) {
                 unset($recordFieldsMappedToHubspotProperties[$propertyName]);
             }
 
-            // Remove hubspot properties that are older in Hubspot, so we don't write them to the local record
-            if (in_array($propertyName, $modifiedHubspotProperties)) {
+            // Overwrite hubspot properties that are older in Hubspot, so we don't write them over the local record
+            if (!in_array($propertyName, $modifiedHubspotProperties)) {
                 if (isset($recordFieldsMappedToHubspotProperties[$propertyName])) {
                     $hubspotData['properties'][$propertyName] = $recordFieldsMappedToHubspotProperties[$propertyName];
                 }
