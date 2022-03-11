@@ -342,6 +342,10 @@ class ContactSynchronizationService extends AbstractSynchronizationService
                 unset($mappedHubspotProperties[$propertyName]);
             }
 
+            if (empty($mappedHubspotProperties['email'])) {
+                unset($mappedHubspotProperties['email']);
+            }
+
             $hubspotContactIdentifier = $this->hubspotContactRepository->create($mappedHubspotProperties);
         } catch (ExistingContactConflictException $existingContactException) {
             $hubspotContact = $this->hubspotContactRepository->findByEmail($mappedHubspotProperties['email']);
