@@ -53,7 +53,7 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
         }
 
         try {
-            $response = $this->factory->contacts()->getByEmail($email);
+            $response = $this->factory->contacts()->getByEmail(urlencode($email));
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 404) {
                 return null;
