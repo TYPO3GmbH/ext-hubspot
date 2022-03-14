@@ -1,3 +1,8 @@
+.. include:: /Includes.txt
+
+.. _administrators:
+
+==============
 Administration
 ==============
 
@@ -13,3 +18,4 @@ as well as some of the features available to administrators.
    BackendModule/Index
    CommandLineAndSchedulerActions/Index
    HowSynchronizationWorks/Index
+   Extending/Index
