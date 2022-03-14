@@ -140,7 +140,7 @@ a schema up-to-date and configured in TYPO3.
 
       TYPO3 is aware of no custom object schemas.
 
-3. Click the :guilabel:`Fetch Updates` button in the docheader
+2. Click the :guilabel:`Fetch Updates` button in the docheader
 
    This will download existing custom object schemas from Hubspot and add them
    to the list. TYPO3 is aware of all the custom object schemas you can see in
@@ -152,11 +152,11 @@ a schema up-to-date and configured in TYPO3.
    If all the custom objects you would like to synchronize are now in the list,
    you can choose to stop here.
 
-4. Declare the JSON schema files you are planning to use
+3. Declare the JSON schema files you are planning to use
 
    Read more about :ref:`declaring JSON files<backend-custom-objects-declare>`.
 
-5. Click the :guilabel:`New` button in the docheader
+4. Click the :guilabel:`New` button in the docheader
 
    You will see a list of all the custom object schema JSON files that have been
    declared.
@@ -166,7 +166,7 @@ a schema up-to-date and configured in TYPO3.
 
       Custom object schemas appear in the list when they have been declared.
 
-6. Click the :guilabel:`Create From File` button
+5. Click the :guilabel:`Create From File` button
 
    Click on the button next to the file containing the custom object schema you
    would like to add to Hubspot.

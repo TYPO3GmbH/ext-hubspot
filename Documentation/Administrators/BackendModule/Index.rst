@@ -37,7 +37,7 @@ Custom Objects
 User interface
 --------------
 
-.. figure:: Images/CustomObjectSchema.png
+.. figure:: Images/CustomObjectSchemas.png
    :alt: TYPO3 Backend UI listing custom object schemas
 
    The main interface lists custom object schemas, i.e. definitions of custom

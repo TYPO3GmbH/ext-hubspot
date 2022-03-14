@@ -38,7 +38,7 @@ Available type arguments
 Options
 ~~~~~~~
 
-.. code-block::
+.. code-block:: text
 
   -p, --default-pid=DEFAULT-PID      Default PID for storage and TypoScript
                                      settings
