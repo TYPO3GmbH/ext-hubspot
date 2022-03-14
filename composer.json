@@ -50,6 +50,9 @@
         ],
         "post-autoload-dump": [
             "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/public/typo3conf/ext/hubspot"
+        ],
+        "docs:generate": [
+            "docker run --rm t3docs/render-documentation show-shell-commands > tempfile.sh; echo 'dockrun_t3rd makehtml' >> tempfile.sh; bash tempfile.sh; rm tempfile.sh"
         ]
     },
     "prefer-stable": true,
