@@ -166,49 +166,17 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
                 );
             }
 
-            if ($exception->getCode() === 400) {
-                if ($recoveryAttempt) {
-                    throw $exception;
-                }
-
-                $exception->getResponse()->getBody()->rewind();
-
-                $parsedResponse = json_decode(
-                    $exception->getResponse()->getBody()->getContents(),
-                    true
-                );
-
-                if (count($parsedResponse['validationResults'] ?? []) === 0) {
-                    throw $exception;
-                }
-
-                $this->logger->warning(
-                    'Recovering from validation error by unsetting properties.',
-                    [
-                        'contactProperties' => $contactProperties,
-                        'validationResults' => $parsedResponse['validationResults'],
-                    ]
-                );
-
-                foreach ($parsedResponse['validationResults'] as $validationResult) {
-                    unset($contactProperties[$validationResult['name']]);
-                }
-
-                if (count($contactProperties) === 0) {
-                    $this->logger->error(
-                        'Unable to recover from validation error. No properties left!',
-                        [
-                            'validationResults' => $parsedResponse['validationResults'],
-                        ]
-                    );
-
-                    throw $exception;
-                }
-
-                return $this->create($contactProperties, true);
+            if ($recoveryAttempt) {
+                throw $exception;
             }
 
-            throw $exception;
+            $this->handleValidationErrors(
+                $exception,
+                function (array $properties) {
+                    $this->create($properties, true);
+                },
+                $contactProperties
+            );
         }
 
         return $response['vid'];
@@ -219,13 +187,28 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
      *
      * @param int $identifier Hubspot VID
      * @param array $properties as associative array
+     * @param bool $
      */
-    public function update(int $identifier, array $properties)
+    public function update(int $identifier, array $properties, bool $recoveryAttempt = false)
     {
-        $this->factory->contacts()->update(
-            $identifier,
-            $this->convertAssociativeArrayToHubspotProperties($properties)
-        );
+        try {
+            $this->factory->contacts()->update(
+                $identifier,
+                $this->convertAssociativeArrayToHubspotProperties($properties)
+            );
+        } catch (BadRequest $exception) {
+            if ($recoveryAttempt) {
+                throw $exception;
+            }
+
+            $this->handleValidationErrors(
+                $exception,
+                function (array $properties) use ($identifier) {
+                    $this->update($identifier, $properties, true);
+                },
+                $properties
+            );
+        }
     }
 
     /**
@@ -255,5 +238,59 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
         }
 
         return $hubspotProperties;
+    }
+
+    /**
+     * Try to handle validation errors from Hubspot by removing properties with errors.
+     *
+     * This should probably be handled by tracking validation errors in a later version.
+     *
+     * @param BadRequest $exception
+     * @param callable $tryAgain
+     * @param array $properties
+     * @return void
+     * @throws BadRequest
+     */
+    protected function handleValidationErrors(BadRequest $exception, callable $tryAgain, array $properties): void
+    {
+        if ($exception->getCode() !== 400) {
+            throw $exception;
+        }
+
+        $exception->getResponse()->getBody()->rewind();
+
+        $parsedResponse = json_decode(
+            $exception->getResponse()->getBody()->getContents(),
+            true
+        );
+
+        if (count($parsedResponse['validationResults'] ?? []) === 0) {
+            throw $exception;
+        }
+
+        $this->logger->warning(
+            'Recovering from validation error by unsetting properties.',
+            [
+                'properties' => $properties,
+                'validationResults' => $parsedResponse['validationResults'],
+            ]
+        );
+
+        foreach ($parsedResponse['validationResults'] as $validationResult) {
+            unset($properties[$validationResult['name']]);
+        }
+
+        if (count($properties) === 0) {
+            $this->logger->error(
+                'Unable to recover from validation error. No properties left!',
+                [
+                    'validationResults' => $parsedResponse['validationResults'],
+                ]
+            );
+
+            throw $exception;
+        }
+
+        $tryAgain($properties);
     }
 }
