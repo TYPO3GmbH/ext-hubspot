@@ -214,7 +214,7 @@ class SchemaController extends AbstractController
 
         if ($updateExisting) {
             foreach ($schema['properties'] ?? [] as $property) {
-                if (!isset($existingSchema['properties'])) {
+                if (!in_array($property['name'], array_column($existingSchema['properties'], 'name'))) {
                     $this->propertyRepository->create($schema['name'], $property);
 
                     continue;
