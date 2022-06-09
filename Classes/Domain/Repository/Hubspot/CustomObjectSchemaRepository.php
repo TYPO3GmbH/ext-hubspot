@@ -112,7 +112,7 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
         $schema = $this->getSchemaFromRegistry($name);
 
         if (!$cached || !is_array($schema)) {
-            $schema = $this->findAll()[$name] ?? null;
+            $schema = $this->findAll(false)[$name] ?? null;
         }
 
         return $schema;
