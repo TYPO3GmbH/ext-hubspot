@@ -48,7 +48,7 @@ User interface
 Docheader buttons
 ~~~~~~~~~~~~~~~~~
 
-New
+New/Update
    Create or update a new custom object schema from a JSON file.
 Fetch Updates
    Fetch custom object schemas and updates to these from Hubspot.
@@ -78,14 +78,14 @@ Delete
 Declaring a schema definition file
 ----------------------------------
 
-When clicking the :guilabel:`New` button in the docheader, you will be brought
-to a list of *declared* schema files. These are JSON files within your code
-repository. You can use these files to create or update a custom object in
+When clicking the :guilabel:`New/Update` button in the docheader, you will be
+brought to a list of *declared* schema files. These are JSON files within your
+code repository. You can use these files to create or update a custom object in
 Hubspot.
 
-Keeping your schemas in with your code enables you to have schema definitions
-under versioning and ensure that you are using exactly the same schema in
-different Hubspot accounts (e.g. sandbox or live).
+Keeping your schemas in sync with your code enables you to have schema
+definitions under versioning and ensure that you are using exactly the same
+schema in different Hubspot accounts (e.g. sandbox or live).
 
 In order to appear in the list the JSON file must be declared in an extension's
 :file:`ext_tables.php` file:
