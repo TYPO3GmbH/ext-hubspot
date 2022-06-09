@@ -16,11 +16,6 @@ class MutableSchema
     use PopulateFromArray;
 
     /**
-     * @var array
-     */
-    protected $labels = [];
-
-    /**
      * @var string
      */
     protected $primaryDisplayProperty = '';
@@ -34,22 +29,6 @@ class MutableSchema
      * @var string[]
      */
     protected $searchableProperties = [];
-
-    /**
-     * @return array
-     */
-    public function getLabels(): array
-    {
-        return $this->labels;
-    }
-
-    /**
-     * @param array $labels
-     */
-    public function setLabels(array $labels)
-    {
-        $this->labels = $labels;
-    }
 
     /**
      * @return string

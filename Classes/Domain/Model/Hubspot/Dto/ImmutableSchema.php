@@ -13,6 +13,11 @@ use T3G\Hubspot\Utility\CustomObjectUtility;
 class ImmutableSchema extends MutableSchema
 {
     /**
+     * @var array
+     */
+    protected $labels = [];
+
+    /**
      * @var MutableProperty[]
      */
     protected $properties = [];
@@ -50,6 +55,22 @@ class ImmutableSchema extends MutableSchema
         }
 
         parent::populate($data);
+    }
+
+    /**
+     * @return array
+     */
+    public function getLabels(): array
+    {
+        return $this->labels;
+    }
+
+    /**
+     * @param array $labels
+     */
+    public function setLabels(array $labels)
+    {
+        $this->labels = $labels;
     }
 
     /**
