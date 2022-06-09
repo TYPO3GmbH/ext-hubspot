@@ -8,13 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        typo3: ['^8.7', '^9.5', '^10.4', '^11']
+        typo3: ['^8.7', '^9.5', '^10.4', '^11.5']
         php: ['7.2', '7.3', '7.4']
+        composer: ['v2']
         exclude:
-          - typo3: '^11'
+          - typo3: '^11.5'
             php: '7.2'
-          - typo3: '^11'
+          - typo3: '^11.5'
             php: '7.3'
+          - typo3: '^8.7'
+            composer: 'v2'
+        include:
+          - typo3: '^8.7'
+              composer: 'v1'
 
     steps:
 
@@ -27,7 +33,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: mbstring, intl, json
           ini-values: error_reporting=E_ALL & ~E_NOTICE
-          tools: composer:v2
+          tools: composer:${{ matrix.composer }}
 
       - name: Validate composer.json and composer.lock
         run: composer validate
