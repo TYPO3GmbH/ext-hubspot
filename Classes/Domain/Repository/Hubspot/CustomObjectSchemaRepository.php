@@ -47,33 +47,20 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
      */
     public function findAll(bool $cached = true): array
     {
-        $schemaLabels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA, null);
+        $schemaLabels = $this->getSchemaLabelsFromRegistry();
 
         if (!$cached || !is_array($schemaLabels)) {
             $schemas = $this->fetchAllSchemasFromHubspot();
 
-            $schemaLabels = [];
             foreach ($schemas as $schema) {
-                $this->registry->set(
-                    'hubspot',
-                    self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $schema['name'],
-                    $schema
-                );
-
-                $schemaLabels[$schema['name']] = $schema['labels']['singular'];
+                $this->persistSchemaInRegistry($schema);
             }
-
-            $this->registry->set(
-                'hubspot',
-                self::REGISTRY_CUSTOM_OBJECT_SCHEMA,
-                $schemaLabels
-            );
 
             return $schemas;
         }
 
         $schemas = [];
-        foreach (array_keys($schemaLabels) as $schemaName) {
+        foreach (array_keys($schemaLabels ?? $this->getSchemaLabelsFromRegistry() ?? []) as $schemaName) {
             $schemas[$schemaName] = $this->registry->get(
                 'hubspot',
                 self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $schemaName
@@ -91,7 +78,7 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
      */
     public function findAllLabels(bool $cached = true): array
     {
-        $schemaLabels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA);
+        $schemaLabels = $this->getSchemaLabelsFromRegistry();
 
         if (!$cached || !is_array($schemaLabels)) {
             $this->findAll(false);
@@ -122,7 +109,7 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
      */
     public function findByName(string $name, bool $cached = true): ?array
     {
-        $schema = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $name);
+        $schema = $this->getSchemaFromRegistry($name);
 
         if (!$cached || !is_array($schema)) {
             $schema = $this->findAll()[$name] ?? null;
@@ -191,5 +178,60 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
     protected function fetchAllSchemasFromHubspot(): array
     {
         return $this->factory->customObjectSchemas()->all()->toArray()['results'] ?? [];
+    }
+
+    /**
+     * @param $schema
+     * @param array $schemaLabels
+     * @return array
+     */
+    protected function persistSchemaInRegistry($schema): void
+    {
+        $this->registry->set(
+            'hubspot',
+            self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $schema['name'],
+            $schema
+        );
+
+        $this->persistSchemaLabelInRegistry($schema['name'], $schema['labels']['singular']);
+    }
+
+    /**
+     * @param string $schemaName
+     * @param string $schemaLabel
+     * @return void
+     */
+    protected function persistSchemaLabelInRegistry(string $schemaName, string $schemaLabel): void
+    {
+        $schemaLabels = $this->getSchemaLabelsFromRegistry();
+
+        $schemaLabels[$schemaName] = $schemaLabel;
+
+        $this->registry->set(
+            'hubspot',
+            self::REGISTRY_CUSTOM_OBJECT_SCHEMA,
+            $schemaLabels
+        );
+    }
+
+    /**
+     * Returns a specific schema from registry or null if it hasn't been set there.
+     *
+     * @param string $schemaName
+     * @return array|null
+     */
+    protected function getSchemaFromRegistry(string $schemaName): ?array
+    {
+        return $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $schemaName);
+    }
+
+    /**
+     * Get schema labels from registry.
+     *
+     * @return array|null
+     */
+    protected function getSchemaLabelsFromRegistry(): ?array
+    {
+        return $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA);
     }
 }
