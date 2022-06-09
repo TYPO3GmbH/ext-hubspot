@@ -10,22 +10,23 @@ jobs:
       matrix:
         typo3: ['^8.7', '^9.5', '^10.4', '^11.5']
         php: ['7.2', '7.3', '7.4']
-        composer: ['v2']
         exclude:
           - typo3: '^11.5'
             php: '7.2'
           - typo3: '^11.5'
             php: '7.3'
-          - typo3: '^8.7'
-            composer: 'v2'
-        include:
-          - typo3: '^8.7'
-            composer: 'v1'
 
     steps:
 
       - name: Checkout
         uses: actions/checkout@v2
+
+      - uses: haya14busa/action-cond@v1
+        id: composer
+        with:
+          cond: ${{ matrix.typo3 == '^8.7' }}
+          if_true: "v1"
+          if_false: "v2"
 
       - name: Set up PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
@@ -33,7 +34,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: mbstring, intl, json
           ini-values: error_reporting=E_ALL & ~E_NOTICE
-          tools: composer:${{ matrix.composer }}
+          tools: composer:${{ steps.composer.outputs.value }}
 
       - name: Validate composer.json and composer.lock
         run: composer validate
