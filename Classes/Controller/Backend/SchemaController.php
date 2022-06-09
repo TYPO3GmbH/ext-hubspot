@@ -81,10 +81,10 @@ class SchemaController extends AbstractController
                         ['redirectUri' => $this->request->getRequestUri()]
                     ))
                     ->setTitle($this->getLanguageService()->getLL(
-                        'hubspot_integration.customObjects.button.newSchema'
+                        'hubspot_integration.customObjects.button.addOrUpdateSchema'
                     ))
                     ->setShowLabelText(true)
-                    ->setIcon($iconFactory->getIcon('actions-add', Icon::SIZE_SMALL)),
+                    ->setIcon($iconFactory->getIcon('hubspot-add-or-update', Icon::SIZE_SMALL)),
                 ButtonBar::BUTTON_POSITION_LEFT,
                 1
             );

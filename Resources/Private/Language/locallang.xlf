@@ -84,8 +84,8 @@
             <trans-unit id="hubspot_integration.customObjects.button.refreshSchemas">
                 <source>Fetch Updates</source>
             </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.button.newSchema">
-                <source>New</source>
+            <trans-unit id="hubspot_integration.customObjects.button.addOrUpdateSchema">
+                <source>New/Update</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.button.deleteSchema">
                 <source>Delete</source>
@@ -97,13 +97,13 @@
                 <source>Schemas were successfully fetched from Hubspot.</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.new.headline">
-                <source>Create Custom Object Schema From File</source>
+                <source>Create or Update Custom Object Schema From File</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.new.table.name">
                 <source>File Name</source>
             </trans-unit>
-            <trans-unit id="hubspot_integration.customObjects.new.button.create">
-                <source>Create From File</source>
+            <trans-unit id="hubspot_integration.customObjects.new.button.createOrUpdate">
+                <source>Create/Update From File</source>
             </trans-unit>
             <trans-unit id="hubspot_integration.customObjects.new.noFiles.title">
                 <source>No Definition Files Defined</source>
