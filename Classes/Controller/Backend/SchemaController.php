@@ -242,6 +242,19 @@ class SchemaController extends AbstractController
         try {
             $name = $this->schemaRepository->create($schema);
         } catch (BadRequest $exception) {
+            if ($exception->getCode() === 400) {
+                $content = json_decode($exception->getResponse()->getBody()->getContents(), true)
+                    ?? $exception->getMessage();
+
+                $this->addFlashMessage(
+                    $content,
+                    'Bad Request',
+                    FlashMessage::ERROR
+                );
+
+                $this->redirect('index');
+            }
+
             if ($exception->getCode() === 409) {
                 $this->addFlashMessage(
                     $this->getLanguageService()->getLL('hubspot_integration.customObjects.create.conflictMessage'),
