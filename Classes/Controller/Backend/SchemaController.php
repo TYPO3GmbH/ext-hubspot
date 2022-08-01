@@ -243,7 +243,7 @@ class SchemaController extends AbstractController
             $name = $this->schemaRepository->create($schema);
         } catch (BadRequest $exception) {
             if ($exception->getCode() === 400) {
-                $content = json_decode($exception->getResponse()->getBody()->getContents(), true)
+                $content = json_decode($exception->getResponse()->getBody()->getContents(), true)['message']
                     ?? $exception->getMessage();
 
                 $this->addFlashMessage(
