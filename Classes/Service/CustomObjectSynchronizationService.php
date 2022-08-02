@@ -580,7 +580,7 @@ class CustomObjectSynchronizationService extends AbstractSynchronizationService
      */
     protected function getLatestTimestampFromHubspotProperty(array $hubspotProperty): int
     {
-        if (!isset($hubspotProperty[0]['timestamp']) === null) {
+        if (!isset($hubspotProperty[0]['timestamp'])) {
             $this->logInfo('No timestamp property: ' . $hubspotProperty[0]['timestamp'], $hubspotProperty);
 
             return 0;
