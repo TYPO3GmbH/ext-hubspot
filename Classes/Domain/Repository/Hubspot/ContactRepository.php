@@ -15,6 +15,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use SevenShores\Hubspot\Exceptions\BadRequest;
 use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\UnexpectedApiInteractionResultException;
 use T3G\Hubspot\Domain\Repository\Traits\LimitResultTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -176,6 +177,14 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
                     $this->create($properties, true);
                 },
                 $contactProperties
+            );
+        }
+
+        if (!isset($response['vid'])) {
+            throw new UnexpectedApiInteractionResultException(
+                'Unexpected result when creating contact. $response[\'vid\'] was not set. Response: '
+                . var_export($response, true),
+                1659440446460
             );
         }
 
