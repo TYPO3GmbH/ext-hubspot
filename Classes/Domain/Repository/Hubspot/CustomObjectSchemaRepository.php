@@ -56,7 +56,7 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
                 $this->persistSchemaInRegistry($schema);
             }
 
-            return $schemas;
+            return array_combine(array_column($schemas, 'name'), $schemas);
         }
 
         $schemas = [];
