@@ -171,13 +171,17 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
                 throw $exception;
             }
 
+            $contactIdentifier = null;
+
             $this->handleValidationErrors(
                 $exception,
-                function (array $properties) {
-                    $this->create($properties, true);
+                function (array $properties) use (&$contactIdentifier) {
+                    $contactIdentifier = $this->create($properties, true);
                 },
                 $contactProperties
             );
+
+            return $contactIdentifier;
         }
 
         if (!isset($response['vid'])) {
