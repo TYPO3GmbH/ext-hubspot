@@ -16,7 +16,9 @@
         "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4 || ^11.5",
         "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
         "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "hubspot/hubspot-php": "^1.0 || ^3.0"
+        "hubspot/hubspot-php": "^1.0 || ^3.0",
+        "ext-json": "*",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
@@ -48,6 +50,9 @@
         ],
         "post-autoload-dump": [
             "mkdir -p .build/public/typo3conf/ext/", "[ -L .build/public/typo3conf/ext/hubspot ] || ln -snvf ../../../../. .build/public/typo3conf/ext/hubspot"
+        ],
+        "docs:generate": [
+            "docker run --rm t3docs/render-documentation show-shell-commands > tempfile.sh; echo 'dockrun_t3rd makehtml' >> tempfile.sh; bash tempfile.sh; rm tempfile.sh"
         ]
     },
     "prefer-stable": true,
@@ -55,7 +60,11 @@
         "sort-packages": true,
         "discard-changes": true,
         "vendor-dir": ".build/vendor",
-        "bin-dir": ".build/bin"
+        "bin-dir": ".build/bin",
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        }
     },
     "extra": {
         "typo3/cms": {

@@ -11,3 +11,4 @@ crashlytics.properties
 crashlytics-build.properties
 vendor
 Build/.phpunit.result.cache
+Documentation-GENERATED-temp

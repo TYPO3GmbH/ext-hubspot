@@ -48,7 +48,7 @@ module.tx_hubspot {
     settings {
         synchronize {
             limitToPids =< module.tx_hubspot.persistence.synchronize.storagePid
-            limit = 10
+            # limit = 10
 
             createNewInHubspot = 1
             createNewInTypo3 = 0
@@ -85,5 +85,10 @@ module.tx_hubspot {
             ignoreOnFrontendUserCreate =
             ignoreOnFrontendUserUpdate = username
         }
+
+        synchronizeCustomObjects {
+            # Any key, but the Hubspot object name is recommended. Still, there could be multiple syncs to the same object
+        }
+
     }
 }

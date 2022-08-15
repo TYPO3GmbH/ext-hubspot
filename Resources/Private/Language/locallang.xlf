@@ -6,6 +6,18 @@
 			<authorEmail>info@typo3.com</authorEmail>
 		</header>
 		<body>
+			<trans-unit id="hubspot_integration.mainMenu.index">
+				<source>Overview</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.forms">
+				<source>Forms</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.ctas">
+				<source>CTAs</source>
+			</trans-unit>
+			<trans-unit id="hubspot_integration.mainMenu.customObjects">
+				<source>Custom Objects</source>
+			</trans-unit>
 			<trans-unit id="hubspot_integration.form.pid">
 				<source>On Page</source>
 			</trans-unit>
@@ -54,6 +66,111 @@
 			<trans-unit id="message.hubspot_blocked.2">
 				<source>Do you use an adblocker? If so, please try turning it off and reload this page.</source>
 			</trans-unit>
-		</body>
+            <trans-unit id="hubspot_integration.customObjects.headline">
+                <source>Custom Object Schemas</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.table.label">
+                <source>Label</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.table.name">
+                <source>Name</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.inspect">
+                <source>Inspect</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.download">
+                <source>Download</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.refreshSchemas">
+                <source>Fetch Updates</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.addOrUpdateSchema">
+                <source>New/Update</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.button.deleteSchema">
+                <source>Delete</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.refreshSchemas.title">
+                <source>Schemas Fetched</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.refreshSchemas.body">
+                <source>Schemas were successfully fetched from Hubspot.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.headline">
+                <source>Create or Update Custom Object Schema From File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.table.name">
+                <source>File Name</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.button.createOrUpdate">
+                <source>Create/Update From File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.noFiles.title">
+                <source>No Definition Files Defined</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.new.noFiles.message">
+                <source>No definition files have been defined in your TYPO3 instance. You can define them in an extension's ext_tables.php file (e.g. in a theme extension).</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.noFileTitle">
+                <source>File Not Found</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.noFileMessage">
+                <source>The file "%s" could not be found.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.jsonDecodeTitle">
+                <source>Invalid JSON File</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.error.jsonDecodeMessage">
+                <source>The file could not be parsed as valid JSON.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.warning.overwriteTitle">
+                <source>Update Existing Schema?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.warning.overwriteMessage">
+                <source>A schema called "%s" already exists in Hubspot. Would you like to update it based on the contents of the file?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.button.update">
+                <source>Update Existing</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.successTitle">
+                <source>Schema Created</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.successMessage">
+                <source>The schema "%s" was successfully created.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.conflictTitle">
+                <source>Naming Conflict</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.conflictMessage">
+                <source>A schema with the same name already exists. Try to fetch updates from Hubspot or check if a schema with this name has previously been deleted and needs to be purged.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.updateSuccessTitle">
+                <source>Schema Updated</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.create.updateSuccessMessage">
+                <source>The schema "%s" was successfully updated.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.cancel">
+                <source>Cancel</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.deleteSuccessTitle">
+                <source>Schema Deleted</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.deleteSuccessMessage">
+                <source>The schema "%s" was successfully deleted.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.objectsExistTitle">
+                <source>Delete Existing Objects First</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.delete.objectsExistMessage">
+                <source>Custom objects exist for the schema "%s". They must be deleted before you can delete it.</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.confirm.deleteSchemaTitle">
+                <source>Delete the Schema?</source>
+            </trans-unit>
+            <trans-unit id="hubspot_integration.customObjects.confirm.deleteSchemaMessage">
+                <source>Do you really want to delete the custom object schema "%s"? This action cannot be undone and you will not be able to create a new custom object with the same name again until it has been purged.</source>
+            </trans-unit>
+        </body>
 	</file>
 </xliff>

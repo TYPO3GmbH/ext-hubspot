@@ -10,15 +10,12 @@ declare(strict_types = 1);
 
 namespace T3G\Hubspot\Service;
 
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
 use SevenShores\Hubspot\Exceptions\BadRequest;
-use T3G\Hubspot\Configuration\BackendConfigurationManager;
-use T3G\Hubspot\Repository\Exception\DataHandlerErrorException;
-use T3G\Hubspot\Repository\Exception\HubspotExistingContactConflictException;
-use T3G\Hubspot\Repository\Exception\UnexpectedMissingContactException;
-use T3G\Hubspot\Repository\FrontendUserRepository;
-use T3G\Hubspot\Repository\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Database\Exception\DataHandlerErrorException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\ExistingContactConflictException;
+use T3G\Hubspot\Domain\Repository\Hubspot\Exception\UnexpectedMissingContactException;
+use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Service\Event\AfterAddingFrontendUserToHubspotEvent;
 use T3G\Hubspot\Service\Event\AfterAddingHubspotContactToFrontendUsersEvent;
 use T3G\Hubspot\Service\Event\AfterContactSynchronizationEvent;
@@ -39,18 +36,14 @@ use T3G\Hubspot\Service\Exception\StopRecordSynchronizationException;
 use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 /**
  * Service handling contact synchronization between TYPO3 frontend users and Hubspot contacts
  */
-class ContactSynchronizationService implements LoggerAwareInterface
+class ContactSynchronizationService extends AbstractSynchronizationService
 {
-    use LoggerAwareTrait;
-
     /**
-     * @var HubspotContactRepository
+     * @var ContactRepository
      */
     protected $hubspotContactRepository = null;
 
@@ -58,21 +51,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * @var FrontendUserRepository
      */
     protected $frontendUserRepository = null;
-
-    /**
-     * @var array Default values for TypoScript configuration
-     */
-    protected $defaultConfiguration = [];
-
-    /**
-     * @var array Configuration array
-     */
-    protected $configuration = [];
-
-    /**
-     * @var int To track active configuration PID
-     */
-    protected $activeConfigurationPageId = 0;
 
     /**
      * @var array[] UIDs of frontend users processed
@@ -90,11 +68,11 @@ class ContactSynchronizationService implements LoggerAwareInterface
      * ContactSynchronizationService constructor.
      */
     public function __construct(
-        HubspotContactRepository $hubspotContactRepository = null,
+        ContactRepository $hubspotContactRepository = null,
         FrontendUserRepository $frontendUserRepository = null
     ) {
         $this->hubspotContactRepository =
-            $hubspotContactRepository ?? GeneralUtility::makeInstance(HubspotContactRepository::class);
+            $hubspotContactRepository ?? GeneralUtility::makeInstance(ContactRepository::class);
         $this->frontendUserRepository =
             $frontendUserRepository ?? GeneralUtility::makeInstance(FrontendUserRepository::class);
     }
@@ -134,8 +112,16 @@ class ContactSynchronizationService implements LoggerAwareInterface
                     try {
                         $this->addHubspotContactToFrontendUsers($newHubspotContact);
                     } catch (SkipRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Skipped when adding contact ' . $newHubspotContact['vid'] . ': ' . $e->getMessage()
+                        );
+
                         continue;
                     } catch (StopRecordSynchronizationException $e) {
+                        $this->logInfo(
+                            'Stopped when adding contact ' . $newHubspotContact['vid'] . ': ' . $e->getMessage()
+                        );
+
                         return;
                     }
                 }
@@ -153,8 +139,20 @@ class ContactSynchronizationService implements LoggerAwareInterface
                 try {
                     $this->synchronizeFrontendUser($frontendUser);
                 } catch (SkipRecordSynchronizationException $e) {
+                    $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
+                    $this->logInfo(
+                        'Skipped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                    );
+
                     continue;
                 } catch (StopRecordSynchronizationException $e) {
+                    $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
+                    $this->logInfo(
+                        'Stopped when adding frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                    );
+
                     return;
                 }
             }
@@ -168,8 +166,20 @@ class ContactSynchronizationService implements LoggerAwareInterface
             try {
                 $this->synchronizeFrontendUser($frontendUser);
             } catch (SkipRecordSynchronizationException $e) {
+                $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
+                $this->logInfo(
+                    'Skipped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                );
+
                 continue;
             } catch (StopRecordSynchronizationException $e) {
+                $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
+
+                $this->logInfo(
+                    'Stopped when syncing frontend user ' . $frontendUser['uid'] . ': ' . $e->getMessage()
+                );
+
                 return;
             }
         }
@@ -183,6 +193,8 @@ class ContactSynchronizationService implements LoggerAwareInterface
         try {
             CompatibilityUtility::dispatchEvent($afterSynchronizationEvent);
         } catch (StopRecordSynchronizationException $e) {
+            $this->logInfo('Stopped after synchronization: ' . $e->getMessage());
+
             return;
         }
 
@@ -212,12 +224,6 @@ class ContactSynchronizationService implements LoggerAwareInterface
         $this->configuration = $beforeFrontendUserSynchronizationEvent->getConfiguration();
         $frontendUser = $beforeFrontendUserSynchronizationEvent->getFrontendUser();
 
-        if (!GeneralUtility::validEmail($frontendUser['email'])) {
-            $this->logger->warning('Frontend user has invalid email and can\'t be synced.', $frontendUser);
-            $this->processedRecords['frontendUsersWithError'][] = $frontendUser['uid'];
-            return;
-        }
-
         $this->configureForPageId($frontendUser['pid']);
 
         if ($frontendUser['hubspot_id'] === 0) {
@@ -239,57 +245,19 @@ class ContactSynchronizationService implements LoggerAwareInterface
     }
 
     /**
-     * Set default TypoScript values
-     *
-     * @param array $defaultConfiguration
-     */
-    public function setDefaultConfiguration(array $defaultConfiguration)
-    {
-        $this->defaultConfiguration = $defaultConfiguration;
-    }
-
-    /**
-     * Fetches TypoScript configuration from page and sets $this->configuration to what's in module.tx_hubspot
-     *
-     * Also configures repository defaults
-     *
-     * @param int $pageId
-     */
-    public function configureForPageId(int $pageId)
-    {
-        if ($this->activeConfigurationPageId === $pageId) {
-            return;
-        }
-
-        /** @var BackendConfigurationManager $configurationManager */
-        $configurationManager = GeneralUtility::makeInstance(ObjectManager::class)
-            ->get(BackendConfigurationManager::class);
-
-        $configurationManager->setCurrentPageId($pageId);
-
-        $configuration = $configurationManager->getTypoScriptSetup()['module.']['tx_hubspot.'] ?? [];
-
-        $this->configuration = array_merge_recursive($this->defaultConfiguration, $configuration);
-
-        $this->activeConfigurationPageId = $pageId;
-
-        $this->configureRepositoryDefaults();
-    }
-
-    /**
      * Sets repository default values based on $this->configuration
      */
     protected function configureRepositoryDefaults()
     {
-        $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid']);
+        $this->frontendUserRepository->setDefaultPageId((int)$this->configuration['persistence.']['synchronize.']['storagePid'] ?? 0);
 
-        if ($this->configuration['synchronize.']['limit']) {
-            $this->frontendUserRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
-            $this->hubspotContactRepository->setLimit((int)$this->configuration['synchronize.']['limit']);
+        if ($this->configuration['settings.']['synchronize.']['limit'] ?? false) {
+            $this->frontendUserRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
+            $this->hubspotContactRepository->setLimit((int)$this->configuration['settings.']['synchronize.']['limit']);
         }
 
         $this->frontendUserRepository->setSearchPids(
-            GeneralUtility::intExplode(',', $this->configuration['synchronize.']['limitToPids'] ?? '', true)
+            GeneralUtility::intExplode(',', $this->configuration['settings.']['synchronize.']['limitToPids'] ?? '', true)
         );
     }
 
@@ -374,9 +342,21 @@ class ContactSynchronizationService implements LoggerAwareInterface
                 unset($mappedHubspotProperties[$propertyName]);
             }
 
+            if (empty($mappedHubspotProperties['email'])) {
+                unset($mappedHubspotProperties['email']);
+            }
+
             $hubspotContactIdentifier = $this->hubspotContactRepository->create($mappedHubspotProperties);
-        } catch (HubspotExistingContactConflictException $existingContactException) {
-            $hubspotContact = $this->hubspotContactRepository->findByEmail($frontendUser['email']);
+        } catch (ExistingContactConflictException $existingContactException) {
+            $hubspotContact = $this->hubspotContactRepository->findByEmail($mappedHubspotProperties['email']);
+
+            $this->logWarning(
+                'Frontend user ' . $frontendUser['uid'] . ' exists in Hubspot as ' . $hubspotContact['vid'],
+                [
+                    'frontendUser' => $frontendUser,
+                    'hubspotContact' => $hubspotContact
+                ]
+            );
 
             if ($hubspotContact !== null) {
                 $frontendUser['hubspot_id'] = $hubspotContact['vid'];
@@ -407,6 +387,14 @@ class ContactSynchronizationService implements LoggerAwareInterface
         $frontendUser['hubspot_id'] = $hubspotContactIdentifier;
 
         $this->processedRecords['addedToHubspot'][] = $frontendUser['uid'];
+
+        $this->logInfo(
+            'Added frontend user ' . $frontendUser['uid'] . ' to Hubspot as ' . $hubspotContactIdentifier,
+            [
+                'frontendUser' => $frontendUser,
+                'hubspotContact' => $mappedHubspotProperties
+            ]
+        );
 
         $afterAddEvent = new AfterAddingFrontendUserToHubspotEvent(
             $this,
@@ -496,6 +484,25 @@ class ContactSynchronizationService implements LoggerAwareInterface
 
         $mappedHubspotProperties = $this->mapFrontendUserToHubspotContactProperties($frontendUser);
 
+        if (isset($mappedHubspotProperties['email']) && !GeneralUtility::validEmail($mappedHubspotProperties['email'])) {
+            $message = 'Frontend user ' . $frontendUser['uid'] . ' has invalid email "'
+                . $mappedHubspotProperties['email'] . '" and can\'t be synced.';
+
+            $this->logWarning(
+                $message,
+                [
+                    'frontendUser' => $frontendUser,
+                    'mappedHubspotProperties' => $mappedHubspotProperties
+                ]
+            );
+            $this->processedRecords['frontendUsersWithError'][] = $frontendUser['uid'];
+
+            throw new SkipRecordSynchronizationException(
+                $message,
+                1645014857388
+            );
+        }
+
         foreach ($mappedHubspotProperties as $propertyName => $value) {
             // Remove hubspot properties that are newer in Hubspot so we don't overwrite them in hubspot
             // Remove hubspot properties if there is no changed content
@@ -565,6 +572,13 @@ class ContactSynchronizationService implements LoggerAwareInterface
         if (count($mappedFrontendUserProperties) > 0) {
             $this->frontendUserRepository->update($frontendUser['uid'], $mappedFrontendUserProperties);
             $this->processedRecords['modifiedInHubspot'][] = $frontendUser['uid'];
+
+            $this->logInfo(
+                'Updated frontend user ' . $frontendUser['uid'] . ' to Hubspot contact ' . $frontendUser['hubspot_id'],
+                [
+                    'frontendUser' => $mappedFrontendUserProperties,
+                ]
+            );
         } else {
             $this->frontendUserRepository->setSyncPassSilently($frontendUser['uid']);
             $this->processedRecords['frontendUsersNotSynchronized'][] = $frontendUser['uid'];
@@ -573,6 +587,13 @@ class ContactSynchronizationService implements LoggerAwareInterface
         if (count($mappedHubspotProperties) > 0) {
             $this->hubspotContactRepository->update($frontendUser['hubspot_id'], $mappedHubspotProperties);
             $this->processedRecords['modifiedInFrontendUsers'][] = $frontendUser['uid'];
+
+            $this->logInfo(
+                'Updated hubspot contact ' . $frontendUser['hubspot_id'] . ' from frontend user ' . $frontendUser['uid'],
+                [
+                    'hubspotContact' => $mappedHubspotProperties
+                ]
+            );
         }
 
         $afterUpdatingEvent = new AfterUpdatingFrontendUserAndHubspotContactEvent(
@@ -609,26 +630,10 @@ class ContactSynchronizationService implements LoggerAwareInterface
         $frontendUser = $beforeMappingEvent->getFrontendUser();
         unset($beforeMappingEvent);
 
-        $toHubspot = $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? [];
-
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($frontendUser);
-
-        $hubspotProperties = [];
-        foreach (array_keys($toHubspot) as $hubspotProperty) {
-            $hubspotProperty = rtrim($hubspotProperty, '.');
-
-            if (array_key_exists($hubspotProperty, $hubspotProperties)) {
-                continue;
-            }
-
-            $hubspotProperties[$hubspotProperty] = $contentObjectRenderer->stdWrap(
-                $toHubspot[$hubspotProperty] ?? '',
-                $toHubspot[$hubspotProperty . '.'] ?? []
-            );
-        }
-
-        $hubspotProperties = ArrayUtility::removeNullValuesRecursive($hubspotProperties);
+        $hubspotProperties = $this->mapAndtransformValues(
+            $frontendUser,
+            $this->configuration['settings.']['synchronize.']['toHubspot.'] ?? []
+        );
 
         $afterMappingEvent = new AfterMappingFrontendUserToHubspotContactPropertiesEvent(
             $this,
@@ -683,24 +688,10 @@ class ContactSynchronizationService implements LoggerAwareInterface
             }
         }
 
-        $toFrontendUser = $this->configuration['settings.']['synchronize.']['toFrontendUser.'] ?? [];
-
-        $contentObjectRenderer = GeneralUtility::makeInstance(ContentObjectRenderer::class);
-        $contentObjectRenderer->start($hubspotContactProperties);
-
-        $frontendUserProperties = [];
-        foreach (array_keys($toFrontendUser) as $frontendUserProperty) {
-            $frontendUserProperty = rtrim($frontendUserProperty, '.');
-
-            if (array_key_exists($frontendUserProperty, $frontendUserProperties)) {
-                continue;
-            }
-
-            $frontendUserProperties[$frontendUserProperty] = $contentObjectRenderer->stdWrap(
-                $hubspotContactProperties[$toFrontendUser[$frontendUserProperty] ?? ''] ?? '',
-                $toFrontendUser[$frontendUserProperty . '.'] ?? []
-            );
-        }
+        $frontendUserProperties = $this->mapAndtransformValues(
+            $hubspotContactProperties,
+            $this->configuration['settings.']['synchronize.']['toFrontendUser.'] ?? []
+        );
 
         $frontendUserProperties['hubspot_created_timestamp'] =
             $hubspotContactProperties['createdate'] ?? $hubspotContact['addedAt'] ?? 0; // Millisecond timestamp

@@ -13,6 +13,6 @@ use T3G\Hubspot\Service\ContactSynchronizationService;
  *
  * @see ContactSynchronizationService
  */
-class StopRecordSynchronizationException extends AbstractContactSynchronizationException
+class StopRecordSynchronizationException extends AbstractSynchronizationException
 {
 }

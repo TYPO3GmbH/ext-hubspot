@@ -8,8 +8,8 @@
  */
 
 return [
-    'hubspot:contactsync' => [
-        'class' => \T3G\Hubspot\Command\SynchronizeContactsCommand::class,
+    'hubspot:sync' => [
+        'class' => \T3G\Hubspot\Command\SynchronizeCommand::class,
         'schedulable' => true,
     ],
 ];

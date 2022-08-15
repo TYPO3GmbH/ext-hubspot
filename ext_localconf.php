@@ -11,14 +11,17 @@ defined('TYPO3_MODE') || die();
 
 call_user_func(function (string $extensionName) {
     if (!\T3G\Hubspot\Utility\CompatibilityUtility::isComposerMode()) {
-        @include 'phar://' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('hubspot') . 'Libraries/hubspot-php.phar/vendor/autoload.php';
+        @include 'phar://' . \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('hubspot')
+            . 'Libraries/hubspot-php.phar/vendor/autoload.php';
     }
-    /***************
-     * PageTS
-     */
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-        '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $extensionName . '/Configuration/TsConfig/Page/All.tsconfig">'
-    );
+
+    if (\T3G\Hubspot\Utility\CompatibilityUtility::typo3VersionIsGreaterThanOrEqualTo('9')) {
+        $pageTs = '@import \'FILE:EXT:' . $extensionName . '/Configuration/TsConfig/Page/All.tsconfig\'';
+    } else {
+        $pageTs = '<INCLUDE_TYPOSCRIPT: source="FILE:EXT:' . $extensionName . '/Configuration/TsConfig/Page/All.tsconfig">';
+    }
+
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig($pageTs);
 
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['tt_content_drawItem']['hubspot_form'] =
         \T3G\Hubspot\Hooks\PageLayoutView\HubspotPreviewRenderer::class;
@@ -42,6 +45,8 @@ call_user_func(function (string $extensionName) {
         $icons = [
             'ctype-hubspot-form' => 'EXT:' . $extensionName . '/Resources/Public/Icons/ContentElements/hubspot_form.svg',
             'ctype-hubspot-cta' => 'EXT:' . $extensionName . '/Resources/Public/Icons/ContentElements/hubspot_cta.svg',
+            'hubspot-custom-object' => 'EXT:' . $extensionName . '/Resources/Public/Icons/hubspot_custom_object.svg',
+            'hubspot-add-or-update' => 'EXT:' . $extensionName . '/Resources/Public/Icons/add-or-update.svg',
         ];
         foreach ($icons as $iconIdentifier => $source) {
             $iconRegistry->registerIcon(

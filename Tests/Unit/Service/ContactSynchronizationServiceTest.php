@@ -11,17 +11,13 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Tests\Unit\Service;
 
 use PHPUnit\Framework\MockObject\MockBuilder;
-use PHPUnit\Runner\Version;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use T3G\Hubspot\Configuration\BackendConfigurationManager;
-use T3G\Hubspot\Repository\FrontendUserRepository;
-use T3G\Hubspot\Repository\HubspotContactRepository;
+use T3G\Hubspot\Domain\Repository\Database\FrontendUserRepository;
+use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
 use T3G\Hubspot\Service\ContactSynchronizationService;
 use T3G\Hubspot\Utility\CompatibilityUtility;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
-use TYPO3\CMS\Core\TypoScript\TypoScriptService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
@@ -267,7 +263,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             ]
         ];
 
-        $hubspotContactRepositoryMock = $this->createMock(HubspotContactRepository::class);
+        $hubspotContactRepositoryMock = $this->createMock(ContactRepository::class);
 
         $hubspotContactRepositoryMock
             ->method('findByIdentifier')
@@ -290,7 +286,7 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             ->expects($this->once())
             ->method('update')
             ->withConsecutive(
-                // $frontendUserUpdateArguments2, isn't called because it's empty
+                // $frontendUserUpdateArguments1,
                 $frontendUserUpdateArguments2
             );
 
@@ -308,20 +304,12 @@ class ContactSynchronizationServiceTest extends UnitTestCase
             'settings.' => [
                 'synchronize.' => [
                     'toHubspot.' => [
-                        'firstname.' => [
-                            'field' => 'first_name'
-                        ],
-                        'zip.' => [
-                            'field' => 'zip'
-                        ],
+                        'firstname' => 'first_name',
+                        'zip' => 'zip',
                     ],
                     'toFrontendUser.' => [
-                        'first_name.' => [
-                            'field' => 'firstname'
-                        ],
-                        'zip.' => [
-                            'field' => 'zip'
-                        ],
+                        'first_name' => 'firstname',
+                        'zip' => 'zip',
                     ]
                 ],
             ],

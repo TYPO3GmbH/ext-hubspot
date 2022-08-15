@@ -1,0 +1,16 @@
+<html
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Main"/>
+<f:section name="content">
+    <h1>Custom Object Schema "{schema.labels.singular}"</h1>
+
+    <h2>Name: <code>{schema.name}</code></h2>
+
+    <be:arrayBrowser data="{schema}" />
+</f:section>
+
+</html>

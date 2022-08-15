@@ -1,36 +1,48 @@
 Command Line and Scheduler Actions
 ==================================
 
-The CLI commands are executed through the `standard TYPO3 CLI<https://docs.typo3.org/m/typo3/reference-coreapi/master/en-us/ApiOverview/CommandControllers/Index.html#running-the-command-from-the-command-line>`__.
+The CLI command is executed through the
+`standard TYPO3 CLI<t3tsref:running-the-command-from-the-command-line>`__.
+
+You can also execute the command through the Scheduler.
 
 .. _command-hubspot-contactsync:
+.. _command-hubspot-sync:
 
 Synchronize Hubspot contacts and Frontend Users
 -----------------------------------------------
 
-`hubspot:contactsync [options]`
+`hubspot:sync [options] [--] [<types>...]`
 
-This command synchronizes HubSpot contact records with TYPO3 frontend users.
+This command synchronizes HubSpot records with TYPO3 records.
+
+.. _command-hubspot-sync-arguments:
+
+Arguments
+~~~~~~~~~
+
+Supply the types of synchronizations to run as command arguments. If none are
+supplied, all types are used.
+
+Available type arguments
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+**contacts**
+   Synchronize frontend users with Hubspot contacts.
+**customobjects**
+   Synchronize TYPO3 records of any type with Hubspot Custom Objects of any
+   type.
+
+.. _command-hubspot-sync-options:
 
 Options
 ~~~~~~~
 
-.. code-block::
+.. code-block:: text
 
-   Options:
-     -p, --default-pid=DEFAULT-PID      Default PID for storage and TypoScript
-                                        settings
-     -s, --limit-to-pids=LIMIT-TO-PIDS  Array of PIDs to search within. Default
-                                        is to ignore PID. (multiple values
-                                        allowed)
-     -l, --limit=LIMIT                  Max records to synchronize
-     -h, --help                         Display this help message
-     -q, --quiet                        Do not output any message
-     -V, --version                      Display this application version
-         --ansi                         Force ANSI output
-         --no-ansi                      Disable ANSI output
-     -n, --no-interaction               Do not ask any interactive question
-     -v|vv|vvv, --verbose               Increase the verbosity of messages: 1
-                                        for normal output, 2 for more verbose
-                                        output and 3 for debug
+  -p, --default-pid=DEFAULT-PID      Default PID for storage and TypoScript
+                                     settings
+  -s, --limit-to-pids=LIMIT-TO-PIDS  Array of PIDs to search within. Default
+                                     is to ignore PID. (multiple values allowed)
+  -l, --limit=LIMIT                  Max records to synchronize
 

@@ -1,0 +1,39 @@
+<html
+    xmlns:be="http://typo3.org/ns/TYPO3/CMS/Backend/ViewHelpers"
+    xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers"
+    xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Main"/>
+<f:section name="content">
+    <h2>
+        <f:translate key="hubspot_integration.customObjects.new.headline"/>
+    </h2>
+
+    <f:be.infobox title="{f:translate(key: 'hubspot_integration.customObjects.create.warning.overwriteTitle')}" state="1">
+        <f:form action="create" arguments="{file: file}" method="post">
+            <f:form.hidden name="updateExisting" value="1" />
+
+            <p><f:translate
+                key="hubspot_integration.customObjects.create.warning.overwriteMessage"
+                arguments="{0: existingSchema.name}"
+            /></p>
+
+            <f:link.action
+                action="new"
+                class="btn btn-primary"
+            >
+                {f:translate(key: 'hubspot_integration.cancel')}
+            </f:link.action>
+
+            <f:form.button
+                type="submit"
+                class="btn btn-danger"
+            >
+                <f:translate key="hubspot_integration.customObjects.create.button.update" />
+            </f:form.button>
+        </f:form>
+    </f:be.infobox>
+</f:section>
+
+</html>
