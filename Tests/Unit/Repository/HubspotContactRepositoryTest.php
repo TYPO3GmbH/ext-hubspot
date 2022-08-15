@@ -11,6 +11,7 @@ declare(strict_types = 1);
 namespace T3G\Hubspot\Tests\Unit\Repository;
 
 use T3G\Hubspot\Domain\Repository\Hubspot\ContactRepository;
+use T3G\Hubspot\Hubspot\Factory;
 use TYPO3\TestingFramework\Core\Unit\UnitTestCase;
 
 class HubspotContactRepositoryTest extends UnitTestCase
@@ -24,7 +25,7 @@ class HubspotContactRepositoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->subject = new ContactRepository();
+        $this->subject = new ContactRepository(self::createMock(Factory::class));
     }
 
     /**
