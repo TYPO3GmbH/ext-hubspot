@@ -45,18 +45,18 @@ Authentication
 ==============
 
 Hubspot authentication is done via ENV vars (APP_HUBSPOT_PORTALID and
-APP_HUBSPOT_SECRET). You need to know your Hubspot Portal-ID and API key.
+APP_HUBSPOT_TOKEN). You need to know your Hubspot Portal-ID and create a private
+app to get an OAuth2 access token.
 
 .. _install-and-setup-get-api-key:
+.. _install-and-setup-get-token:
 
-How to get your API key
------------------------
+How to get your access token
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-By clicking on your username in the upper right hand corner, you will find
-the menu item "Integrations". Here you can generate a new API key. Hubspot
-allows you to generate only one API key at a time. This means that each and
-every integration and application share this one key. The key belongs to a
-specific installation and not to an individual user.
+In order to get an OAuth2 access token you have to create a private app in your
+Hubspot instance. Read `how to create a private app <https://developers.hubspot.com/docs/api/private-apps#create-a-private-app>`__
+in the Hubspot Documentation.
 
 .. _install-and-setup-find-portal-id:
 

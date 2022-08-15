@@ -12,4 +12,8 @@ return [
         'class' => \T3G\Hubspot\Command\SynchronizeCommand::class,
         'schedulable' => true,
     ],
+    'hubspot:test' => [
+        'class' => \T3G\Hubspot\Command\ConnectionTestCommand::class,
+        'schedulable' => false,
+    ],
 ];
