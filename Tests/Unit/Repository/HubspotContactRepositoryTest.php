@@ -25,7 +25,7 @@ class HubspotContactRepositoryTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->subject = new ContactRepository(self::createMock(Factory::class));
+        $this->subject = new ContactRepository();
     }
 
     /**
