@@ -225,6 +225,16 @@ class ContactRepository extends AbstractHubspotRepository implements LoggerAware
     }
 
     /**
+     * Returns contact statistics data.
+     *
+     * @return array
+     */
+    public function statistics(): array
+    {
+        return $this->factory->contacts()->statistics()->toArray();
+    }
+
+    /**
      * Converts an associative array to the type Hubspot likes
      *
      * [ 'propertyName' => 'theValue' ]
