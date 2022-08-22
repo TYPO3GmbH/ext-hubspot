@@ -83,7 +83,7 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
         if (!$cached || !is_array($schemaLabels)) {
             $this->findAll(false);
 
-            $schemaLabels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA);
+            $schemaLabels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA) ?? [];
         }
 
         return $schemaLabels;
