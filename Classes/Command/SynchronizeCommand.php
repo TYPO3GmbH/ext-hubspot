@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use T3G\Hubspot\Service\ContactSynchronizationService;
 use T3G\Hubspot\Service\CustomObjectSynchronizationService;
-use T3G\Hubspot\Utility\CompatibilityUtility;
+use TYPO3\CMS\Core\Core\Bootstrap;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -77,7 +77,7 @@ class SynchronizeCommand extends Command
         $this->input = $input;
         $this->output = $output;
 
-        CompatibilityUtility::initializeBackendAuthentication();
+        Bootstrap::initializeBackendAuthentication();
 
         // Initialize TSFE
         if (!isset($GLOBALS['TSFE'])) {
