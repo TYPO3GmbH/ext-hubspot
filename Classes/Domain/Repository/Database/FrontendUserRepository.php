@@ -241,6 +241,7 @@ class FrontendUserRepository extends AbstractDatabaseRepository
                 $queryBuilder->expr()->max('hubspot_sync_pass'),
                 $queryBuilder->expr()->min('hubspot_sync_pass')
             )
+            ->andWhere($queryBuilder->expr()->neq('hubspot_sync_pass', 0))
             ->from(static::TABLE_NAME)
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
