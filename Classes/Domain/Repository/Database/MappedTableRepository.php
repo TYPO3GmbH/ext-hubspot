@@ -208,6 +208,10 @@ class MappedTableRepository extends AbstractDatabaseRepository
             )
             ->where(
                 $queryBuilder->expr()->neq(
+                    'hubspot_sync_pass',
+                    0
+                ),
+                $queryBuilder->expr()->neq(
                     'hubspot_id',
                     0
                 ),
