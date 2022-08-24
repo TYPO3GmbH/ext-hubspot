@@ -122,7 +122,7 @@ class MappedTableRepository extends AbstractDatabaseRepository
                 'table_foreign' => $this->tableName,
                 'hubspot_created_timestamp' => time() * 1000,
                 'hubspot_sync_timestamp' => time(),
-                'hubspot_sync_pass' => 1,
+                'hubspot_sync_pass' => $this->getSyncPassIdentifier(),
             ])
             ->execute();
     }
@@ -206,7 +206,24 @@ class MappedTableRepository extends AbstractDatabaseRepository
                 $queryBuilder->expr()->max('hubspot_sync_pass'),
                 $queryBuilder->expr()->min('hubspot_sync_pass')
             )
-            ->andWhere($queryBuilder->expr()->neq('hubspot_id', 0))
+            ->where(
+                $queryBuilder->expr()->neq(
+                    'hubspot_id',
+                    0
+                ),
+                $queryBuilder->expr()->eq(
+                    'object_type',
+                    $queryBuilder->createNamedParameter($this->objectType)
+                ),
+                $queryBuilder->expr()->eq(
+                    'typoscript_key',
+                    $queryBuilder->createNamedParameter($this->typoScriptKey)
+                ),
+                $queryBuilder->expr()->eq(
+                    'table_foreign',
+                    $queryBuilder->createNamedParameter($this->tableName)
+                )
+            )
             ->from(self::RELATION_TABLE)
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
