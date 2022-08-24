@@ -11,18 +11,18 @@
         }
     ],
     "require": {
-        "typo3/cms-backend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "typo3/cms-core": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "typo3/cms-extbase": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "typo3/cms-frontend": "^8.7 || ^9.5 || ^10.4 || ^11.5",
-        "typo3/cms-fluid": "^8.7 || ^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-backend": "^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-core": "^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-extbase": "^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-frontend": "^9.5 || ^10.4 || ^11.5",
+        "typo3/cms-fluid": "^9.5 || ^10.4 || ^11.5",
         "hubspot/hubspot-php": "^1.0 || ^3.0",
         "ext-json": "*",
         "ext-pdo": "*"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.14",
-        "typo3/testing-framework": "^2 || ^4.9 || ^5.0 || ^6.2",
+        "typo3/testing-framework": "^4.9 || ^5.0 || ^6.2",
         "overtrue/phplint": "^1.1",
         "phpspec/prophecy": "^1.15"
     },

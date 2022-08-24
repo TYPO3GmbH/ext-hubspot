@@ -25,35 +25,6 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 class CompatibilityUtility
 {
     /**
-     * Compatibility for Bootstrap::initializeBackendAuthentication()
-     *
-     * Became stateless in TYPO3 9.2
-     */
-    public static function initializeBackendAuthentication()
-    {
-        if (self::typo3VersionIsGreaterThanOrEqualTo('9.2')) {
-            Bootstrap::initializeBackendAuthentication();
-            return;
-        }
-
-        Bootstrap::getInstance()->initializeBackendAuthentication();
-    }
-
-    /**
-     * Returns true if the installation is in composer mode
-     *
-     * @return bool
-     */
-    public static function isComposerMode(): bool
-    {
-        if (self::typo3VersionIsLessThan('9.2')) {
-            return TYPO3_COMPOSER_MODE;
-        }
-
-        return Environment::isComposerMode();
-    }
-
-    /**
      * Returns true if the current TYPO3 version is less than $version
      *
      * @param string $version
