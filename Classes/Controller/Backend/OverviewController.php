@@ -23,7 +23,7 @@ class OverviewController extends AbstractController
                 'ctasView' => $this->uriBuilder->reset()->uriFor(
                     'index',
                     [],
-                    'Backend\\Tca'
+                    'Backend\\Cta'
                 ),
                 'customObjectsView' => $this->uriBuilder->reset()->uriFor(
                     'index',
