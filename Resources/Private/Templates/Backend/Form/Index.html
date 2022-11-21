@@ -41,14 +41,14 @@
           </a>
         </td>
         <td>
-          <f:link.action action="hubspotForm" controller="Backend" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}">{formElement.form_name}</f:link.action>
+          <f:link.action action="editInline" controller="Backend\Form" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}">{formElement.form_name}</f:link.action>
         </td>
         <td align="right">
           <a href="{be:moduleLink(route: 'record_edit', query: 'edit[tt_content][{formElement.uid}]=edit&returnUrl={returnUrl}')}" class="btn btn-default btn-sm">
             <core:icon identifier="actions-open" size="small"/>
             <f:translate key="hubspot_integration.form.editForm"/>
           </a>
-          <f:link.action action="hubspotForm" controller="Backend" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}" class="btn btn-default btn-sm">
+          <f:link.action action="editInline" controller="Backend\Form" extensionName="hubspot" arguments="{hubspotGuid: formElement.hubspot_guid}" class="btn btn-default btn-sm">
             <core:icon identifier="actions-view" size="small"/>
             <f:translate key="hubspot_integration.form.editFormInHubspot"/>
           </f:link.action>
