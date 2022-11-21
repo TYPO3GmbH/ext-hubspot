@@ -27,7 +27,7 @@ call_user_func(
                 'top',
                 [
                     \T3G\Hubspot\Controller\Backend\OverviewController::class => 'index',
-                    \T3G\Hubspot\Controller\Backend\FormController::class => 'index',
+                    \T3G\Hubspot\Controller\Backend\FormController::class => 'index, editInline',
                     \T3G\Hubspot\Controller\Backend\CtaController::class => 'index',
                     \T3G\Hubspot\Controller\Backend\SchemaController::class => 'index, inspect, refresh, new, create, download, delete'
                 ],
