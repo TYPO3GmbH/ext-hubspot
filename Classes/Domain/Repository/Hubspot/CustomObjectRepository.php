@@ -85,7 +85,6 @@ class CustomObjectRepository extends AbstractHubspotRepository
 
             throw $exception;
         }
-
     }
 
     /**

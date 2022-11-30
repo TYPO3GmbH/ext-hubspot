@@ -7,6 +7,10 @@
             <f:translate key="hubspot_integration.headline"/>
         </h1>
 
+        <f:render section="accountInformation" arguments="{accountDetails: accountDetails}" />
+
+        <f:render section="contextWarnings" arguments="{accountDetails: accountDetails, applicationContext: applicationContext}" />
+
         <div class="row">
             <div class="col-xs-12 col-sm-4">
                 <a href="{formsView}" class="panel panel-default t3js-equalheight">
@@ -54,5 +58,97 @@
                 </a>
             </div>
         </div>
+    </f:section>
+
+    <f:section name="accountInformation">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12">
+                <table class="table table-condensed table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <td colspan="2"><f:translate key="hubspot_integration.accountInformation.header"/></td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.portalId"/></th>
+                            <td>{accountDetails.portalId}</td>
+                        </tr>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.accountType"/></th>
+                            <td>{accountDetails.accountType}</td>
+                        </tr>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.timeZone"/></th>
+                            <td>{accountDetails.timeZone}</td>
+                        </tr>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.utcOffset"/></th>
+                            <td>{accountDetails.utcOffset}</td>
+                        </tr>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.companyCurrency"/></th>
+                            <td>{accountDetails.companyCurrency}</td>
+                        </tr>
+                        <f:if condition="{accountDetails.additionalCurrencies}">
+                            <tr>
+                                <th><f:translate key="hubspot_integration.accountInformation.additionalCurrencies"/></th>
+                                <td>
+                                    <ul>
+                                        <f:for each="{accountDetails.additionalCurrencies}" as="additionalCurrency" iteration="i">
+                                            <li>{additionalCurrency}</li>
+                                        </f:for>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </f:if>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.dataHostingLocation"/></th>
+                            <td>{accountDetails.dataHostingLocation}</td>
+                        </tr>
+                        <tr>
+                            <th><f:translate key="hubspot_integration.accountInformation.uiDomain"/></th>
+                            <td>{accountDetails.uiDomain}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </f:section>
+
+    <f:section name="contextWarnings">
+        <f:comment><!-- Determine if warning is to be displayed. --></f:comment>
+        <f:comment><!-- Couldn't find list of accountTypes, so will likely need more "triggers". --></f:comment>
+        <f:variable name="displayWarning">0</f:variable>
+
+        <f:comment><!-- HubSpot standard and TYPO3 development --></f:comment>
+        <f:if condition="{accountDetails.accountType} == 'STANDARD' && {applicationContext.isDevelopment}">
+            <f:variable name="displayWarning">1</f:variable>
+        </f:if>
+
+        <f:comment><!-- HubSpot sandbox and TYPO3 production --></f:comment>
+        <f:if condition="{accountDetails.accountType} == 'SANDBOX' && {applicationContext.isProduction}">
+            <f:variable name="displayWarning">1</f:variable>
+        </f:if>
+
+        <f:if condition="{displayWarning} == 1">
+            <div class="typo3-messages">
+                <div class="alert alert-warning">
+                    <div class="media">
+                        <div class="media-left">
+                            <span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-info fa-stack-1x"></i></span>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="alert-title"><f:translate key="hubspot_integration.accountInformation.contextWarningHeader"/></h4>
+                            <p class="alert-message">
+                                <f:translate
+                                    key="hubspot_integration.accountInformation.contextWarningText"
+                                    arguments="{0: applicationContext.applicationContext, 1: accountDetails.accountType}"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </f:if>
     </f:section>
 </div>
