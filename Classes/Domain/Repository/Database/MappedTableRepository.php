@@ -199,36 +199,47 @@ class MappedTableRepository extends AbstractDatabaseRepository
      */
     public function getSyncPassIdentifier(bool $ignoreScopeError = false): int
     {
-        $queryBuilder = $this->getRelationTableQueryBuilder();
+        $queryBuilder = $this->getMappedTableQueryBuilder();
 
         list($maxPass, $minPass) = $queryBuilder
             ->addSelectLiteral(
-                $queryBuilder->expr()->max('hubspot_sync_pass'),
-                $queryBuilder->expr()->min('hubspot_sync_pass')
+                $queryBuilder->expr()->max('m.hubspot_sync_pass'),
+                $queryBuilder->expr()->min('m.hubspot_sync_pass')
+            )
+            ->from($this->tableName, 't')
+            ->join(
+                't',
+                self::RELATION_TABLE,
+                'm',
+                (string)$queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq(
+                        't.uid',
+                        $queryBuilder->quoteIdentifier('m.uid_foreign')
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.object_type',
+                        $queryBuilder->createNamedParameter($this->objectType)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.typoscript_key',
+                        $queryBuilder->createNamedParameter($this->typoScriptKey)
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'm.table_foreign',
+                        $queryBuilder->createNamedParameter($this->tableName)
+                    )
+                )
             )
             ->where(
                 $queryBuilder->expr()->neq(
-                    'hubspot_sync_pass',
+                    'm.hubspot_sync_pass',
                     0
                 ),
                 $queryBuilder->expr()->neq(
-                    'hubspot_id',
+                    'm.hubspot_id',
                     0
-                ),
-                $queryBuilder->expr()->eq(
-                    'object_type',
-                    $queryBuilder->createNamedParameter($this->objectType)
-                ),
-                $queryBuilder->expr()->eq(
-                    'typoscript_key',
-                    $queryBuilder->createNamedParameter($this->typoScriptKey)
-                ),
-                $queryBuilder->expr()->eq(
-                    'table_foreign',
-                    $queryBuilder->createNamedParameter($this->tableName)
                 )
             )
-            ->from(self::RELATION_TABLE)
             ->execute()
             ->fetch(\PDO::FETCH_NUM);
 
