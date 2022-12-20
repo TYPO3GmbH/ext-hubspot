@@ -14,6 +14,7 @@ namespace T3G\Hubspot\Hubspot;
 use SevenShores\Hubspot\Factory as HubspotFactory;
 use SevenShores\Hubspot\Http\Client;
 use SevenShores\Hubspot\Resources\Resource;
+use T3G\Hubspot\Hubspot\Resources\AccountInformation;
 use T3G\Hubspot\Hubspot\Resources\CustomObjects;
 use T3G\Hubspot\Hubspot\Resources\CustomObjectSchemas;
 
@@ -50,6 +51,8 @@ class Factory extends HubspotFactory
                 return new CustomObjects($this->client, $args[0]);
             case 'customObjectSchemas':
                 return new CustomObjectSchemas($this->client);
+            case 'accountInformation':
+                return new AccountInformation($this->client);
         }
 
         return parent::__call($name, $args);
