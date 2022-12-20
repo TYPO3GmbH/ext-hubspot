@@ -56,6 +56,12 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
                 $this->persistSchemaInRegistry($schema);
             }
 
+            // Remove schemas in registry that doesn't exist in HubSpot.
+            $schemasNamesToRemove = array_diff(array_keys($schemaLabels), array_column($schemas, 'name'));
+            if (!empty($schemasNamesToRemove)) {
+                $this->removeSchemasFromRegistry($schemasNamesToRemove);
+            }
+
             return array_combine(array_column($schemas, 'name'), $schemas);
         }
 
@@ -233,5 +239,21 @@ class CustomObjectSchemaRepository extends AbstractHubspotRepository
     protected function getSchemaLabelsFromRegistry(): ?array
     {
         return $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA);
+    }
+
+    /**
+     * Remove schemas from registry.
+     *
+     * @param array $schemaNames
+     */
+    public function removeSchemasFromRegistry(array $schemaNames): void
+    {
+        foreach ($schemaNames as $name) {
+            $this->registry->remove('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA . '_' . $name);
+
+            $labels = $this->registry->get('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA, []);
+            unset($labels[$name]);
+            $this->registry->set('hubspot', self::REGISTRY_CUSTOM_OBJECT_SCHEMA, $labels);
+        }
     }
 }
