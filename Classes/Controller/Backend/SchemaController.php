@@ -147,10 +147,11 @@ class SchemaController extends AbstractController
      */
     public function refreshAction(string $redirectUri)
     {
-        $this->schemaRepository->findAll(false);
+        $schemas = $this->schemaRepository->findAll(false);
+        $schemaNames = implode(',', array_column($schemas, 'name'));
 
         $this->addFlashMessage(
-            $this->getLanguageService()->getLL('hubspot_integration.customObjects.refreshSchemas.body'),
+            $this->getLanguageService()->getLL('hubspot_integration.customObjects.refreshSchemas.body') . ' (' . $schemaNames . ')',
             $this->getLanguageService()->getLL('hubspot_integration.customObjects.refreshSchemas.title')
         );
 
