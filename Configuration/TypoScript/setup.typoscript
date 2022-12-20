@@ -90,5 +90,13 @@ module.tx_hubspot {
             # Any key, but the Hubspot object name is recommended. Still, there could be multiple syncs to the same object
         }
 
+        download {
+            filterSchema {
+                enabled = 0
+                allowedMainProperties = name, labels, primaryDisplayProperty, secondaryDisplayProperties, searchableProperties, requiredProperties, properties, associatedObjects, metaType
+                allowedPropertyProperties = name, label, type, fieldType, groupName, options
+                excludeHubspotDefinedProperties = 1
+            }
+        }
     }
 }

@@ -14,5 +14,6 @@ found in `module.tx_hubspot`.
    :titlesonly:
    :glob:
 
+   BackendModule
    ContactSynchronization
    CustomObjectSynchronization

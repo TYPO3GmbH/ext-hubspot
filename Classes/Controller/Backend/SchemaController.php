@@ -297,6 +297,10 @@ class SchemaController extends AbstractController
             );
         }
 
+        if ($this->settings['download']['filterSchema']['enabled']) {
+            $schema = $this->filterSchema($schema);
+        }
+
         $jsonEncodedSchema = json_encode($schema);
 
         $headers = array(
@@ -360,5 +364,44 @@ class SchemaController extends AbstractController
             'Delete operation was not confirmed.',
             1645097457171
         );
+    }
+
+    /**
+     * Filter schema based om typoscript settings.
+     *
+     * @param array $schema
+     * @return array
+     */
+    protected function filterSchema(array $schema): array
+    {
+        $filteredProperties = [];
+        $allowedMainProperties = GeneralUtility::trimExplode(
+            ',',
+            $this->settings['download']['filterSchema']['allowedMainProperties'],
+            true
+        );
+        $allowedPropertyProperties = GeneralUtility::trimExplode(
+            ',',
+            $this->settings['download']['filterSchema']['allowedPropertyProperties'],
+            true
+        );
+        $excludeHubspotDefinedProperties = $this->settings['download']['filterSchema']['excludeHubspotDefinedProperties'] ?? false;
+
+        if (empty($allowedMainProperties) || empty($allowedPropertyProperties)) {
+            return $schema;
+        }
+
+        $schema = array_intersect_key($schema, array_flip($allowedMainProperties));
+
+        foreach ($schema['properties'] as $index => $values) {
+            if ($excludeHubspotDefinedProperties && $values['hubspotDefined'] ?? 0 === 1) {
+                continue;
+            }
+            $filteredProperties[] = array_intersect_key($schema['properties'][$index], array_flip($allowedPropertyProperties));
+        }
+
+        $schema['properties'] = $filteredProperties;
+
+        return $schema;
     }
 }
