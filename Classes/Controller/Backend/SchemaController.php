@@ -316,7 +316,7 @@ class SchemaController extends AbstractController
 
         $this->response->setContent($jsonEncodedSchema);
 
-        return $this->response;
+        return $this->response->shutdown();
     }
 
     /**
